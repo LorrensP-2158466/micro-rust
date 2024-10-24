@@ -1,0 +1,47 @@
+[
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang++",
+      "-c",
+      "-std=c++17",
+      "-I",
+      "/opt/homebrew/opt/flex/include",
+      "-o",
+      "main",
+      "main.cpp"
+    ],
+    "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust",
+    "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main.cpp",
+    "output": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang++",
+      "-c",
+      "-std=c++17",
+      "-I",
+      "/opt/homebrew/opt/flex/include",
+      "-o",
+      "main",
+      "lexer/lexer.yy.cpp"
+    ],
+    "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust",
+    "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/lexer/lexer.yy.cpp",
+    "output": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main"
+  },
+  {
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang++",
+      "-c",
+      "-std=c++17",
+      "-I",
+      "/opt/homebrew/opt/flex/include",
+      "-o",
+      "main",
+      "parser/parser.tab.cpp"
+    ],
+    "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust",
+    "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/parser/parser.tab.cpp",
+    "output": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main"
+  }
+]

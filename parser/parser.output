@@ -1,0 +1,2752 @@
+Terminals unused in grammar
+
+    PRINT_VAR
+    PRINT_STRING
+    OR
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: item_list
+
+    2 item_list: item_list item
+    3          | item_list error item
+    4          | item
+
+    5 item: function_decl
+
+    6 function_decl: FN IDENTIFIER func_decl_args func_ret_type block_expr
+
+    7 func_ret_type: ARROW type
+    8              | ε
+
+    9 func_decl_args: LPAREN func_arg_list RPAREN
+   10               | LPAREN RPAREN
+   11               | error
+
+   12 func_arg_list: func_arg_list COMMA func_arg
+   13              | func_arg
+
+   14 func_arg: IDENTIFIER type_decl
+
+   15 stmt: SEMICOLON
+   16     | let
+   17     | expr SEMICOLON
+   18     | PRINT_LN SEMICOLON
+   19     | item
+   20     | error SEMICOLON
+
+   21 stmt_list: stmt_list stmt
+   22          | stmt
+
+   23 type_decl: COLON type
+   24          | ε
+
+   25 opt_mut: MUT
+   26        | ε
+
+   27 let: LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
+   28    | LET opt_mut IDENTIFIER type_decl error EQ SEMICOLON
+   29    | LET opt_mut IDENTIFIER COLON type SEMICOLON
+   30    | LET UNDERSCORE COLON type EQ expr SEMICOLON
+
+   31 if_expr: IF expr block_expr
+   32        | IF expr block_expr ELSE if_expr
+   33        | IF expr block_expr ELSE block_expr
+
+   34 ref_add: AMPERSAND
+   35        | AMPERSAND_MUT
+   36        | ε
+
+   37 type: ref_add I32
+   38     | ref_add BOOL
+   39     | ref_add LPAREN RPAREN
+   40     | ref_add IDENTIFIER
+
+   41 block_expr: LBRACE stmt_list RBRACE
+   42           | LBRACE stmt_list expr RBRACE
+   43           | LBRACE expr RBRACE
+   44           | LBRACE RBRACE
+
+   45 assignment: IDENTIFIER EQ expr
+   46           | IDENTIFIER PLUS_EQ expr
+   47           | IDENTIFIER MIN_EQ expr
+   48           | IDENTIFIER DIV_EQ expr
+   49           | IDENTIFIER MUL_EQ expr
+
+   50 unary_op_expr: MINUS expr
+   51              | STAR expr
+   52              | BANG expr
+   53              | AMPERSAND expr
+   54              | AMPERSAND_MUT expr
+
+   55 bin_op_expr: expr PLUS expr
+   56            | expr MINUS expr
+   57            | expr STAR expr
+   58            | expr SLASH expr
+   59            | expr L_AND expr
+   60            | expr L_OR expr
+   61            | expr EQEQ expr
+   62            | expr NE expr
+   63            | expr LT expr
+   64            | expr GT expr
+   65            | expr GE expr
+   66            | expr LE expr
+
+   67 call_expr_args: call_expr_args COMMA expr
+   68               | expr
+
+   69 call_expr: IDENTIFIER LPAREN call_expr_args RPAREN
+   70          | IDENTIFIER LPAREN RPAREN
+
+   71 while_expr: WHILE expr block_expr
+
+   72 expr: assignment
+   73     | bin_op_expr
+   74     | block_expr
+   75     | if_expr
+   76     | DEC_LITERAL
+   77     | TRUE
+   78     | FALSE
+   79     | IDENTIFIER
+   80     | unary_op_expr
+   81     | LPAREN expr RPAREN
+   82     | LPAREN RPAREN
+   83     | call_expr
+   84     | while_expr
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256) 3 11 20 28
+    DEC_LITERAL <Token> (258) 76
+    TRUE <Token> (259) 77
+    FALSE <Token> (260) 78
+    IDENTIFIER <Token> (261) 6 14 27 28 29 40 45 46 47 48 49 69 70 79
+    UNDERSCORE <Token> (262) 30
+    LET <Token> (263) 27 28 29 30
+    MUT <Token> (264) 25
+    I32 <Token> (265) 37
+    BOOL <Token> (266) 38
+    FN <Token> (267) 6
+    WHILE <Token> (268) 71
+    PRINT_VAR <Token> (269)
+    PRINT_STRING <Token> (270)
+    PRINT_LN <Token> (271) 18
+    EQ <Token> (272) 27 28 30 45
+    EQEQ <Token> (273) 61
+    NE <Token> (274) 62
+    BANG <Token> (275) 52
+    LT <Token> (276) 63
+    LE <Token> (277) 66
+    GT <Token> (278) 64
+    GE <Token> (279) 65
+    PLUS <Token> (280) 55
+    MINUS <Token> (281) 50 56
+    STAR <Token> (282) 51 57
+    SLASH <Token> (283) 58
+    COMMA <Token> (284) 12 67
+    ARROW <Token> (285) 7
+    IF <Token> (286) 31 32 33
+    ELSE <Token> (287) 32 33
+    L_AND <Token> (288) 59
+    L_OR <Token> (289) 60
+    PLUS_EQ <Token> (290) 46
+    MIN_EQ <Token> (291) 47
+    MUL_EQ <Token> (292) 49
+    DIV_EQ <Token> (293) 48
+    LBRACE <Token> (294) 41 42 43 44
+    RBRACE <Token> (295) 41 42 43 44
+    LPAREN <Token> (296) 9 10 39 69 70 81 82
+    RPAREN <Token> (297) 9 10 39 69 70 81 82
+    SEMICOLON <Token> (298) 15 17 18 20 27 28 29 30
+    COLON <Token> (299) 23 29 30
+    AMPERSAND <Token> (300) 34 53
+    OR <Token> (301)
+    AMPERSAND_MUT <Token> (302) 35 54
+    REF (303)
+    REF_MUT (304)
+    DEREF (305)
+    UMINUS (306)
+    NOT (307)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (53)
+        on left: 0
+    program <Unique<Ast>> (54)
+        on left: 1
+        on right: 0
+    item_list <std::vector<Unique<Item>>> (55)
+        on left: 2 3 4
+        on right: 1 2 3
+    item <Unique<Item>> (56)
+        on left: 5
+        on right: 2 3 4 19
+    function_decl <Unique<FunDecl>> (57)
+        on left: 6
+        on right: 5
+    func_ret_type <std::optional<Type>> (58)
+        on left: 7 8
+        on right: 6
+    func_decl_args <std::vector<FuncArg>> (59)
+        on left: 9 10 11
+        on right: 6
+    func_arg_list <std::vector<FuncArg>> (60)
+        on left: 12 13
+        on right: 9 12
+    func_arg <FuncArg> (61)
+        on left: 14
+        on right: 12 13
+    stmt <Unique<Stmt>> (62)
+        on left: 15 16 17 18 19 20
+        on right: 21 22
+    stmt_list <std::vector<Unique<Stmt>>> (63)
+        on left: 21 22
+        on right: 21 41 42
+    type_decl <std::optional<Type>> (64)
+        on left: 23 24
+        on right: 14 27 28
+    opt_mut <bool> (65)
+        on left: 25 26
+        on right: 27 28 29
+    let <Unique<LetStmt>> (66)
+        on left: 27 28 29 30
+        on right: 16
+    if_expr <Unique<IfElse>> (67)
+        on left: 31 32 33
+        on right: 32 75
+    ref_add <uint8_t> (68)
+        on left: 34 35 36
+        on right: 37 38 39 40
+    type <Type> (69)
+        on left: 37 38 39 40
+        on right: 7 23 29 30
+    block_expr <Unique<BlockExpr>> (70)
+        on left: 41 42 43 44
+        on right: 6 31 32 33 71 74
+    assignment <Unique<AssignExpr>> (71)
+        on left: 45 46 47 48 49
+        on right: 72
+    unary_op_expr <Unique<UnaryOpExpr>> (72)
+        on left: 50 51 52 53 54
+        on right: 80
+    bin_op_expr <Unique<BinOpExpr>> (73)
+        on left: 55 56 57 58 59 60 61 62 63 64 65 66
+        on right: 73
+    call_expr_args <std::vector<Unique<Expr>>> (74)
+        on left: 67 68
+        on right: 67 69
+    call_expr <Unique<CallExpr>> (75)
+        on left: 69 70
+        on right: 83
+    while_expr <Unique<WhileLoop>> (76)
+        on left: 71
+        on right: 84
+    expr <Unique<Expr>> (77)
+        on left: 72 73 74 75 76 77 78 79 80 81 82 83 84
+        on right: 17 27 30 31 32 33 42 43 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 71 81
+
+
+State 0
+
+    0 $accept: • program $end
+
+    FN  shift, and go to state 1
+
+    program        go to state 2
+    item_list      go to state 3
+    item           go to state 4
+    function_decl  go to state 5
+
+
+State 1
+
+    6 function_decl: FN • IDENTIFIER func_decl_args func_ret_type block_expr
+
+    IDENTIFIER  shift, and go to state 6
+
+
+State 2
+
+    0 $accept: program • $end
+
+    $end  shift, and go to state 7
+
+
+State 3
+
+    1 program: item_list •
+    2 item_list: item_list • item
+    3          | item_list • error item
+
+    error  shift, and go to state 8
+    FN     shift, and go to state 1
+
+    $end  reduce using rule 1 (program)
+
+    item           go to state 9
+    function_decl  go to state 5
+
+
+State 4
+
+    4 item_list: item •
+
+    $default  reduce using rule 4 (item_list)
+
+
+State 5
+
+    5 item: function_decl •
+
+    $default  reduce using rule 5 (item)
+
+
+State 6
+
+    6 function_decl: FN IDENTIFIER • func_decl_args func_ret_type block_expr
+
+    error   shift, and go to state 10
+    LPAREN  shift, and go to state 11
+
+    func_decl_args  go to state 12
+
+
+State 7
+
+    0 $accept: program $end •
+
+    $default  accept
+
+
+State 8
+
+    3 item_list: item_list error • item
+
+    FN  shift, and go to state 1
+
+    item           go to state 13
+    function_decl  go to state 5
+
+
+State 9
+
+    2 item_list: item_list item •
+
+    $default  reduce using rule 2 (item_list)
+
+
+State 10
+
+   11 func_decl_args: error •
+
+    $default  reduce using rule 11 (func_decl_args)
+
+
+State 11
+
+    9 func_decl_args: LPAREN • func_arg_list RPAREN
+   10               | LPAREN • RPAREN
+
+    IDENTIFIER  shift, and go to state 14
+    RPAREN      shift, and go to state 15
+
+    func_arg_list  go to state 16
+    func_arg       go to state 17
+
+
+State 12
+
+    6 function_decl: FN IDENTIFIER func_decl_args • func_ret_type block_expr
+
+    ARROW  shift, and go to state 18
+
+    $default  reduce using rule 8 (func_ret_type)
+
+    func_ret_type  go to state 19
+
+
+State 13
+
+    3 item_list: item_list error item •
+
+    $default  reduce using rule 3 (item_list)
+
+
+State 14
+
+   14 func_arg: IDENTIFIER • type_decl
+
+    COLON  shift, and go to state 20
+
+    $default  reduce using rule 24 (type_decl)
+
+    type_decl  go to state 21
+
+
+State 15
+
+   10 func_decl_args: LPAREN RPAREN •
+
+    $default  reduce using rule 10 (func_decl_args)
+
+
+State 16
+
+    9 func_decl_args: LPAREN func_arg_list • RPAREN
+   12 func_arg_list: func_arg_list • COMMA func_arg
+
+    COMMA   shift, and go to state 22
+    RPAREN  shift, and go to state 23
+
+
+State 17
+
+   13 func_arg_list: func_arg •
+
+    $default  reduce using rule 13 (func_arg_list)
+
+
+State 18
+
+    7 func_ret_type: ARROW • type
+
+    AMPERSAND      shift, and go to state 24
+    AMPERSAND_MUT  shift, and go to state 25
+
+    $default  reduce using rule 36 (ref_add)
+
+    ref_add  go to state 26
+    type     go to state 27
+
+
+State 19
+
+    6 function_decl: FN IDENTIFIER func_decl_args func_ret_type • block_expr
+
+    LBRACE  shift, and go to state 28
+
+    block_expr  go to state 29
+
+
+State 20
+
+   23 type_decl: COLON • type
+
+    AMPERSAND      shift, and go to state 24
+    AMPERSAND_MUT  shift, and go to state 25
+
+    $default  reduce using rule 36 (ref_add)
+
+    ref_add  go to state 26
+    type     go to state 30
+
+
+State 21
+
+   14 func_arg: IDENTIFIER type_decl •
+
+    $default  reduce using rule 14 (func_arg)
+
+
+State 22
+
+   12 func_arg_list: func_arg_list COMMA • func_arg
+
+    IDENTIFIER  shift, and go to state 14
+
+    func_arg  go to state 31
+
+
+State 23
+
+    9 func_decl_args: LPAREN func_arg_list RPAREN •
+
+    $default  reduce using rule 9 (func_decl_args)
+
+
+State 24
+
+   34 ref_add: AMPERSAND •
+
+    $default  reduce using rule 34 (ref_add)
+
+
+State 25
+
+   35 ref_add: AMPERSAND_MUT •
+
+    $default  reduce using rule 35 (ref_add)
+
+
+State 26
+
+   37 type: ref_add • I32
+   38     | ref_add • BOOL
+   39     | ref_add • LPAREN RPAREN
+   40     | ref_add • IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 32
+    I32         shift, and go to state 33
+    BOOL        shift, and go to state 34
+    LPAREN      shift, and go to state 35
+
+
+State 27
+
+    7 func_ret_type: ARROW type •
+
+    $default  reduce using rule 7 (func_ret_type)
+
+
+State 28
+
+   41 block_expr: LBRACE • stmt_list RBRACE
+   42           | LBRACE • stmt_list expr RBRACE
+   43           | LBRACE • expr RBRACE
+   44           | LBRACE • RBRACE
+
+    error          shift, and go to state 36
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    LET            shift, and go to state 41
+    FN             shift, and go to state 1
+    WHILE          shift, and go to state 42
+    PRINT_LN       shift, and go to state 43
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    RBRACE         shift, and go to state 48
+    LPAREN         shift, and go to state 49
+    SEMICOLON      shift, and go to state 50
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    item           go to state 53
+    function_decl  go to state 5
+    stmt           go to state 54
+    stmt_list      go to state 55
+    let            go to state 56
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 64
+
+
+State 29
+
+    6 function_decl: FN IDENTIFIER func_decl_args func_ret_type block_expr •
+
+    $default  reduce using rule 6 (function_decl)
+
+
+State 30
+
+   23 type_decl: COLON type •
+
+    $default  reduce using rule 23 (type_decl)
+
+
+State 31
+
+   12 func_arg_list: func_arg_list COMMA func_arg •
+
+    $default  reduce using rule 12 (func_arg_list)
+
+
+State 32
+
+   40 type: ref_add IDENTIFIER •
+
+    $default  reduce using rule 40 (type)
+
+
+State 33
+
+   37 type: ref_add I32 •
+
+    $default  reduce using rule 37 (type)
+
+
+State 34
+
+   38 type: ref_add BOOL •
+
+    $default  reduce using rule 38 (type)
+
+
+State 35
+
+   39 type: ref_add LPAREN • RPAREN
+
+    RPAREN  shift, and go to state 65
+
+
+State 36
+
+   20 stmt: error • SEMICOLON
+
+    SEMICOLON  shift, and go to state 66
+
+
+State 37
+
+   76 expr: DEC_LITERAL •
+
+    $default  reduce using rule 76 (expr)
+
+
+State 38
+
+   77 expr: TRUE •
+
+    $default  reduce using rule 77 (expr)
+
+
+State 39
+
+   78 expr: FALSE •
+
+    $default  reduce using rule 78 (expr)
+
+
+State 40
+
+   45 assignment: IDENTIFIER • EQ expr
+   46           | IDENTIFIER • PLUS_EQ expr
+   47           | IDENTIFIER • MIN_EQ expr
+   48           | IDENTIFIER • DIV_EQ expr
+   49           | IDENTIFIER • MUL_EQ expr
+   69 call_expr: IDENTIFIER • LPAREN call_expr_args RPAREN
+   70          | IDENTIFIER • LPAREN RPAREN
+   79 expr: IDENTIFIER •
+
+    EQ       shift, and go to state 67
+    PLUS_EQ  shift, and go to state 68
+    MIN_EQ   shift, and go to state 69
+    MUL_EQ   shift, and go to state 70
+    DIV_EQ   shift, and go to state 71
+    LPAREN   shift, and go to state 72
+
+    $default  reduce using rule 79 (expr)
+
+
+State 41
+
+   27 let: LET • opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
+   28    | LET • opt_mut IDENTIFIER type_decl error EQ SEMICOLON
+   29    | LET • opt_mut IDENTIFIER COLON type SEMICOLON
+   30    | LET • UNDERSCORE COLON type EQ expr SEMICOLON
+
+    UNDERSCORE  shift, and go to state 73
+    MUT         shift, and go to state 74
+
+    $default  reduce using rule 26 (opt_mut)
+
+    opt_mut  go to state 75
+
+
+State 42
+
+   71 while_expr: WHILE • expr block_expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 76
+
+
+State 43
+
+   18 stmt: PRINT_LN • SEMICOLON
+
+    SEMICOLON  shift, and go to state 77
+
+
+State 44
+
+   52 unary_op_expr: BANG • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 78
+
+
+State 45
+
+   50 unary_op_expr: MINUS • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 79
+
+
+State 46
+
+   51 unary_op_expr: STAR • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 80
+
+
+State 47
+
+   31 if_expr: IF • expr block_expr
+   32        | IF • expr block_expr ELSE if_expr
+   33        | IF • expr block_expr ELSE block_expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 81
+
+
+State 48
+
+   44 block_expr: LBRACE RBRACE •
+
+    $default  reduce using rule 44 (block_expr)
+
+
+State 49
+
+   81 expr: LPAREN • expr RPAREN
+   82     | LPAREN • RPAREN
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    RPAREN         shift, and go to state 82
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 83
+
+
+State 50
+
+   15 stmt: SEMICOLON •
+
+    $default  reduce using rule 15 (stmt)
+
+
+State 51
+
+   53 unary_op_expr: AMPERSAND • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 84
+
+
+State 52
+
+   54 unary_op_expr: AMPERSAND_MUT • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 85
+
+
+State 53
+
+   19 stmt: item •
+
+    $default  reduce using rule 19 (stmt)
+
+
+State 54
+
+   22 stmt_list: stmt •
+
+    $default  reduce using rule 22 (stmt_list)
+
+
+State 55
+
+   21 stmt_list: stmt_list • stmt
+   41 block_expr: LBRACE stmt_list • RBRACE
+   42           | LBRACE stmt_list • expr RBRACE
+
+    error          shift, and go to state 36
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    LET            shift, and go to state 41
+    FN             shift, and go to state 1
+    WHILE          shift, and go to state 42
+    PRINT_LN       shift, and go to state 43
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    RBRACE         shift, and go to state 86
+    LPAREN         shift, and go to state 49
+    SEMICOLON      shift, and go to state 50
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    item           go to state 53
+    function_decl  go to state 5
+    stmt           go to state 87
+    let            go to state 56
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 88
+
+
+State 56
+
+   16 stmt: let •
+
+    $default  reduce using rule 16 (stmt)
+
+
+State 57
+
+   75 expr: if_expr •
+
+    $default  reduce using rule 75 (expr)
+
+
+State 58
+
+   74 expr: block_expr •
+
+    $default  reduce using rule 74 (expr)
+
+
+State 59
+
+   72 expr: assignment •
+
+    $default  reduce using rule 72 (expr)
+
+
+State 60
+
+   80 expr: unary_op_expr •
+
+    $default  reduce using rule 80 (expr)
+
+
+State 61
+
+   73 expr: bin_op_expr •
+
+    $default  reduce using rule 73 (expr)
+
+
+State 62
+
+   83 expr: call_expr •
+
+    $default  reduce using rule 83 (expr)
+
+
+State 63
+
+   84 expr: while_expr •
+
+    $default  reduce using rule 84 (expr)
+
+
+State 64
+
+   17 stmt: expr • SEMICOLON
+   43 block_expr: LBRACE expr • RBRACE
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ       shift, and go to state 89
+    NE         shift, and go to state 90
+    LT         shift, and go to state 91
+    LE         shift, and go to state 92
+    GT         shift, and go to state 93
+    GE         shift, and go to state 94
+    PLUS       shift, and go to state 95
+    MINUS      shift, and go to state 96
+    STAR       shift, and go to state 97
+    SLASH      shift, and go to state 98
+    L_AND      shift, and go to state 99
+    L_OR       shift, and go to state 100
+    RBRACE     shift, and go to state 101
+    SEMICOLON  shift, and go to state 102
+
+
+State 65
+
+   39 type: ref_add LPAREN RPAREN •
+
+    $default  reduce using rule 39 (type)
+
+
+State 66
+
+   20 stmt: error SEMICOLON •
+
+    $default  reduce using rule 20 (stmt)
+
+
+State 67
+
+   45 assignment: IDENTIFIER EQ • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 103
+
+
+State 68
+
+   46 assignment: IDENTIFIER PLUS_EQ • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 104
+
+
+State 69
+
+   47 assignment: IDENTIFIER MIN_EQ • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 105
+
+
+State 70
+
+   49 assignment: IDENTIFIER MUL_EQ • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 106
+
+
+State 71
+
+   48 assignment: IDENTIFIER DIV_EQ • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 107
+
+
+State 72
+
+   69 call_expr: IDENTIFIER LPAREN • call_expr_args RPAREN
+   70          | IDENTIFIER LPAREN • RPAREN
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    RPAREN         shift, and go to state 108
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr         go to state 57
+    block_expr      go to state 58
+    assignment      go to state 59
+    unary_op_expr   go to state 60
+    bin_op_expr     go to state 61
+    call_expr_args  go to state 109
+    call_expr       go to state 62
+    while_expr      go to state 63
+    expr            go to state 110
+
+
+State 73
+
+   30 let: LET UNDERSCORE • COLON type EQ expr SEMICOLON
+
+    COLON  shift, and go to state 111
+
+
+State 74
+
+   25 opt_mut: MUT •
+
+    $default  reduce using rule 25 (opt_mut)
+
+
+State 75
+
+   27 let: LET opt_mut • IDENTIFIER type_decl EQ expr SEMICOLON
+   28    | LET opt_mut • IDENTIFIER type_decl error EQ SEMICOLON
+   29    | LET opt_mut • IDENTIFIER COLON type SEMICOLON
+
+    IDENTIFIER  shift, and go to state 112
+
+
+State 76
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+   71 while_expr: WHILE expr • block_expr
+
+    EQEQ    shift, and go to state 89
+    NE      shift, and go to state 90
+    LT      shift, and go to state 91
+    LE      shift, and go to state 92
+    GT      shift, and go to state 93
+    GE      shift, and go to state 94
+    PLUS    shift, and go to state 95
+    MINUS   shift, and go to state 96
+    STAR    shift, and go to state 97
+    SLASH   shift, and go to state 98
+    L_AND   shift, and go to state 99
+    L_OR    shift, and go to state 100
+    LBRACE  shift, and go to state 28
+
+    block_expr  go to state 113
+
+
+State 77
+
+   18 stmt: PRINT_LN SEMICOLON •
+
+    $default  reduce using rule 18 (stmt)
+
+
+State 78
+
+   52 unary_op_expr: BANG expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    $default  reduce using rule 52 (unary_op_expr)
+
+
+State 79
+
+   50 unary_op_expr: MINUS expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    $default  reduce using rule 50 (unary_op_expr)
+
+
+State 80
+
+   51 unary_op_expr: STAR expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    $default  reduce using rule 51 (unary_op_expr)
+
+
+State 81
+
+   31 if_expr: IF expr • block_expr
+   32        | IF expr • block_expr ELSE if_expr
+   33        | IF expr • block_expr ELSE block_expr
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ    shift, and go to state 89
+    NE      shift, and go to state 90
+    LT      shift, and go to state 91
+    LE      shift, and go to state 92
+    GT      shift, and go to state 93
+    GE      shift, and go to state 94
+    PLUS    shift, and go to state 95
+    MINUS   shift, and go to state 96
+    STAR    shift, and go to state 97
+    SLASH   shift, and go to state 98
+    L_AND   shift, and go to state 99
+    L_OR    shift, and go to state 100
+    LBRACE  shift, and go to state 28
+
+    block_expr  go to state 114
+
+
+State 82
+
+   82 expr: LPAREN RPAREN •
+
+    $default  reduce using rule 82 (expr)
+
+
+State 83
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+   81 expr: LPAREN expr • RPAREN
+
+    EQEQ    shift, and go to state 89
+    NE      shift, and go to state 90
+    LT      shift, and go to state 91
+    LE      shift, and go to state 92
+    GT      shift, and go to state 93
+    GE      shift, and go to state 94
+    PLUS    shift, and go to state 95
+    MINUS   shift, and go to state 96
+    STAR    shift, and go to state 97
+    SLASH   shift, and go to state 98
+    L_AND   shift, and go to state 99
+    L_OR    shift, and go to state 100
+    RPAREN  shift, and go to state 115
+
+
+State 84
+
+   53 unary_op_expr: AMPERSAND expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    $default  reduce using rule 53 (unary_op_expr)
+
+
+State 85
+
+   54 unary_op_expr: AMPERSAND_MUT expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    $default  reduce using rule 54 (unary_op_expr)
+
+
+State 86
+
+   41 block_expr: LBRACE stmt_list RBRACE •
+
+    $default  reduce using rule 41 (block_expr)
+
+
+State 87
+
+   21 stmt_list: stmt_list stmt •
+
+    $default  reduce using rule 21 (stmt_list)
+
+
+State 88
+
+   17 stmt: expr • SEMICOLON
+   42 block_expr: LBRACE stmt_list expr • RBRACE
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ       shift, and go to state 89
+    NE         shift, and go to state 90
+    LT         shift, and go to state 91
+    LE         shift, and go to state 92
+    GT         shift, and go to state 93
+    GE         shift, and go to state 94
+    PLUS       shift, and go to state 95
+    MINUS      shift, and go to state 96
+    STAR       shift, and go to state 97
+    SLASH      shift, and go to state 98
+    L_AND      shift, and go to state 99
+    L_OR       shift, and go to state 100
+    RBRACE     shift, and go to state 116
+    SEMICOLON  shift, and go to state 102
+
+
+State 89
+
+   61 bin_op_expr: expr EQEQ • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 117
+
+
+State 90
+
+   62 bin_op_expr: expr NE • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 118
+
+
+State 91
+
+   63 bin_op_expr: expr LT • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 119
+
+
+State 92
+
+   66 bin_op_expr: expr LE • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 120
+
+
+State 93
+
+   64 bin_op_expr: expr GT • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 121
+
+
+State 94
+
+   65 bin_op_expr: expr GE • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 122
+
+
+State 95
+
+   55 bin_op_expr: expr PLUS • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 123
+
+
+State 96
+
+   56 bin_op_expr: expr MINUS • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 124
+
+
+State 97
+
+   57 bin_op_expr: expr STAR • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 125
+
+
+State 98
+
+   58 bin_op_expr: expr SLASH • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 126
+
+
+State 99
+
+   59 bin_op_expr: expr L_AND • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 127
+
+
+State 100
+
+   60 bin_op_expr: expr L_OR • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 128
+
+
+State 101
+
+   43 block_expr: LBRACE expr RBRACE •
+
+    $default  reduce using rule 43 (block_expr)
+
+
+State 102
+
+   17 stmt: expr SEMICOLON •
+
+    $default  reduce using rule 17 (stmt)
+
+
+State 103
+
+   45 assignment: IDENTIFIER EQ expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ   shift, and go to state 89
+    NE     shift, and go to state 90
+    LT     shift, and go to state 91
+    LE     shift, and go to state 92
+    GT     shift, and go to state 93
+    GE     shift, and go to state 94
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    $default  reduce using rule 45 (assignment)
+
+
+State 104
+
+   46 assignment: IDENTIFIER PLUS_EQ expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ   shift, and go to state 89
+    NE     shift, and go to state 90
+    LT     shift, and go to state 91
+    LE     shift, and go to state 92
+    GT     shift, and go to state 93
+    GE     shift, and go to state 94
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    $default  reduce using rule 46 (assignment)
+
+
+State 105
+
+   47 assignment: IDENTIFIER MIN_EQ expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ   shift, and go to state 89
+    NE     shift, and go to state 90
+    LT     shift, and go to state 91
+    LE     shift, and go to state 92
+    GT     shift, and go to state 93
+    GE     shift, and go to state 94
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    $default  reduce using rule 47 (assignment)
+
+
+State 106
+
+   49 assignment: IDENTIFIER MUL_EQ expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ   shift, and go to state 89
+    NE     shift, and go to state 90
+    LT     shift, and go to state 91
+    LE     shift, and go to state 92
+    GT     shift, and go to state 93
+    GE     shift, and go to state 94
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    $default  reduce using rule 49 (assignment)
+
+
+State 107
+
+   48 assignment: IDENTIFIER DIV_EQ expr •
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ   shift, and go to state 89
+    NE     shift, and go to state 90
+    LT     shift, and go to state 91
+    LE     shift, and go to state 92
+    GT     shift, and go to state 93
+    GE     shift, and go to state 94
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    $default  reduce using rule 48 (assignment)
+
+
+State 108
+
+   70 call_expr: IDENTIFIER LPAREN RPAREN •
+
+    $default  reduce using rule 70 (call_expr)
+
+
+State 109
+
+   67 call_expr_args: call_expr_args • COMMA expr
+   69 call_expr: IDENTIFIER LPAREN call_expr_args • RPAREN
+
+    COMMA   shift, and go to state 129
+    RPAREN  shift, and go to state 130
+
+
+State 110
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+   68 call_expr_args: expr •
+
+    EQEQ   shift, and go to state 89
+    NE     shift, and go to state 90
+    LT     shift, and go to state 91
+    LE     shift, and go to state 92
+    GT     shift, and go to state 93
+    GE     shift, and go to state 94
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    $default  reduce using rule 68 (call_expr_args)
+
+
+State 111
+
+   30 let: LET UNDERSCORE COLON • type EQ expr SEMICOLON
+
+    AMPERSAND      shift, and go to state 24
+    AMPERSAND_MUT  shift, and go to state 25
+
+    $default  reduce using rule 36 (ref_add)
+
+    ref_add  go to state 26
+    type     go to state 131
+
+
+State 112
+
+   27 let: LET opt_mut IDENTIFIER • type_decl EQ expr SEMICOLON
+   28    | LET opt_mut IDENTIFIER • type_decl error EQ SEMICOLON
+   29    | LET opt_mut IDENTIFIER • COLON type SEMICOLON
+
+    COLON  shift, and go to state 132
+
+    $default  reduce using rule 24 (type_decl)
+
+    type_decl  go to state 133
+
+
+State 113
+
+   71 while_expr: WHILE expr block_expr •
+
+    $default  reduce using rule 71 (while_expr)
+
+
+State 114
+
+   31 if_expr: IF expr block_expr •
+   32        | IF expr block_expr • ELSE if_expr
+   33        | IF expr block_expr • ELSE block_expr
+
+    ELSE  shift, and go to state 134
+
+    $default  reduce using rule 31 (if_expr)
+
+
+State 115
+
+   81 expr: LPAREN expr RPAREN •
+
+    $default  reduce using rule 81 (expr)
+
+
+State 116
+
+   42 block_expr: LBRACE stmt_list expr RBRACE •
+
+    $default  reduce using rule 42 (block_expr)
+
+
+State 117
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   61            | expr EQEQ expr •
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    EQEQ  error (nonassociative)
+    NE    error (nonassociative)
+    LT    error (nonassociative)
+    LE    error (nonassociative)
+    GT    error (nonassociative)
+    GE    error (nonassociative)
+
+    $default  reduce using rule 61 (bin_op_expr)
+
+
+State 118
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   62            | expr NE expr •
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    EQEQ  error (nonassociative)
+    NE    error (nonassociative)
+    LT    error (nonassociative)
+    LE    error (nonassociative)
+    GT    error (nonassociative)
+    GE    error (nonassociative)
+
+    $default  reduce using rule 62 (bin_op_expr)
+
+
+State 119
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   63            | expr LT expr •
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    EQEQ  error (nonassociative)
+    NE    error (nonassociative)
+    LT    error (nonassociative)
+    LE    error (nonassociative)
+    GT    error (nonassociative)
+    GE    error (nonassociative)
+
+    $default  reduce using rule 63 (bin_op_expr)
+
+
+State 120
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+   66            | expr LE expr •
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    EQEQ  error (nonassociative)
+    NE    error (nonassociative)
+    LT    error (nonassociative)
+    LE    error (nonassociative)
+    GT    error (nonassociative)
+    GE    error (nonassociative)
+
+    $default  reduce using rule 66 (bin_op_expr)
+
+
+State 121
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   64            | expr GT expr •
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    EQEQ  error (nonassociative)
+    NE    error (nonassociative)
+    LT    error (nonassociative)
+    LE    error (nonassociative)
+    GT    error (nonassociative)
+    GE    error (nonassociative)
+
+    $default  reduce using rule 64 (bin_op_expr)
+
+
+State 122
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   65            | expr GE expr •
+   66            | expr • LE expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    EQEQ  error (nonassociative)
+    NE    error (nonassociative)
+    LT    error (nonassociative)
+    LE    error (nonassociative)
+    GT    error (nonassociative)
+    GE    error (nonassociative)
+
+    $default  reduce using rule 65 (bin_op_expr)
+
+
+State 123
+
+   55 bin_op_expr: expr • PLUS expr
+   55            | expr PLUS expr •
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+
+    $default  reduce using rule 55 (bin_op_expr)
+
+
+State 124
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   56            | expr MINUS expr •
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+
+    $default  reduce using rule 56 (bin_op_expr)
+
+
+State 125
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   57            | expr STAR expr •
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    $default  reduce using rule 57 (bin_op_expr)
+
+
+State 126
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   58            | expr SLASH expr •
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    $default  reduce using rule 58 (bin_op_expr)
+
+
+State 127
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   59            | expr L_AND expr •
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+
+    $default  reduce using rule 59 (bin_op_expr)
+
+
+State 128
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   60            | expr L_OR expr •
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+
+    $default  reduce using rule 60 (bin_op_expr)
+
+
+State 129
+
+   67 call_expr_args: call_expr_args COMMA • expr
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 135
+
+
+State 130
+
+   69 call_expr: IDENTIFIER LPAREN call_expr_args RPAREN •
+
+    $default  reduce using rule 69 (call_expr)
+
+
+State 131
+
+   30 let: LET UNDERSCORE COLON type • EQ expr SEMICOLON
+
+    EQ  shift, and go to state 136
+
+
+State 132
+
+   23 type_decl: COLON • type
+   29 let: LET opt_mut IDENTIFIER COLON • type SEMICOLON
+
+    AMPERSAND      shift, and go to state 24
+    AMPERSAND_MUT  shift, and go to state 25
+
+    $default  reduce using rule 36 (ref_add)
+
+    ref_add  go to state 26
+    type     go to state 137
+
+
+State 133
+
+   27 let: LET opt_mut IDENTIFIER type_decl • EQ expr SEMICOLON
+   28    | LET opt_mut IDENTIFIER type_decl • error EQ SEMICOLON
+
+    error  shift, and go to state 138
+    EQ     shift, and go to state 139
+
+
+State 134
+
+   32 if_expr: IF expr block_expr ELSE • if_expr
+   33        | IF expr block_expr ELSE • block_expr
+
+    IF      shift, and go to state 47
+    LBRACE  shift, and go to state 28
+
+    if_expr     go to state 140
+    block_expr  go to state 141
+
+
+State 135
+
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+   67 call_expr_args: call_expr_args COMMA expr •
+
+    EQEQ   shift, and go to state 89
+    NE     shift, and go to state 90
+    LT     shift, and go to state 91
+    LE     shift, and go to state 92
+    GT     shift, and go to state 93
+    GE     shift, and go to state 94
+    PLUS   shift, and go to state 95
+    MINUS  shift, and go to state 96
+    STAR   shift, and go to state 97
+    SLASH  shift, and go to state 98
+    L_AND  shift, and go to state 99
+    L_OR   shift, and go to state 100
+
+    $default  reduce using rule 67 (call_expr_args)
+
+
+State 136
+
+   30 let: LET UNDERSCORE COLON type EQ • expr SEMICOLON
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 142
+
+
+State 137
+
+   23 type_decl: COLON type •
+   29 let: LET opt_mut IDENTIFIER COLON type • SEMICOLON
+
+    SEMICOLON  shift, and go to state 143
+
+    $default  reduce using rule 23 (type_decl)
+
+
+State 138
+
+   28 let: LET opt_mut IDENTIFIER type_decl error • EQ SEMICOLON
+
+    EQ  shift, and go to state 144
+
+
+State 139
+
+   27 let: LET opt_mut IDENTIFIER type_decl EQ • expr SEMICOLON
+
+    DEC_LITERAL    shift, and go to state 37
+    TRUE           shift, and go to state 38
+    FALSE          shift, and go to state 39
+    IDENTIFIER     shift, and go to state 40
+    WHILE          shift, and go to state 42
+    BANG           shift, and go to state 44
+    MINUS          shift, and go to state 45
+    STAR           shift, and go to state 46
+    IF             shift, and go to state 47
+    LBRACE         shift, and go to state 28
+    LPAREN         shift, and go to state 49
+    AMPERSAND      shift, and go to state 51
+    AMPERSAND_MUT  shift, and go to state 52
+
+    if_expr        go to state 57
+    block_expr     go to state 58
+    assignment     go to state 59
+    unary_op_expr  go to state 60
+    bin_op_expr    go to state 61
+    call_expr      go to state 62
+    while_expr     go to state 63
+    expr           go to state 145
+
+
+State 140
+
+   32 if_expr: IF expr block_expr ELSE if_expr •
+
+    $default  reduce using rule 32 (if_expr)
+
+
+State 141
+
+   33 if_expr: IF expr block_expr ELSE block_expr •
+
+    $default  reduce using rule 33 (if_expr)
+
+
+State 142
+
+   30 let: LET UNDERSCORE COLON type EQ expr • SEMICOLON
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ       shift, and go to state 89
+    NE         shift, and go to state 90
+    LT         shift, and go to state 91
+    LE         shift, and go to state 92
+    GT         shift, and go to state 93
+    GE         shift, and go to state 94
+    PLUS       shift, and go to state 95
+    MINUS      shift, and go to state 96
+    STAR       shift, and go to state 97
+    SLASH      shift, and go to state 98
+    L_AND      shift, and go to state 99
+    L_OR       shift, and go to state 100
+    SEMICOLON  shift, and go to state 146
+
+
+State 143
+
+   29 let: LET opt_mut IDENTIFIER COLON type SEMICOLON •
+
+    $default  reduce using rule 29 (let)
+
+
+State 144
+
+   28 let: LET opt_mut IDENTIFIER type_decl error EQ • SEMICOLON
+
+    SEMICOLON  shift, and go to state 147
+
+
+State 145
+
+   27 let: LET opt_mut IDENTIFIER type_decl EQ expr • SEMICOLON
+   55 bin_op_expr: expr • PLUS expr
+   56            | expr • MINUS expr
+   57            | expr • STAR expr
+   58            | expr • SLASH expr
+   59            | expr • L_AND expr
+   60            | expr • L_OR expr
+   61            | expr • EQEQ expr
+   62            | expr • NE expr
+   63            | expr • LT expr
+   64            | expr • GT expr
+   65            | expr • GE expr
+   66            | expr • LE expr
+
+    EQEQ       shift, and go to state 89
+    NE         shift, and go to state 90
+    LT         shift, and go to state 91
+    LE         shift, and go to state 92
+    GT         shift, and go to state 93
+    GE         shift, and go to state 94
+    PLUS       shift, and go to state 95
+    MINUS      shift, and go to state 96
+    STAR       shift, and go to state 97
+    SLASH      shift, and go to state 98
+    L_AND      shift, and go to state 99
+    L_OR       shift, and go to state 100
+    SEMICOLON  shift, and go to state 148
+
+
+State 146
+
+   30 let: LET UNDERSCORE COLON type EQ expr SEMICOLON •
+
+    $default  reduce using rule 30 (let)
+
+
+State 147
+
+   28 let: LET opt_mut IDENTIFIER type_decl error EQ SEMICOLON •
+
+    $default  reduce using rule 28 (let)
+
+
+State 148
+
+   27 let: LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON •
+
+    $default  reduce using rule 27 (let)
