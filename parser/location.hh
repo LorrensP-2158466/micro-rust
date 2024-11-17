@@ -53,7 +53,7 @@
 #  endif
 # endif
 
-#line 38 "parser/yaccfile.yy"
+#line 39 "parser/yaccfile.yy"
 namespace mr {
 #line 59 "parser/location.hh"
 
@@ -299,7 +299,7 @@ namespace mr {
     return ostr;
   }
 
-#line 38 "parser/yaccfile.yy"
+#line 39 "parser/yaccfile.yy"
 } // mr
 #line 305 "parser/location.hh"
 

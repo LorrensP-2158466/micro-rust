@@ -17,7 +17,7 @@ using namespace mr;
 // Define YY_USER_ACTION for updating location
 #define YY_USER_ACTION {\
   yylloc->columns(yyleng); \
-  yylval->build(Token{{yytext}, Span{this->prev_token_loc.end, yylloc->end}});\
+  yylval->build(Token{{yytext}, Span{this->prev_token_loc.end, yylloc->end}, (size_t) yyleng});\
   this->prev_token_loc = *yylloc;\
   }
 
@@ -32,8 +32,9 @@ using namespace mr;
 DIGIT       [0-9]
 LETTER      [a-zA-Z_]
 IDENTIFIER  {LETTER}({LETTER}|{DIGIT})*
-
-R_PRINTLN   println!\(\"[^\"]*\"\)
+DEC_LITERAL {DIGIT}+({IDENTIFIER})?
+FLOAT_LITERAL {DIGIT}+\.{DIGIT}*{IDENTIFIER}
+STR_LITERAL   \"[^\"]*\"
 
 %%
 
@@ -42,11 +43,19 @@ R_PRINTLN   println!\(\"[^\"]*\"\)
 %}
 
 
-"i32"                       { return Token_T::I32; }
-                            
+"i8"                        { return Token_T::I8;}
+"i16"                       { return Token_T::I16;}
+"i32"                       { return Token_T::I32;}
+"i64"                       { return Token_T::I64;}
+"isize"                     { return Token_T::ISIZE;}
+"u8"                        { return Token_T::U8;}
+"u16"                       { return Token_T::U16;}
+"u32"                       { return Token_T::U32;}
+"u64"                       { return Token_T::U64;}
+"usize"                     { return Token_T::USIZE;}
 "bool"                      { return Token_T::BOOL; }
-"true"                      { yylval->as<Token>()._value = true;  return Token_T::TRUE; }
-"false"                     { yylval->as<Token>()._value = false; return Token_T::FALSE; }
+"true"                      { return Token_T::TRUE; }
+"false"                     { return Token_T::FALSE; }
 "let"                       { return Token_T::LET; }
 "mut"                       { return Token_T::MUT; }
 "if"                        { return Token_T::IF; }
@@ -54,17 +63,10 @@ R_PRINTLN   println!\(\"[^\"]*\"\)
 "while"                     { return Token_T::WHILE; }
 "fn"                        { return Token_T::FN; }
 "_"                         { return Token_T::UNDERSCORE; }
+"println\!"                 { return Token_T::PRINT_LN; }
 
-{R_PRINTLN}                  {
-                              // Extract the content inside the parentheses
-                              std::string content = yytext;
-                              // Remove `println!("` and `")`
-                              content = content.substr(10, content.length() - 12);  
-                              yylval->as<Token>()._value = content;
-                              return Token_T::PRINT_LN;
-                             }
-
-{DIGIT}+                    { yylval->as<Token>()._value = std::stoull(yytext); return Token_T::DEC_LITERAL; }
+{DEC_LITERAL}               { return Token_T::DEC_LITERAL; }
+{STR_LITERAL}               { return Token_T::STR_LITERAL; }
 {IDENTIFIER}                { return Token_T::IDENTIFIER; }
 
 "="                         { return Token_T::EQ; }
@@ -125,7 +127,7 @@ R_PRINTLN   println!\(\"[^\"]*\"\)
     }
   }
   /* lex read exactly one char; the illegal one */
-    std::cerr << " at " << yylloc << std::endl;
+    std::cerr << " at " << *yylloc << std::endl;
 	}
 %%
 

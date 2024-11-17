@@ -4,11 +4,10 @@
 
 namespace mr {
     namespace expr {
-        class CallExpr : public Expr {
+        struct CallExpr : public Expr {
             std::string               _id;
             std::vector<Unique<Expr>> _args;
 
-          public:
             CallExpr(std::string id, std::vector<Unique<Expr>> args)
                 : Expr(), _id(id), _args(std::move(args)) {}
 

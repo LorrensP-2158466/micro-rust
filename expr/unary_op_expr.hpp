@@ -30,11 +30,10 @@ namespace mr {
             }
         }
 
-        class UnaryOpExpr : public Expr {
+        struct UnaryOpExpr : public Expr {
             UnaryOp      _op;
             Unique<Expr> _expr;
 
-          public:
             UnaryOpExpr(UnaryOp op, Unique<Expr> expr)
                 : Expr(), _op(op), _expr(std::move(expr)) {}
 

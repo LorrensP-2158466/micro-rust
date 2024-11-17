@@ -6,21 +6,21 @@
 
 namespace mr {
     namespace expr {
-        enum class BinOp {
-            Mul,   // *
-            Div,   // /
-            Plus,  // +
-            Min,   // -
-            L_AND, // &&
-            L_OR,  // ||
+        ENUM_DEFINE(BinOp,
+                    Mul,   // *
+                    Div,   // /
+                    Plus,  // +
+                    Min,   // -
+                    L_AND, // &&
+                    L_OR,  // ||
 
-            Eq,   // ==
-            NEq,  // !=
-            Gt,   // >
-            Lt,   // <
-            GtEq, // >=
-            LtEq, // <=
-        };
+                    Eq,   // ==
+                    NEq,  // !=
+                    Gt,   // >
+                    Lt,   // <
+                    GtEq, // >=
+                    LtEq, // <=
+        )
 
         static const char* binop_to_str(BinOp bo) {
             switch (bo) {
@@ -56,23 +56,21 @@ namespace mr {
          *  Expr BinOp Expr
          */
         struct BinOpExpr : public Expr {
-            Unique<Expr> _left, _right;
-            BinOp        _bin_op;
+            Unique<Expr> left, right;
+            BinOp        op;
 
             BinOpExpr(Unique<Expr> left, BinOp bo, Unique<Expr> right)
-                : _left(std::move(left)), _right(std::move(right)),
-                  _bin_op(bo) {}
+                : left(std::move(left)), right(std::move(right)), op(bo) {}
 
             ~BinOpExpr() = default;
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');
-                std::cout << indent << "BinOp(" << binop_to_str(_bin_op)
-                          << "):\n";
+                std::cout << indent << "BinOp(" << binop_to_str(op) << "):\n";
                 std::cout << indent << "  left:\n";
-                _left->print(depth + 1);
+                left->print(depth + 1);
                 std::cout << indent << "  right:\n";
-                _right->print(depth + 1);
+                right->print(depth + 1);
             }
         };
 

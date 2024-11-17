@@ -34,3 +34,5 @@ in function scopes
 
 // simple println!() statement for debugging programs
 #include "println.hpp"
+
+#include "visitor.hpp"

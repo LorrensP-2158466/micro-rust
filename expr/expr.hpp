@@ -15,11 +15,7 @@ namespace mr
 
             Expr() : ast::Stmt() {};
             virtual ~Expr() = default;
-            
-            // some expressions have a default type that doesnt need any inferring
-            // but default is always infer
-
-
+        
             virtual void print(const int depth)const override = 0;
         } ;
 

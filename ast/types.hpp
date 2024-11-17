@@ -32,35 +32,21 @@
 
 namespace mr {
     namespace ast {
-        enum class primitive_type {
-            Unit,
+        ENUM_DEFINE(primitive_type,
+             Unit,
+            I8,
+            I16,
             I32,
-            U32,
             I64,
+            ISIZE,
+            U8,
+            U16,
+            U32,
             U64,
+            USIZE,
             Char,
-            Bool,
-        };
-        static const char* primitive_type_to_str(primitive_type pt) {
-            switch (pt) {
-            case primitive_type::Unit:
-                return "()";
-            case primitive_type::U32:
-                return "u32";
-            case primitive_type::U64:
-                return "u64";
-            case primitive_type::I32:
-                return "i32";
-            case primitive_type::I64:
-                return "i64";
-            case primitive_type::Char:
-                return "char";
-            case primitive_type::Bool:
-                return "bool";
-            default:
-                return "Unknown Type name";
-            }
-        }
+            Bool
+        )
 
         // we don't know the exact type when were parsing a specific typename
         // we only know the NAME itself;
@@ -91,9 +77,9 @@ namespace mr {
                 return std::visit(
                     overloaded{
                         [](const primitive_type& pt) -> std::string {
-                            return primitive_type_to_str(pt);
+                            return primitive_type_to_string(pt);
                         },
-                        [](const std::string& s) -> std::string { return s; },
+                        [](const std::string& s) -> std::string { TODO("USER DEFINED TYPES NOT SUPPORTED"); return s;},
                     },
                     *this);
             }

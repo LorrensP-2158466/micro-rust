@@ -10,9 +10,9 @@ namespace mr
     {
         class PrintLn : public Stmt
         {
-        private:
-            std::string _format_str;
         public:
+            std::string _format_str;
+
             PrintLn(std::string s) : Stmt(), _format_str(s) {};
             ~PrintLn() = default;
 
@@ -20,6 +20,8 @@ namespace mr
                 const auto indent = std::string(depth, '\t');
                 std::cout << indent << "Print Line: " << _format_str << std::endl;
             }
+
+
         };
         
     } // namespace ast

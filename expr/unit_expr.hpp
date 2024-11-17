@@ -1,5 +1,7 @@
 #pragma once
 #include "module.hpp"
+#include <iostream>
+#include <string>
 
 namespace mr
 {

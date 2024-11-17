@@ -8,10 +8,9 @@ namespace mr
 {
     namespace expr
     {
-        class WhileLoop : public Expr{
+        struct WhileLoop : public Expr{
             Unique<Expr> _cond;
             Unique<BlockExpr> _body;
-        public:
             WhileLoop(Unique<Expr> cond, Unique<BlockExpr> block)
                 : Expr()
                 , _cond(std::move(cond))

@@ -32,6 +32,14 @@ namespace mr {
                     _implicit_return->print(depth + 1);
                 }
             }
+
+            const auto& statements() const{
+                return _statements;
+            }
+
+            const Expr* tail_expr() const{
+                return _implicit_return.get();
+            }
         };
     } // namespace expr
 

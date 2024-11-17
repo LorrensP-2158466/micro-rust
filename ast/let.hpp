@@ -15,24 +15,24 @@ namespace mr {
             x = 5;
          */
         class LetStmt : public Stmt {
-            std::string                       _id;
-            std::optional<Type>               _type_decl;
-            OptUnique<expr::Expr>             _initializer;
-            bool                              _mutable;
+            std::string           _id;
+            std::optional<Type>   _type_decl;
+            Unique<expr::Expr> _initializer;
+            bool                  _mutable;
 
           public:
             // full constructor
             LetStmt(std::string id, std::optional<Type> type_decl,
-                    std::optional<Unique<expr::Expr>> init, bool mut)
+                    Unique<expr::Expr> init, bool mut)
                 : Stmt(), _id(id), _type_decl(type_decl),
-                  _initializer({std::move(init)}), _mutable(mut) {};
+                  _initializer(std::move(init)), _mutable(mut) {};
 
             ~LetStmt() = default;
 
             static Unique<LetStmt> make_unique_decl(std::string id,
                                                     Type        type_delc,
                                                     bool        mut) noexcept {
-                return std::make_unique<LetStmt>(id, type_delc, std::nullopt,
+                return std::make_unique<LetStmt>(id, type_delc, std::unique_ptr<expr::Expr>{},
                                                  mut);
             }
 
@@ -45,22 +45,28 @@ namespace mr {
                                                  mut);
             }
 
-            void print(const int depth) const override{
+            const std::string&               id() const { return _id; }
+            const std::optional<Type>&      type_decl() const { return _type_decl; }
+            const expr::Expr* initializer() const {
+                return _initializer.get();
+            }
+            bool is_mutable() const { return _mutable; }
+
+            void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');
                 const auto let = indent + "Let Statement:\n";
-                const auto id =  indent + "  identifier: " + _id + '\n';
-                const auto mut = indent + "  mutable: " + bool_to_str(_mutable) + "\n";
+                const auto id = indent + "  identifier: " + _id + '\n';
+                const auto mut =
+                    indent + "  mutable: " + bool_to_str(_mutable) + "\n";
                 auto type_decl = indent + "  type decl: ";
-                if (_type_decl){
+                if (_type_decl) {
                     type_decl += _type_decl->to_string() + "\n";
-                }else{
+                } else {
                     type_decl += "NO TYPE DECL\n";
                 }
                 const auto init = indent + "  initializer:\n";
                 std::cout << let << id << mut << type_decl << init;
-                if (_initializer){
-                    (*_initializer)->print(depth + 1);
-                }
+                if (_initializer) { _initializer->print(depth + 1); }
             }
         };
 

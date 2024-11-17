@@ -22,12 +22,6 @@
 */
 #include "block_expr.hpp"
 
-// decimal literals
-// 10
-// 10i32
-// 10u64
-// ...
-#include "dec_literal.hpp"
 
 // assign expressions
 // foo += 10
@@ -57,9 +51,14 @@
 // function call expr
 #include "call_expr.hpp"
 
-// boolean literal: "true" or "false"
-#include "bool_lit.hpp"
-
 // while loop expression
 // yes while loops are expressions with return type UNIT
 #include "while_loop.hpp"
+
+
+// literals with optional suffix
+// true, false,
+// 10, 10.0, 30usize, 30.f32
+// 'h'
+// "hello world"
+#include "literal.hpp"

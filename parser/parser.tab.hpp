@@ -45,7 +45,7 @@
 #ifndef YY_YY_PARSER_PARSER_TAB_HPP_INCLUDED
 # define YY_YY_PARSER_PARSER_TAB_HPP_INCLUDED
 // "%code requires" blocks.
-#line 5 "parser/yaccfile.yy"
+#line 4 "parser/yaccfile.yy"
 
 
 
@@ -58,6 +58,7 @@
 #include <variant>
 #include <cstddef>
 #include <memory>
+#include <assert.h>
 namespace mr {
   class Lexer; // Forward declaration
 }
@@ -66,7 +67,8 @@ namespace mr {
 using namespace mr::ast;
 using namespace mr::expr;
 
-#line 70 "parser/parser.tab.hpp"
+
+#line 72 "parser/parser.tab.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -200,9 +202,9 @@ using namespace mr::expr;
 # define YYDEBUG 1
 #endif
 
-#line 38 "parser/yaccfile.yy"
+#line 39 "parser/yaccfile.yy"
 namespace mr {
-#line 206 "parser/parser.tab.hpp"
+#line 208 "parser/parser.tab.hpp"
 
 
 
@@ -399,21 +401,30 @@ namespace mr {
     union union_type
     {
       // func_arg
-      char dummy1[sizeof (FuncArg)];
+      char dummy1[sizeof (FunArg)];
 
       // DEC_LITERAL
+      // FLOAT_LITERAL
+      // STR_LITERAL
       // TRUE
       // FALSE
       // IDENTIFIER
       // UNDERSCORE
+      // I8
+      // I16
+      // I32
+      // I64
+      // ISIZE
+      // U8
+      // U16
+      // U32
+      // U64
+      // USIZE
       // LET
       // MUT
-      // I32
       // BOOL
       // FN
       // WHILE
-      // PRINT_VAR
-      // PRINT_STRING
       // PRINT_LN
       // EQ
       // EQEQ
@@ -448,6 +459,7 @@ namespace mr {
       // AMPERSAND_MUT
       char dummy2[sizeof (Token)];
 
+      // func_ret_type
       // type
       char dummy3[sizeof (Type)];
 
@@ -467,6 +479,9 @@ namespace mr {
       char dummy8[sizeof (Unique<CallExpr>)];
 
       // expr
+      // expr_stmt
+      // expr_w_block
+      // expr_wo_block
       char dummy9[sizeof (Unique<Expr>)];
 
       // function_decl
@@ -481,37 +496,42 @@ namespace mr {
       // let
       char dummy13[sizeof (Unique<LetStmt>)];
 
+      // literal
+      char dummy14[sizeof (Unique<Literal>)];
+
+      // print_ln
+      char dummy15[sizeof (Unique<PrintLn>)];
+
       // stmt
-      char dummy14[sizeof (Unique<Stmt>)];
+      char dummy16[sizeof (Unique<Stmt>)];
 
       // unary_op_expr
-      char dummy15[sizeof (Unique<UnaryOpExpr>)];
+      char dummy17[sizeof (Unique<UnaryOpExpr>)];
 
       // while_expr
-      char dummy16[sizeof (Unique<WhileLoop>)];
+      char dummy18[sizeof (Unique<WhileLoop>)];
 
       // opt_mut
-      char dummy17[sizeof (bool)];
+      char dummy19[sizeof (bool)];
 
-      // func_ret_type
       // type_decl
-      char dummy18[sizeof (std::optional<Type>)];
+      char dummy20[sizeof (std::optional<Type>)];
 
       // func_decl_args
       // func_arg_list
-      char dummy19[sizeof (std::vector<FuncArg>)];
+      char dummy21[sizeof (std::vector<FunArg>)];
 
       // call_expr_args
-      char dummy20[sizeof (std::vector<Unique<Expr>>)];
+      char dummy22[sizeof (std::vector<Unique<Expr>>)];
 
       // item_list
-      char dummy21[sizeof (std::vector<Unique<Item>>)];
+      char dummy23[sizeof (std::vector<Unique<Item>>)];
 
       // stmt_list
-      char dummy22[sizeof (std::vector<Unique<Stmt>>)];
+      char dummy24[sizeof (std::vector<Unique<Stmt>>)];
 
       // ref_add
-      char dummy23[sizeof (uint8_t)];
+      char dummy25[sizeof (uint8_t)];
     };
 
     /// The size of the largest semantic type.
@@ -562,55 +582,64 @@ namespace mr {
     YYerror = 256,                 // error
     YYUNDEF = 257,                 // "invalid token"
     DEC_LITERAL = 258,             // DEC_LITERAL
-    TRUE = 259,                    // TRUE
-    FALSE = 260,                   // FALSE
-    IDENTIFIER = 261,              // IDENTIFIER
-    UNDERSCORE = 262,              // UNDERSCORE
-    LET = 263,                     // LET
-    MUT = 264,                     // MUT
-    I32 = 265,                     // I32
-    BOOL = 266,                    // BOOL
-    FN = 267,                      // FN
-    WHILE = 268,                   // WHILE
-    PRINT_VAR = 269,               // PRINT_VAR
-    PRINT_STRING = 270,            // PRINT_STRING
-    PRINT_LN = 271,                // PRINT_LN
-    EQ = 272,                      // EQ
-    EQEQ = 273,                    // EQEQ
-    NE = 274,                      // NE
-    BANG = 275,                    // BANG
-    LT = 276,                      // LT
-    LE = 277,                      // LE
-    GT = 278,                      // GT
-    GE = 279,                      // GE
-    PLUS = 280,                    // PLUS
-    MINUS = 281,                   // MINUS
-    STAR = 282,                    // STAR
-    SLASH = 283,                   // SLASH
-    COMMA = 284,                   // COMMA
-    ARROW = 285,                   // ARROW
-    IF = 286,                      // IF
-    ELSE = 287,                    // ELSE
-    L_AND = 288,                   // L_AND
-    L_OR = 289,                    // L_OR
-    PLUS_EQ = 290,                 // PLUS_EQ
-    MIN_EQ = 291,                  // MIN_EQ
-    MUL_EQ = 292,                  // MUL_EQ
-    DIV_EQ = 293,                  // DIV_EQ
-    LBRACE = 294,                  // LBRACE
-    RBRACE = 295,                  // RBRACE
-    LPAREN = 296,                  // LPAREN
-    RPAREN = 297,                  // RPAREN
-    SEMICOLON = 298,               // SEMICOLON
-    COLON = 299,                   // COLON
-    AMPERSAND = 300,               // AMPERSAND
-    OR = 301,                      // OR
-    AMPERSAND_MUT = 302,           // AMPERSAND_MUT
-    REF = 303,                     // REF
-    REF_MUT = 304,                 // REF_MUT
-    DEREF = 305,                   // DEREF
-    UMINUS = 306,                  // UMINUS
-    NOT = 307                      // NOT
+    FLOAT_LITERAL = 259,           // FLOAT_LITERAL
+    STR_LITERAL = 260,             // STR_LITERAL
+    TRUE = 261,                    // TRUE
+    FALSE = 262,                   // FALSE
+    IDENTIFIER = 263,              // IDENTIFIER
+    UNDERSCORE = 264,              // UNDERSCORE
+    I8 = 265,                      // I8
+    I16 = 266,                     // I16
+    I32 = 267,                     // I32
+    I64 = 268,                     // I64
+    ISIZE = 269,                   // ISIZE
+    U8 = 270,                      // U8
+    U16 = 271,                     // U16
+    U32 = 272,                     // U32
+    U64 = 273,                     // U64
+    USIZE = 274,                   // USIZE
+    LET = 275,                     // LET
+    MUT = 276,                     // MUT
+    BOOL = 277,                    // BOOL
+    FN = 278,                      // FN
+    WHILE = 279,                   // WHILE
+    PRINT_LN = 280,                // PRINT_LN
+    EQ = 281,                      // EQ
+    EQEQ = 282,                    // EQEQ
+    NE = 283,                      // NE
+    BANG = 284,                    // BANG
+    LT = 285,                      // LT
+    LE = 286,                      // LE
+    GT = 287,                      // GT
+    GE = 288,                      // GE
+    PLUS = 289,                    // PLUS
+    MINUS = 290,                   // MINUS
+    STAR = 291,                    // STAR
+    SLASH = 292,                   // SLASH
+    COMMA = 293,                   // COMMA
+    ARROW = 294,                   // ARROW
+    IF = 295,                      // IF
+    ELSE = 296,                    // ELSE
+    L_AND = 297,                   // L_AND
+    L_OR = 298,                    // L_OR
+    PLUS_EQ = 299,                 // PLUS_EQ
+    MIN_EQ = 300,                  // MIN_EQ
+    MUL_EQ = 301,                  // MUL_EQ
+    DIV_EQ = 302,                  // DIV_EQ
+    LBRACE = 303,                  // LBRACE
+    RBRACE = 304,                  // RBRACE
+    LPAREN = 305,                  // LPAREN
+    RPAREN = 306,                  // RPAREN
+    SEMICOLON = 307,               // SEMICOLON
+    COLON = 308,                   // COLON
+    AMPERSAND = 309,               // AMPERSAND
+    OR = 310,                      // OR
+    AMPERSAND_MUT = 311,           // AMPERSAND_MUT
+    REF = 312,                     // REF
+    REF_MUT = 313,                 // REF_MUT
+    DEREF = 314,                   // DEREF
+    UMINUS = 315,                  // UMINUS
+    NOT = 316                      // NOT
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -627,86 +656,100 @@ namespace mr {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 53, ///< Number of tokens.
+        YYNTOKENS = 62, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
         S_YYUNDEF = 2,                           // "invalid token"
         S_DEC_LITERAL = 3,                       // DEC_LITERAL
-        S_TRUE = 4,                              // TRUE
-        S_FALSE = 5,                             // FALSE
-        S_IDENTIFIER = 6,                        // IDENTIFIER
-        S_UNDERSCORE = 7,                        // UNDERSCORE
-        S_LET = 8,                               // LET
-        S_MUT = 9,                               // MUT
-        S_I32 = 10,                              // I32
-        S_BOOL = 11,                             // BOOL
-        S_FN = 12,                               // FN
-        S_WHILE = 13,                            // WHILE
-        S_PRINT_VAR = 14,                        // PRINT_VAR
-        S_PRINT_STRING = 15,                     // PRINT_STRING
-        S_PRINT_LN = 16,                         // PRINT_LN
-        S_EQ = 17,                               // EQ
-        S_EQEQ = 18,                             // EQEQ
-        S_NE = 19,                               // NE
-        S_BANG = 20,                             // BANG
-        S_LT = 21,                               // LT
-        S_LE = 22,                               // LE
-        S_GT = 23,                               // GT
-        S_GE = 24,                               // GE
-        S_PLUS = 25,                             // PLUS
-        S_MINUS = 26,                            // MINUS
-        S_STAR = 27,                             // STAR
-        S_SLASH = 28,                            // SLASH
-        S_COMMA = 29,                            // COMMA
-        S_ARROW = 30,                            // ARROW
-        S_IF = 31,                               // IF
-        S_ELSE = 32,                             // ELSE
-        S_L_AND = 33,                            // L_AND
-        S_L_OR = 34,                             // L_OR
-        S_PLUS_EQ = 35,                          // PLUS_EQ
-        S_MIN_EQ = 36,                           // MIN_EQ
-        S_MUL_EQ = 37,                           // MUL_EQ
-        S_DIV_EQ = 38,                           // DIV_EQ
-        S_LBRACE = 39,                           // LBRACE
-        S_RBRACE = 40,                           // RBRACE
-        S_LPAREN = 41,                           // LPAREN
-        S_RPAREN = 42,                           // RPAREN
-        S_SEMICOLON = 43,                        // SEMICOLON
-        S_COLON = 44,                            // COLON
-        S_AMPERSAND = 45,                        // AMPERSAND
-        S_OR = 46,                               // OR
-        S_AMPERSAND_MUT = 47,                    // AMPERSAND_MUT
-        S_REF = 48,                              // REF
-        S_REF_MUT = 49,                          // REF_MUT
-        S_DEREF = 50,                            // DEREF
-        S_UMINUS = 51,                           // UMINUS
-        S_NOT = 52,                              // NOT
-        S_YYACCEPT = 53,                         // $accept
-        S_program = 54,                          // program
-        S_item_list = 55,                        // item_list
-        S_item = 56,                             // item
-        S_function_decl = 57,                    // function_decl
-        S_func_ret_type = 58,                    // func_ret_type
-        S_func_decl_args = 59,                   // func_decl_args
-        S_func_arg_list = 60,                    // func_arg_list
-        S_func_arg = 61,                         // func_arg
-        S_stmt = 62,                             // stmt
-        S_stmt_list = 63,                        // stmt_list
-        S_type_decl = 64,                        // type_decl
-        S_opt_mut = 65,                          // opt_mut
-        S_let = 66,                              // let
-        S_if_expr = 67,                          // if_expr
-        S_ref_add = 68,                          // ref_add
-        S_type = 69,                             // type
-        S_block_expr = 70,                       // block_expr
-        S_assignment = 71,                       // assignment
-        S_unary_op_expr = 72,                    // unary_op_expr
-        S_bin_op_expr = 73,                      // bin_op_expr
-        S_call_expr_args = 74,                   // call_expr_args
-        S_call_expr = 75,                        // call_expr
-        S_while_expr = 76,                       // while_expr
-        S_expr = 77                              // expr
+        S_FLOAT_LITERAL = 4,                     // FLOAT_LITERAL
+        S_STR_LITERAL = 5,                       // STR_LITERAL
+        S_TRUE = 6,                              // TRUE
+        S_FALSE = 7,                             // FALSE
+        S_IDENTIFIER = 8,                        // IDENTIFIER
+        S_UNDERSCORE = 9,                        // UNDERSCORE
+        S_I8 = 10,                               // I8
+        S_I16 = 11,                              // I16
+        S_I32 = 12,                              // I32
+        S_I64 = 13,                              // I64
+        S_ISIZE = 14,                            // ISIZE
+        S_U8 = 15,                               // U8
+        S_U16 = 16,                              // U16
+        S_U32 = 17,                              // U32
+        S_U64 = 18,                              // U64
+        S_USIZE = 19,                            // USIZE
+        S_LET = 20,                              // LET
+        S_MUT = 21,                              // MUT
+        S_BOOL = 22,                             // BOOL
+        S_FN = 23,                               // FN
+        S_WHILE = 24,                            // WHILE
+        S_PRINT_LN = 25,                         // PRINT_LN
+        S_EQ = 26,                               // EQ
+        S_EQEQ = 27,                             // EQEQ
+        S_NE = 28,                               // NE
+        S_BANG = 29,                             // BANG
+        S_LT = 30,                               // LT
+        S_LE = 31,                               // LE
+        S_GT = 32,                               // GT
+        S_GE = 33,                               // GE
+        S_PLUS = 34,                             // PLUS
+        S_MINUS = 35,                            // MINUS
+        S_STAR = 36,                             // STAR
+        S_SLASH = 37,                            // SLASH
+        S_COMMA = 38,                            // COMMA
+        S_ARROW = 39,                            // ARROW
+        S_IF = 40,                               // IF
+        S_ELSE = 41,                             // ELSE
+        S_L_AND = 42,                            // L_AND
+        S_L_OR = 43,                             // L_OR
+        S_PLUS_EQ = 44,                          // PLUS_EQ
+        S_MIN_EQ = 45,                           // MIN_EQ
+        S_MUL_EQ = 46,                           // MUL_EQ
+        S_DIV_EQ = 47,                           // DIV_EQ
+        S_LBRACE = 48,                           // LBRACE
+        S_RBRACE = 49,                           // RBRACE
+        S_LPAREN = 50,                           // LPAREN
+        S_RPAREN = 51,                           // RPAREN
+        S_SEMICOLON = 52,                        // SEMICOLON
+        S_COLON = 53,                            // COLON
+        S_AMPERSAND = 54,                        // AMPERSAND
+        S_OR = 55,                               // OR
+        S_AMPERSAND_MUT = 56,                    // AMPERSAND_MUT
+        S_REF = 57,                              // REF
+        S_REF_MUT = 58,                          // REF_MUT
+        S_DEREF = 59,                            // DEREF
+        S_UMINUS = 60,                           // UMINUS
+        S_NOT = 61,                              // NOT
+        S_YYACCEPT = 62,                         // $accept
+        S_program = 63,                          // program
+        S_item_list = 64,                        // item_list
+        S_item = 65,                             // item
+        S_function_decl = 66,                    // function_decl
+        S_func_ret_type = 67,                    // func_ret_type
+        S_func_decl_args = 68,                   // func_decl_args
+        S_func_arg_list = 69,                    // func_arg_list
+        S_func_arg = 70,                         // func_arg
+        S_stmt = 71,                             // stmt
+        S_stmt_list = 72,                        // stmt_list
+        S_print_ln = 73,                         // print_ln
+        S_type_decl = 74,                        // type_decl
+        S_opt_mut = 75,                          // opt_mut
+        S_let = 76,                              // let
+        S_if_expr = 77,                          // if_expr
+        S_ref_add = 78,                          // ref_add
+        S_type = 79,                             // type
+        S_block_expr = 80,                       // block_expr
+        S_assignment = 81,                       // assignment
+        S_unary_op_expr = 82,                    // unary_op_expr
+        S_bin_op_expr = 83,                      // bin_op_expr
+        S_literal = 84,                          // literal
+        S_call_expr_args = 85,                   // call_expr_args
+        S_call_expr = 86,                        // call_expr
+        S_while_expr = 87,                       // while_expr
+        S_expr = 88,                             // expr
+        S_expr_stmt = 89,                        // expr_stmt
+        S_expr_w_block = 90,                     // expr_w_block
+        S_expr_wo_block = 91                     // expr_wo_block
       };
     };
 
@@ -744,22 +787,31 @@ namespace mr {
         switch (this->kind ())
     {
       case symbol_kind::S_func_arg: // func_arg
-        value.move< FuncArg > (std::move (that.value));
+        value.move< FunArg > (std::move (that.value));
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
+      case symbol_kind::S_FLOAT_LITERAL: // FLOAT_LITERAL
+      case symbol_kind::S_STR_LITERAL: // STR_LITERAL
       case symbol_kind::S_TRUE: // TRUE
       case symbol_kind::S_FALSE: // FALSE
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_UNDERSCORE: // UNDERSCORE
+      case symbol_kind::S_I8: // I8
+      case symbol_kind::S_I16: // I16
+      case symbol_kind::S_I32: // I32
+      case symbol_kind::S_I64: // I64
+      case symbol_kind::S_ISIZE: // ISIZE
+      case symbol_kind::S_U8: // U8
+      case symbol_kind::S_U16: // U16
+      case symbol_kind::S_U32: // U32
+      case symbol_kind::S_U64: // U64
+      case symbol_kind::S_USIZE: // USIZE
       case symbol_kind::S_LET: // LET
       case symbol_kind::S_MUT: // MUT
-      case symbol_kind::S_I32: // I32
       case symbol_kind::S_BOOL: // BOOL
       case symbol_kind::S_FN: // FN
       case symbol_kind::S_WHILE: // WHILE
-      case symbol_kind::S_PRINT_VAR: // PRINT_VAR
-      case symbol_kind::S_PRINT_STRING: // PRINT_STRING
       case symbol_kind::S_PRINT_LN: // PRINT_LN
       case symbol_kind::S_EQ: // EQ
       case symbol_kind::S_EQEQ: // EQEQ
@@ -795,6 +847,7 @@ namespace mr {
         value.move< Token > (std::move (that.value));
         break;
 
+      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.move< Type > (std::move (that.value));
         break;
@@ -820,6 +873,9 @@ namespace mr {
         break;
 
       case symbol_kind::S_expr: // expr
+      case symbol_kind::S_expr_stmt: // expr_stmt
+      case symbol_kind::S_expr_w_block: // expr_w_block
+      case symbol_kind::S_expr_wo_block: // expr_wo_block
         value.move< Unique<Expr> > (std::move (that.value));
         break;
 
@@ -839,6 +895,14 @@ namespace mr {
         value.move< Unique<LetStmt> > (std::move (that.value));
         break;
 
+      case symbol_kind::S_literal: // literal
+        value.move< Unique<Literal> > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_print_ln: // print_ln
+        value.move< Unique<PrintLn> > (std::move (that.value));
+        break;
+
       case symbol_kind::S_stmt: // stmt
         value.move< Unique<Stmt> > (std::move (that.value));
         break;
@@ -855,14 +919,13 @@ namespace mr {
         value.move< bool > (std::move (that.value));
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type_decl: // type_decl
         value.move< std::optional<Type> > (std::move (that.value));
         break;
 
       case symbol_kind::S_func_decl_args: // func_decl_args
       case symbol_kind::S_func_arg_list: // func_arg_list
-        value.move< std::vector<FuncArg> > (std::move (that.value));
+        value.move< std::vector<FunArg> > (std::move (that.value));
         break;
 
       case symbol_kind::S_call_expr_args: // call_expr_args
@@ -905,13 +968,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, FuncArg&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, FunArg&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const FuncArg& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const FunArg& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1087,6 +1150,34 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Unique<Literal>&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Unique<Literal>& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Unique<PrintLn>&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Unique<PrintLn>& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, Unique<Stmt>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -1157,13 +1248,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, std::vector<FuncArg>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, std::vector<FunArg>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const std::vector<FuncArg>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const std::vector<FunArg>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1251,22 +1342,31 @@ namespace mr {
 switch (yykind)
     {
       case symbol_kind::S_func_arg: // func_arg
-        value.template destroy< FuncArg > ();
+        value.template destroy< FunArg > ();
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
+      case symbol_kind::S_FLOAT_LITERAL: // FLOAT_LITERAL
+      case symbol_kind::S_STR_LITERAL: // STR_LITERAL
       case symbol_kind::S_TRUE: // TRUE
       case symbol_kind::S_FALSE: // FALSE
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_UNDERSCORE: // UNDERSCORE
+      case symbol_kind::S_I8: // I8
+      case symbol_kind::S_I16: // I16
+      case symbol_kind::S_I32: // I32
+      case symbol_kind::S_I64: // I64
+      case symbol_kind::S_ISIZE: // ISIZE
+      case symbol_kind::S_U8: // U8
+      case symbol_kind::S_U16: // U16
+      case symbol_kind::S_U32: // U32
+      case symbol_kind::S_U64: // U64
+      case symbol_kind::S_USIZE: // USIZE
       case symbol_kind::S_LET: // LET
       case symbol_kind::S_MUT: // MUT
-      case symbol_kind::S_I32: // I32
       case symbol_kind::S_BOOL: // BOOL
       case symbol_kind::S_FN: // FN
       case symbol_kind::S_WHILE: // WHILE
-      case symbol_kind::S_PRINT_VAR: // PRINT_VAR
-      case symbol_kind::S_PRINT_STRING: // PRINT_STRING
       case symbol_kind::S_PRINT_LN: // PRINT_LN
       case symbol_kind::S_EQ: // EQ
       case symbol_kind::S_EQEQ: // EQEQ
@@ -1302,6 +1402,7 @@ switch (yykind)
         value.template destroy< Token > ();
         break;
 
+      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.template destroy< Type > ();
         break;
@@ -1327,6 +1428,9 @@ switch (yykind)
         break;
 
       case symbol_kind::S_expr: // expr
+      case symbol_kind::S_expr_stmt: // expr_stmt
+      case symbol_kind::S_expr_w_block: // expr_w_block
+      case symbol_kind::S_expr_wo_block: // expr_wo_block
         value.template destroy< Unique<Expr> > ();
         break;
 
@@ -1346,6 +1450,14 @@ switch (yykind)
         value.template destroy< Unique<LetStmt> > ();
         break;
 
+      case symbol_kind::S_literal: // literal
+        value.template destroy< Unique<Literal> > ();
+        break;
+
+      case symbol_kind::S_print_ln: // print_ln
+        value.template destroy< Unique<PrintLn> > ();
+        break;
+
       case symbol_kind::S_stmt: // stmt
         value.template destroy< Unique<Stmt> > ();
         break;
@@ -1362,14 +1474,13 @@ switch (yykind)
         value.template destroy< bool > ();
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type_decl: // type_decl
         value.template destroy< std::optional<Type> > ();
         break;
 
       case symbol_kind::S_func_decl_args: // func_decl_args
       case symbol_kind::S_func_arg_list: // func_arg_list
-        value.template destroy< std::vector<FuncArg> > ();
+        value.template destroy< std::vector<FunArg> > ();
         break;
 
       case symbol_kind::S_call_expr_args: // call_expr_args
@@ -1603,6 +1714,36 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_FLOAT_LITERAL (Token v, location_type l)
+      {
+        return symbol_type (token::FLOAT_LITERAL, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_FLOAT_LITERAL (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::FLOAT_LITERAL, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_STR_LITERAL (Token v, location_type l)
+      {
+        return symbol_type (token::STR_LITERAL, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_STR_LITERAL (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::STR_LITERAL, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_TRUE (Token v, location_type l)
       {
         return symbol_type (token::TRUE, std::move (v), std::move (l));
@@ -1663,6 +1804,156 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_I8 (Token v, location_type l)
+      {
+        return symbol_type (token::I8, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_I8 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::I8, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_I16 (Token v, location_type l)
+      {
+        return symbol_type (token::I16, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_I16 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::I16, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_I32 (Token v, location_type l)
+      {
+        return symbol_type (token::I32, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_I32 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::I32, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_I64 (Token v, location_type l)
+      {
+        return symbol_type (token::I64, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_I64 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::I64, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_ISIZE (Token v, location_type l)
+      {
+        return symbol_type (token::ISIZE, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_ISIZE (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::ISIZE, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_U8 (Token v, location_type l)
+      {
+        return symbol_type (token::U8, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_U8 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::U8, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_U16 (Token v, location_type l)
+      {
+        return symbol_type (token::U16, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_U16 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::U16, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_U32 (Token v, location_type l)
+      {
+        return symbol_type (token::U32, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_U32 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::U32, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_U64 (Token v, location_type l)
+      {
+        return symbol_type (token::U64, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_U64 (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::U64, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_USIZE (Token v, location_type l)
+      {
+        return symbol_type (token::USIZE, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_USIZE (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::USIZE, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_LET (Token v, location_type l)
       {
         return symbol_type (token::LET, std::move (v), std::move (l));
@@ -1688,21 +1979,6 @@ switch (yykind)
       make_MUT (const Token& v, const location_type& l)
       {
         return symbol_type (token::MUT, v, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_I32 (Token v, location_type l)
-      {
-        return symbol_type (token::I32, std::move (v), std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_I32 (const Token& v, const location_type& l)
-      {
-        return symbol_type (token::I32, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1748,36 +2024,6 @@ switch (yykind)
       make_WHILE (const Token& v, const location_type& l)
       {
         return symbol_type (token::WHILE, v, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_PRINT_VAR (Token v, location_type l)
-      {
-        return symbol_type (token::PRINT_VAR, std::move (v), std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_PRINT_VAR (const Token& v, const location_type& l)
-      {
-        return symbol_type (token::PRINT_VAR, v, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_PRINT_STRING (Token v, location_type l)
-      {
-        return symbol_type (token::PRINT_STRING, std::move (v), std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_PRINT_STRING (const Token& v, const location_type& l)
-      {
-        return symbol_type (token::PRINT_STRING, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -2416,7 +2662,7 @@ switch (yykind)
     static const signed char yypgoto_[];
 
     // YYDEFGOTO[NTERM-NUM].
-    static const signed char yydefgoto_[];
+    static const unsigned char yydefgoto_[];
 
     // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
     // positive, shift that token.  If negative, reduce the rule whose
@@ -2665,9 +2911,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 426,     ///< Last index in yytable_.
-      yynnts_ = 25,  ///< Number of nonterminal symbols.
-      yyfinal_ = 7 ///< Termination state number.
+      yylast_ = 475,     ///< Last index in yytable_.
+      yynnts_ = 30,  ///< Number of nonterminal symbols.
+      yyfinal_ = 8 ///< Termination state number.
     };
 
 
@@ -2679,9 +2925,9 @@ switch (yykind)
   };
 
 
-#line 38 "parser/yaccfile.yy"
+#line 39 "parser/yaccfile.yy"
 } // mr
-#line 2685 "parser/parser.tab.hpp"
+#line 2931 "parser/parser.tab.hpp"
 
 
 

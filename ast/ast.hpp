@@ -21,8 +21,8 @@ namespace mr {
                 }
             }
 
-            slice<Unique<Item>> items_slice() const {
-                return slice(&_items[0], _items.size());
+            const auto& items() const {
+                return _items;
             }
 
 
