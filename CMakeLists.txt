@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(YourCompilerProject CXX)
+project(MicroRust CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -41,19 +41,19 @@ BISON_TARGET(Parser
 )
 
 # Add executable
-add_executable(main 
+add_executable(mr 
     main.cpp
     ${FLEX_Lexer_OUTPUTS}
     ${BISON_Parser_OUTPUTS}
 )
 
 # Link libraries
-target_link_libraries(main 
+target_link_libraries(mr 
     spdlog::spdlog
 )
 
 # Compiler flags
-target_compile_options(main PRIVATE 
+target_compile_options(mr PRIVATE 
     -g 
     -ferror-limit=40
 )

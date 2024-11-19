@@ -63,7 +63,7 @@ CMAKE_BINARY_DIR = /Users/lorrens/Informatica/Master1/Compilers/mini-rust/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/main.dir/all
+all: CMakeFiles/mr.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,35 +71,35 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/main.dir/clean
+clean: CMakeFiles/mr.dir/clean
 clean: CMakeFiles/clean-all.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/main.dir
+# Target rules for target CMakeFiles/mr.dir
 
 # All Build rule for target.
-CMakeFiles/main.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles --progress-num=2,3,4,5,6,7 "Built target main"
-.PHONY : CMakeFiles/main.dir/all
+CMakeFiles/mr.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles --progress-num=2,3,4,5,6,7 "Built target mr"
+.PHONY : CMakeFiles/mr.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/main.dir/rule: cmake_check_build_system
+CMakeFiles/mr.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles 6
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/main.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mr.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles 0
-.PHONY : CMakeFiles/main.dir/rule
+.PHONY : CMakeFiles/mr.dir/rule
 
 # Convenience name for target.
-main: CMakeFiles/main.dir/rule
-.PHONY : main
+mr: CMakeFiles/mr.dir/rule
+.PHONY : mr
 
 # clean rule for target.
-CMakeFiles/main.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/clean
-.PHONY : CMakeFiles/main.dir/clean
+CMakeFiles/mr.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/clean
+.PHONY : CMakeFiles/mr.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/clean-all.dir

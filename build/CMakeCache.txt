@@ -128,7 +128,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=YourCompilerProject
+CMAKE_PROJECT_NAME:STATIC=MicroRust
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib
@@ -202,13 +202,13 @@ FLEX_INCLUDE_DIR:PATH=FLEX_INCLUDE_DIR-NOTFOUND
 FL_LIBRARY:FILEPATH=FL_LIBRARY-NOTFOUND
 
 //Value Computed by CMake
-YourCompilerProject_BINARY_DIR:STATIC=/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build
+MicroRust_BINARY_DIR:STATIC=/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build
 
 //Value Computed by CMake
-YourCompilerProject_IS_TOP_LEVEL:STATIC=ON
+MicroRust_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-YourCompilerProject_SOURCE_DIR:STATIC=/Users/lorrens/Informatica/Master1/Compilers/mini-rust
+MicroRust_SOURCE_DIR:STATIC=/Users/lorrens/Informatica/Master1/Compilers/mini-rust
 
 //The directory containing a CMake configuration file for fmt.
 fmt_DIR:PATH=/opt/homebrew/lib/cmake/fmt

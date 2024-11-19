@@ -117,17 +117,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named main
+# Target rules for targets named mr
 
 # Build rule for target.
-main: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main
-.PHONY : main
+mr: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mr
+.PHONY : mr
 
 # fast build rule for target.
-main/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-.PHONY : main/fast
+mr/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/build
+.PHONY : mr/fast
 
 #=============================================================================
 # Target rules for targets named clean-all
@@ -147,7 +147,7 @@ lexer/lexer.yy.o: lexer/lexer.yy.cpp.o
 
 # target to build an object file
 lexer/lexer.yy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/lexer/lexer.yy.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/lexer/lexer.yy.cpp.o
 .PHONY : lexer/lexer.yy.cpp.o
 
 lexer/lexer.yy.i: lexer/lexer.yy.cpp.i
@@ -155,7 +155,7 @@ lexer/lexer.yy.i: lexer/lexer.yy.cpp.i
 
 # target to preprocess a source file
 lexer/lexer.yy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/lexer/lexer.yy.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/lexer/lexer.yy.cpp.i
 .PHONY : lexer/lexer.yy.cpp.i
 
 lexer/lexer.yy.s: lexer/lexer.yy.cpp.s
@@ -163,7 +163,7 @@ lexer/lexer.yy.s: lexer/lexer.yy.cpp.s
 
 # target to generate assembly for a file
 lexer/lexer.yy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/lexer/lexer.yy.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/lexer/lexer.yy.cpp.s
 .PHONY : lexer/lexer.yy.cpp.s
 
 main.o: main.cpp.o
@@ -171,7 +171,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -179,7 +179,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -187,7 +187,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 parser/parser.tab.o: parser/parser.tab.cpp.o
@@ -195,7 +195,7 @@ parser/parser.tab.o: parser/parser.tab.cpp.o
 
 # target to build an object file
 parser/parser.tab.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/parser/parser.tab.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/parser/parser.tab.cpp.o
 .PHONY : parser/parser.tab.cpp.o
 
 parser/parser.tab.i: parser/parser.tab.cpp.i
@@ -203,7 +203,7 @@ parser/parser.tab.i: parser/parser.tab.cpp.i
 
 # target to preprocess a source file
 parser/parser.tab.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/parser/parser.tab.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/parser/parser.tab.cpp.i
 .PHONY : parser/parser.tab.cpp.i
 
 parser/parser.tab.s: parser/parser.tab.cpp.s
@@ -211,7 +211,7 @@ parser/parser.tab.s: parser/parser.tab.cpp.s
 
 # target to generate assembly for a file
 parser/parser.tab.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/parser/parser.tab.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/parser/parser.tab.cpp.s
 .PHONY : parser/parser.tab.cpp.s
 
 # Help Target
@@ -223,7 +223,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... clean-all"
-	@echo "... main"
+	@echo "... mr"
 	@echo "... lexer/lexer.yy.o"
 	@echo "... lexer/lexer.yy.i"
 	@echo "... lexer/lexer.yy.s"
