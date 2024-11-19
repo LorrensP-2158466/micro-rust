@@ -237,8 +237,6 @@ namespace mr {
                     t = shallow_resolve(t);
                     u = shallow_resolve(u);
                     if (t == u) { return {t}; }
-                    DBG(t);
-                    DBG(u);
                     return std::visit(
                         overloaded{
                             [&](const InferTy& ti, const InferTy& ui) {

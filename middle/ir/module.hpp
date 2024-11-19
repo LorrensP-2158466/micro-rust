@@ -6,5 +6,6 @@
 #include "function.hpp"
 #include "ir.hpp"
 #include "local.hpp"
+#include "scalar.hpp"
 #include "statement.hpp"
 #include "values.hpp"

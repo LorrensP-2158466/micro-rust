@@ -44,6 +44,8 @@ namespace mr {
                 size_t                             id;
                 template <typename T> BlockWith<T> with(T val);
                 BlockWith<void>                    empty();
+
+                auto operator<=>(const BlockId&) const = default;
             };
 
             template <typename T> struct [[nodiscard]] BlockWith {
@@ -69,13 +71,13 @@ namespace mr {
             }
 
             template <typename T>
-            inline T unpack(BlockWith<T> block_with, BlockId& id) noexcept {
+            inline T unpack(BlockId& id, BlockWith<T> block_with) noexcept {
                 const auto [block, val] = block_with;
                 id = block;
                 return val;
             }
             template <>
-            inline void unpack(BlockWith<void> block_with, BlockId& id) noexcept {
+            inline void unpack(BlockId& id, BlockWith<void> block_with) noexcept {
                 id = block_with.block;
             }
 

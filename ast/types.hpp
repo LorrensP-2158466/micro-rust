@@ -32,21 +32,8 @@
 
 namespace mr {
     namespace ast {
-        ENUM_DEFINE(primitive_type,
-             Unit,
-            I8,
-            I16,
-            I32,
-            I64,
-            ISIZE,
-            U8,
-            U16,
-            U32,
-            U64,
-            USIZE,
-            Char,
-            Bool
-        )
+        ENUM_DEFINE(primitive_type, Unit, I8, I16, I32, I64, ISIZE, U8, U16, U32, U64,
+                    USIZE, Char, Bool)
 
         // we don't know the exact type when were parsing a specific typename
         // we only know the NAME itself;
@@ -58,12 +45,11 @@ namespace mr {
             static const unsigned char ref_mut_flag = 0b10;
             unsigned char              _reference_flags = 0b00;
 
-            Type()
-                : type_variant_t{primitive_type::Unit}, _reference_flags(0) {}
+            Type() : type_variant_t{primitive_type::Unit}, _reference_flags(0) {}
 
             Type(primitive_type t, unsigned char flags)
                 : type_variant_t{t}, _reference_flags(flags) {}
-            
+
             Type(std::string s, unsigned char flags)
                 : type_variant_t{s}, _reference_flags(flags) {}
             bool is_primitive() const {
@@ -74,14 +60,16 @@ namespace mr {
             bool is_mut_ref() const { return _reference_flags == ref_mut_flag; }
 
             std::string to_string() const {
-                return std::visit(
-                    overloaded{
-                        [](const primitive_type& pt) -> std::string {
-                            return primitive_type_to_string(pt);
-                        },
-                        [](const std::string& s) -> std::string { TODO("USER DEFINED TYPES NOT SUPPORTED"); return s;},
-                    },
-                    *this);
+                return std::visit(overloaded{
+                                      [](const primitive_type& pt) -> std::string {
+                                          return primitive_type_to_string(pt);
+                                      },
+                                      [](const std::string& s) -> std::string {
+                                          TODO("USER DEFINED TYPES NOT SUPPORTED");
+                                          return s;
+                                      },
+                                  },
+                                  *this);
             }
         };
     } // namespace ast

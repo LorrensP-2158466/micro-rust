@@ -15,10 +15,7 @@
 namespace mr {
     namespace middle {
         namespace build {
-            using namespace ::mr::middle::types;
-            using namespace ::mr::middle::tast;
-            using namespace ::mr::middle::inference;
-            using namespace ::mr::middle::ir;
+            using namespace ir;
             // Define a custom hash function for the BlockId
             struct BlockIdHasher {
                 // this effectivly creates a index vec i think?
@@ -29,10 +26,20 @@ namespace mr {
                 std::unordered_map<BlockId, Block, BlockIdHasher> _blocks;
 
                 void push_stmt(BlockId block, Statement stmt) {
-                    _blocks[block].statements.push_back(std::move(stmt));
+                    _blocks.at(block).statements.push_back(std::move(stmt));
                 }
 
               public:
+                auto begin() { return _blocks.begin(); }
+                auto end() { return _blocks.end(); }
+
+                auto begin() const { return _blocks.begin(); }
+                auto end() const { return _blocks.end(); }
+                auto cbegin() const { return _blocks.cbegin(); }
+                auto cend() const { return _blocks.cend(); }
+
+                size_t size() const noexcept { return _blocks.size(); }
+
                 BlockId create_new_block() {
                     const auto id = BlockId{_blocks.size()};
                     _blocks.insert({id, Block()});

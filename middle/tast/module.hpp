@@ -17,7 +17,7 @@ namespace mr {
             struct TAst {
                 std::string        name;
                 std::vector<Param> params;
-                Unique<BlockExpr>  body;
+                BlockExpr          body;
                 types::Ty          ret_type;
             };
         } // namespace tast

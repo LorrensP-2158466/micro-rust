@@ -1,9 +1,10 @@
 #include "ast/module.hpp"
 #include "expr/module.hpp"
-#include "middle/module.hpp"
 #include "lexer/lexer.hpp"
+#include "middle/module.hpp"
 #include "mr_util.hpp"
 #include "parser/parser.tab.hpp"
+#include "spdlog/spdlog.h"
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,9 +21,9 @@ int main(int argc, char** argv) {
     }
 
     std::ifstream input_file(argv[1], std::ios::in);
-    Lexer     lexer(input_file, false);
-    Parser    parser(lexer, false, argv[1]);
-
+    Lexer         lexer(input_file, false);
+    Parser        parser(lexer, false, argv[1]);
+    spdlog::info("Starting Compiler");
     // i really don't care if parsing failed
     // i'm still checking the ast.
     parser.parse();

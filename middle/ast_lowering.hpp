@@ -109,8 +109,26 @@ namespace mr {
                 build::IrBuilder ir_builder{_inferer};
                 for (const auto& [fn_name, function] : _functions.get_current_scope()) {
                     // collect_scope_items(function->body().statements());
-                    auto       fn_tast = tast_builder.build(*function);
+                    auto fn_tast = tast_builder.build(*function);
                     const auto ir = ir_builder.build_function(std::move(fn_tast));
+                    size_t     i = 0;
+                    std::cout << "SIZE: " << ir._blocks.size() << std::endl;
+                    for (const auto& local : ir.locals) {
+                        std::cout << "let _" << i++ << ": "
+                                  << _inferer.ty_to_string(local.ty) << " => " << local.id
+                                  << std::endl;
+                    }
+                    for (auto& [bb_id, bb] : ir._blocks) {
+
+                        std::cout << "bb" << bb_id.id << ": {\n";
+                        for (const auto stmt : bb.statements) {
+                            std::cout << "\t";
+                            stmt.print();
+                        }
+                        // std::cout << "\t";
+
+                        std::cout << "}\n";
+                    }
                     _inferer.clear_tables();
                 }
             }

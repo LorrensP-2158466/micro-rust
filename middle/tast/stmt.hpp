@@ -34,20 +34,19 @@ namespace mr {
             // Exprs are simple types so we're defining them as structs
             // everything is public this way, but that doesn't really matter
             struct ExprStmt {
-                Expr* expr;
-                ExprStmt(Expr* e) : expr(e) {}
+                Expr expr;
+                ExprStmt(Expr e) : expr(std::move(e)) {}
             };
 
-            using stmt_variant_t = std::variant<ExprStmt, LetStmt, PrintLn>;
-            struct Stmt : stmt_variant_t {
-
+            using StmtKind = std::variant<ExprStmt, LetStmt, PrintLn>;
+            struct Stmt {
+                StmtKind inner;
                 // for implicit construction
-                Stmt(Expr* e) : stmt_variant_t(e) {}
-                Stmt(Unique<Expr> e) : stmt_variant_t(e.release()) {}
-                Stmt(LetStmt l) : stmt_variant_t(std::move(l)) {}
-                Stmt(PrintLn p) : stmt_variant_t(p) {}
+                Stmt(Expr e) : inner(std::move(e)) {}
+                Stmt(LetStmt l) : inner(std::move(l)) {}
+                Stmt(PrintLn p) : inner(p) {}
 
-                static Stmt expr(Expr* e) { return Stmt(e); }
+                static Stmt expr(Expr e) { return Stmt(std::move(e)); }
 
                 static Stmt let(std::string i, types::Ty td, Unique<Expr> init, bool m) {
                     return Stmt(LetStmt(i, td, std::move(init), m));

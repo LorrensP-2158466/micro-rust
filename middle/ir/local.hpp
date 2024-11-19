@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../type.hpp"
+#include <iostream>
 #include <string>
 
 namespace mr {
@@ -18,6 +19,11 @@ namespace mr {
 
             struct LocalId {
                 size_t id;
+
+                friend std::ostream& operator<<(std::ostream& o, const LocalId id) {
+                    o << '_' << id.id;
+                    return o;
+                }
             };
         } // namespace ir
 

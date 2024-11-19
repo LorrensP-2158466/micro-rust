@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -21,9 +22,10 @@ namespace mr {
         return std::make_optional(t);
     }
 
-    inline void
-    todo(std::string                message,
-         const std::source_location location = std::source_location::current()) {
+    inline void todo(
+        std::string                message,
+        const std::source_location location = std::source_location::current()
+    ) {
         std::cerr << "TODO: " << message << " in " << location.file_name() << ':'
                   << location.line() << ':' << location.column() << std::endl;
         abort();
@@ -38,9 +40,10 @@ namespace mr {
     }
 
     template <typename T>
-    inline T
-    debug_print(std::string expr, T t,
-                const std::source_location location = std::source_location::current()) {
+    inline T debug_print(
+        std::string expr, T t,
+        const std::source_location location = std::source_location::current()
+    ) {
         std::cerr << "DEBUG:  in " << location.file_name() << ':' << location.line()
                   << ':' << location.column() << ": " << expr << " = " << t << std::endl;
         return t;
@@ -59,7 +62,12 @@ namespace mr {
     template <typename T, typename U, typename MapF>
     std::optional<U> map_optional(std::optional<T> o, MapF f) {
         if (o) return f(*o);
-        else return {};
+        else return std::nullopt;
+    }
+    template <typename T, typename U, typename MapF>
+    U map_optional_or(std::optional<T> o, MapF&& f, U u) {
+        if (o) return f(std::move(*o));
+        else return u;
     }
 
     template <typename Variant, typename... Variants>
@@ -73,6 +81,14 @@ namespace mr {
         return has_variant<V1>(vt1) && has_variant<V2>(vt2);
     }
 
+    // thanks:
+    // https://stackoverflow.com/questions/46893056/how-do-i-write-operator-for-stdvariant
+    template <typename T, typename... Ts>
+    std::ostream& operator<<(std::ostream& os, const std::variant<T, Ts...>& v) {
+        std::visit([&os](auto&& arg) { os << arg; }, v);
+        return os;
+    }
+
     // i hate typing "std::unique_ptr" constantly
     template <typename T> using Unique = std::unique_ptr<T>;
 
@@ -82,14 +98,23 @@ namespace mr {
         return b ? "true" : "false";
     }
 
-    // helper type for the visitor #4
+    // this is very unsafe, this just checks if str == "true" else it returns false
+    // only use this when you are absolutely certain str can only have "true" or "false"
+    inline bool const str_to_bool(const char* str) {
+        return std::strcmp(str, "true") == 0;
+    }
+
+    // to create multiple lambdas for std::visit
     template <class... Ts> struct overloaded : Ts... {
         using Ts::operator()...;
     };
 
-    // explicit deduction guide (not needed as of C++20)
-    template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
-
+    // dont know if this will work
+    template <typename U, typename... Ts>
+    auto
+    variant_apply(std::variant<Ts...>& var, std::function<U(std::variant<Ts...>&)> f) {
+        std::visit([&](const Ts var) { return f(var); }..., var);
+    }
     // dynamic_pointer_cast overload for std::unique_ptr
     template <class T, class U>
     std::unique_ptr<T> dynamic_unique_cast(std::unique_ptr<U>&& r) noexcept {
@@ -97,7 +122,8 @@ namespace mr {
 
         static_assert(
             std::has_virtual_destructor_v<T>,
-            "The target of dynamic_pointer_cast must have a virtual destructor.");
+            "The target of dynamic_pointer_cast must have a virtual destructor."
+        );
 
         T* p = dynamic_cast<T*>(r.get());
         if (p) r.release();
@@ -156,7 +182,7 @@ namespace mr {
 #define TODO(msg)                                                                        \
     do {                                                                                 \
         todo(msg);                                                                       \
-    } while (false);
+    } while (false)
 #define DBG(t) debug_print(#t, t)
 
 // Credits to someone on stackoverflow, i lost the source....
@@ -187,13 +213,15 @@ namespace mr {
 #define MAP15(m, x, ...)        m(x) IDENTITY(MAP14(m, __VA_ARGS__))
 #define MAP16(m, x, ...)        m(x) IDENTITY(MAP15(m, __VA_ARGS__))
 
-#define EVALUATE_COUNT(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, \
-                       _16, count, ...)                                                  \
+#define EVALUATE_COUNT(                                                                  \
+    _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, count, ...    \
+)                                                                                        \
     count
 
 #define COUNT(...)                                                                       \
-    IDENTITY(EVALUATE_COUNT(__VA_ARGS__, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,   \
-                            3, 2, 1))
+    IDENTITY(EVALUATE_COUNT(                                                             \
+        __VA_ARGS__, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1               \
+    ))
 
 // Stringizes each argument.
 #define STRINGIZE_SINGLE(e) #e,
@@ -210,4 +238,11 @@ namespace mr {
     static std::ostream& operator<<(std::ostream& o, enumName value) {                    \
         o << enumName##_to_string(value);                                                 \
         return o;                                                                         \
+    }
+
+// ty: Type Struct
+// v: Variant Type
+// v_t: the acutal std::variant<...>
+#define VARIANT_CONSTR(ty, v, v_t)                                                       \
+    ty(v _value) : v_t(_value) {                                                         \
     }
