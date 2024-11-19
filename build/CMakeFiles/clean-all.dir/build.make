@@ -68,7 +68,7 @@ include CMakeFiles/clean-all.dir/progress.make
 
 CMakeFiles/clean-all:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Cleaning generated files"
-	/Applications/CMake.app/Contents/bin/cmake -E remove /Users/lorrens/Informatica/Master1/Compilers/mini-rust/lexer/lexer.yy.cpp /Users/lorrens/Informatica/Master1/Compilers/mini-rust/parser/parser.tab.cpp /Users/lorrens/Informatica/Master1/Compilers/mini-rust/parser/parser.tab.hpp /Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/main
+	/Applications/CMake.app/Contents/bin/cmake -E remove /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/main
 
 clean-all: CMakeFiles/clean-all
 clean-all: CMakeFiles/clean-all.dir/build.make

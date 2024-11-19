@@ -142,77 +142,77 @@ clean-all/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/clean-all.dir/build.make CMakeFiles/clean-all.dir/build
 .PHONY : clean-all/fast
 
-lexer/lexer.yy.o: lexer/lexer.yy.cpp.o
-.PHONY : lexer/lexer.yy.o
+src/lexer/lexer.yy.o: src/lexer/lexer.yy.cpp.o
+.PHONY : src/lexer/lexer.yy.o
 
 # target to build an object file
-lexer/lexer.yy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/lexer/lexer.yy.cpp.o
-.PHONY : lexer/lexer.yy.cpp.o
+src/lexer/lexer.yy.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/lexer/lexer.yy.cpp.o
+.PHONY : src/lexer/lexer.yy.cpp.o
 
-lexer/lexer.yy.i: lexer/lexer.yy.cpp.i
-.PHONY : lexer/lexer.yy.i
+src/lexer/lexer.yy.i: src/lexer/lexer.yy.cpp.i
+.PHONY : src/lexer/lexer.yy.i
 
 # target to preprocess a source file
-lexer/lexer.yy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/lexer/lexer.yy.cpp.i
-.PHONY : lexer/lexer.yy.cpp.i
+src/lexer/lexer.yy.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/lexer/lexer.yy.cpp.i
+.PHONY : src/lexer/lexer.yy.cpp.i
 
-lexer/lexer.yy.s: lexer/lexer.yy.cpp.s
-.PHONY : lexer/lexer.yy.s
+src/lexer/lexer.yy.s: src/lexer/lexer.yy.cpp.s
+.PHONY : src/lexer/lexer.yy.s
 
 # target to generate assembly for a file
-lexer/lexer.yy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/lexer/lexer.yy.cpp.s
-.PHONY : lexer/lexer.yy.cpp.s
+src/lexer/lexer.yy.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/lexer/lexer.yy.cpp.s
+.PHONY : src/lexer/lexer.yy.cpp.s
 
-main.o: main.cpp.o
-.PHONY : main.o
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/main.cpp.o
-.PHONY : main.cpp.o
+src/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
-parser/parser.tab.o: parser/parser.tab.cpp.o
-.PHONY : parser/parser.tab.o
+src/parser/parser.tab.o: src/parser/parser.tab.cpp.o
+.PHONY : src/parser/parser.tab.o
 
 # target to build an object file
-parser/parser.tab.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/parser/parser.tab.cpp.o
-.PHONY : parser/parser.tab.cpp.o
+src/parser/parser.tab.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/parser/parser.tab.cpp.o
+.PHONY : src/parser/parser.tab.cpp.o
 
-parser/parser.tab.i: parser/parser.tab.cpp.i
-.PHONY : parser/parser.tab.i
+src/parser/parser.tab.i: src/parser/parser.tab.cpp.i
+.PHONY : src/parser/parser.tab.i
 
 # target to preprocess a source file
-parser/parser.tab.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/parser/parser.tab.cpp.i
-.PHONY : parser/parser.tab.cpp.i
+src/parser/parser.tab.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/parser/parser.tab.cpp.i
+.PHONY : src/parser/parser.tab.cpp.i
 
-parser/parser.tab.s: parser/parser.tab.cpp.s
-.PHONY : parser/parser.tab.s
+src/parser/parser.tab.s: src/parser/parser.tab.cpp.s
+.PHONY : src/parser/parser.tab.s
 
 # target to generate assembly for a file
-parser/parser.tab.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/parser/parser.tab.cpp.s
-.PHONY : parser/parser.tab.cpp.s
+src/parser/parser.tab.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mr.dir/build.make CMakeFiles/mr.dir/src/parser/parser.tab.cpp.s
+.PHONY : src/parser/parser.tab.cpp.s
 
 # Help Target
 help:
@@ -224,15 +224,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... clean-all"
 	@echo "... mr"
-	@echo "... lexer/lexer.yy.o"
-	@echo "... lexer/lexer.yy.i"
-	@echo "... lexer/lexer.yy.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... parser/parser.tab.o"
-	@echo "... parser/parser.tab.i"
-	@echo "... parser/parser.tab.s"
+	@echo "... src/lexer/lexer.yy.o"
+	@echo "... src/lexer/lexer.yy.i"
+	@echo "... src/lexer/lexer.yy.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
+	@echo "... src/parser/parser.tab.o"
+	@echo "... src/parser/parser.tab.i"
+	@echo "... src/parser/parser.tab.s"
 .PHONY : help
 
 
