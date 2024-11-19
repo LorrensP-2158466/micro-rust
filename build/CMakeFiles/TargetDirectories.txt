@@ -1,4 +1,0 @@
-/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles/mr.dir
-/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles/clean-all.dir
-/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles/edit_cache.dir
-/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build/CMakeFiles/rebuild_cache.dir
