@@ -4,6 +4,7 @@
 #include "local.hpp"
 #include "mr_util.hpp"
 #include "scalar.hpp"
+#include <fmt/format.h>
 #include <functional>
 #include <iostream>
 #include <variant>
@@ -26,7 +27,7 @@ namespace mr {
             // it uses a project list
             struct Place {
                 LocalId local;
-                // TODO: projections
+                // TODO: projections: List<Projection>
 
                 Place(LocalId l) : local(l) {}
 
@@ -103,11 +104,26 @@ namespace mr {
                     return o;
                 }
             };
-            using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp>;
+
+            struct Call {
+                std::string          fun;
+                std::vector<Operand> args;
+                friend std::ostream& operator<<(std::ostream& o, const Call& call) {
+                    o << call.fun << '(';
+                    std::copy(
+                        call.args.begin(),
+                        call.args.end(),
+                        std::ostream_iterator<Operand>(o, " ")
+                    );
+                    o << ')';
+                    return o;
+                }
+            };
+
+            using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp, Call>;
             struct RValue : public rvalue_variant_t {
-                VARIANT_CONSTR(RValue, AsIs, rvalue_variant_t)
-                VARIANT_CONSTR(RValue, BinaryOp, rvalue_variant_t)
-                VARIANT_CONSTR(RValue, UnaryOp, rvalue_variant_t)
+#define RVALUE_CONSTR(ty) VARIANT_CONSTR(RValue, ty, rvalue_variant_t)
+                MAP(RVALUE_CONSTR, AsIs, BinaryOp, UnaryOp, Call)
 
                 friend std::ostream& operator<<(std::ostream& o, const RValue& val) {
                     std::visit([&](const auto& v) { o << v; }, val);

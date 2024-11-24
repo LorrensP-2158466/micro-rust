@@ -69,6 +69,7 @@ namespace mr {
             SymbolTable<const ast::FunDecl*> _functions;
             SymbolTable<Ty>                  _scoped_types;
             inference::TyInferer             _inferer;
+            ir::Ir                           generated_ir;
 
           public:
             void lower(const Unique<ast::Ast> ast) {
@@ -109,28 +110,15 @@ namespace mr {
                 build::IrBuilder ir_builder{_inferer};
                 for (const auto& [fn_name, function] : _functions.get_current_scope()) {
                     // collect_scope_items(function->body().statements());
+                    spdlog::info("Building TAST of function {}", fn_name);
                     auto fn_tast = tast_builder.build(*function);
-                    const auto ir = ir_builder.build_function(std::move(fn_tast));
-                    size_t     i = 0;
-                    std::cout << "SIZE: " << ir._blocks.size() << std::endl;
-                    for (const auto& local : ir.locals) {
-                        std::cout << "let _" << i++ << ": "
-                                  << _inferer.ty_to_string(local.ty) << " => " << local.id
-                                  << std::endl;
-                    }
-                    for (auto& [bb_id, bb] : ir._blocks) {
+                    spdlog::info("Building IR of function {}", fn_name);
+                    auto ir = ir_builder.build_function(std::move(fn_tast));
+                    generated_ir.register_function(fn_name, std::move(ir));
 
-                        std::cout << "bb" << bb_id.id << ": {\n";
-                        for (const auto stmt : bb.statements) {
-                            std::cout << "\t";
-                            stmt.print();
-                        }
-                        // std::cout << "\t";
-
-                        std::cout << "}\n";
-                    }
                     _inferer.clear_tables();
                 }
+                generated_ir.dump();
             }
 
             // collects items from statements in a scope
@@ -139,7 +127,8 @@ namespace mr {
                 for (const auto& stmt : scope_statements) {
                     if (auto fn_item = dynamic_cast<const ast::FunDecl*>(stmt.get()))
                         std::runtime_error(
-                            "Function Items in function scopes not supported yet");
+                            "Function Items in function scopes not supported yet"
+                        );
                     // collect_function_item(fn_item);
                 }
             }

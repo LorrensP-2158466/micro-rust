@@ -1,47 +1,17 @@
 [
-  {
-    "arguments": [
-      "/opt/homebrew/opt/llvm/bin/clang++",
-      "-c",
-      "-std=c++17",
-      "-I",
-      "/opt/homebrew/opt/flex/include",
-      "-o",
-      "main",
-      "main.cpp"
-    ],
-    "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust",
-    "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main.cpp",
-    "output": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main"
-  },
-  {
-    "arguments": [
-      "/opt/homebrew/opt/llvm/bin/clang++",
-      "-c",
-      "-std=c++17",
-      "-I",
-      "/opt/homebrew/opt/flex/include",
-      "-o",
-      "main",
-      "lexer/lexer.yy.cpp"
-    ],
-    "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust",
-    "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/lexer/lexer.yy.cpp",
-    "output": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main"
-  },
-  {
-    "arguments": [
-      "/opt/homebrew/opt/llvm/bin/clang++",
-      "-c",
-      "-std=c++17",
-      "-I",
-      "/opt/homebrew/opt/flex/include",
-      "-o",
-      "main",
-      "parser/parser.tab.cpp"
-    ],
-    "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust",
-    "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/parser/parser.tab.cpp",
-    "output": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/main"
-  }
+{
+  "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/opt/homebrew/opt/flex/include -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/include -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/ast -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/expr -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/ir -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/build -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/tast -isystem /opt/homebrew/include  -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=15.0 -g -ferror-limit=40 -std=gnu++20 -o CMakeFiles/mr.dir/src/main.cpp.o -c /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/main.cpp",
+  "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/main.cpp"
+},
+{
+  "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/opt/homebrew/opt/flex/include -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/include -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/ast -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/expr -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/ir -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/build -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/tast -isystem /opt/homebrew/include  -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=15.0 -g -ferror-limit=40 -std=gnu++20 -o CMakeFiles/mr.dir/src/lexer/lexer.yy.cpp.o -c /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp",
+  "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
+},
+{
+  "directory": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/opt/homebrew/opt/flex/include -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/include -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/ast -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/expr -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/ir -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/build -I/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/middle/tast -isystem /opt/homebrew/include  -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk -mmacosx-version-min=15.0 -g -ferror-limit=40 -std=gnu++20 -o CMakeFiles/mr.dir/src/parser/parser.tab.cpp.o -c /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp",
+  "file": "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+}
 ]

@@ -3,6 +3,8 @@
 #include "../ast/module.hpp"
 #include "mr_util.hpp"
 #include <assert.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -43,33 +45,33 @@ namespace mr {
 
             // i32, i64, u32, ...
             // seperate because this makes it easier for checking operations
-            ENUM_DEFINE(IntTy, I8, I16, I32, I64, ISIZE)
+            ENUM_DEFINE(IntTy, i8, i16, i32, i64, isize)
             size_t size_of_int_ty(IntTy it) {
                 switch (it) {
-                case IntTy::I8:
+                case IntTy::i8:
                     return 1;
-                case IntTy::I16:
+                case IntTy::i16:
                     return 2;
-                case IntTy::I32:
+                case IntTy::i32:
                     return 4;
-                case IntTy::I64:
+                case IntTy::i64:
                     return 8;
-                case IntTy::ISIZE:
+                case IntTy::isize:
                     return sizeof(signed long);
                 }
             }
-            ENUM_DEFINE(UIntTy, U8, U16, U32, U64, USIZE)
+            ENUM_DEFINE(UIntTy, u8, u16, u32, u64, usize)
             size_t size_of_u_int_ty(UIntTy ut) {
                 switch (ut) {
-                case UIntTy::U8:
+                case UIntTy::u8:
                     return 1;
-                case UIntTy::U16:
+                case UIntTy::u16:
                     return 2;
-                case UIntTy::U32:
+                case UIntTy::u32:
                     return 4;
-                case UIntTy::U64:
+                case UIntTy::u64:
                     return 8;
-                case UIntTy::USIZE:
+                case UIntTy::usize:
                     return sizeof(size_t);
                 }
             }
@@ -109,10 +111,13 @@ namespace mr {
             struct IntVarValue : public std::variant<UnknownTy, IntTy, UIntTy> {
                 friend std::ostream& operator<<(std::ostream& o, const IntVarValue& t) {
                     o << std::visit(
-                        overloaded{[](const UnknownTy& t) { return "{integer}"; },
-                                   [](const IntTy& t) { return IntTy_to_string(t); },
-                                   [](const UIntTy& t) { return UIntTy_to_string(t); }},
-                        t);
+                        overloaded{
+                            [](const UnknownTy& t) { return "{integer}"; },
+                            [](const IntTy& t) { return IntTy_to_string(t); },
+                            [](const UIntTy& t) { return UIntTy_to_string(t); }
+                        },
+                        t
+                    );
                     return o;
                 }
             };
@@ -123,7 +128,8 @@ namespace mr {
                             [](const UnknownTy& t) { return "{float}"; },
                             [](const FloatTy& t) { return FloatTy_to_string(t); },
                         },
-                        t);
+                        t
+                    );
                     return o;
                 }
             };
@@ -162,14 +168,16 @@ namespace mr {
             struct FunctionType;
             std::string function_type_to_string(const FunctionType* ft);
 
-            using type_variant_t =
-                std::variant<UnknownTy, NeverTy, InferTy, BoolTy, IntTy, UIntTy, UnitTy,
-                             FloatTy, const FunctionType*>;
+            using type_variant_t = std::variant<
+                UnknownTy, NeverTy, InferTy, BoolTy, IntTy, UIntTy, UnitTy, FloatTy,
+                const FunctionType*>;
             struct Ty : public type_variant_t {
 
                 bool is_known() const noexcept {
                     return !std::holds_alternative<InferTy>(*this);
                 }
+
+                static Ty unit() { return Ty{UnitTy{}}; }
 
                 size_t size() const noexcept {
                     return std::visit(
@@ -186,32 +194,36 @@ namespace mr {
                                 return 0ul;
                             },
                         },
-                        *this);
+                        *this
+                    );
                 }
 
                 friend std::ostream& operator<<(std::ostream& o, const Ty& ft) {
                     o << std::visit(
-                        overloaded{[](const FunctionType* const& t) {
-                                       return function_type_to_string(t);
-                                   },
-                                   [](const NeverTy& t) { return "!"s; },
-                                   [](const UnitTy& t) { return "()"s; },
-                                   [](const BoolTy& t) { return "bool"s; },
-                                   [](const UnknownTy& t) { return "{unknown}"s; },
-                                   [](const InferTy& t) -> std::string {
-                                       return t.infer_ty_to_string();
-                                   },
-                                   [](const IntTy& t) -> std::string {
-                                       return IntTy_to_string(t);
-                                   },
-                                   [](const UIntTy& t) -> std::string {
-                                       return UIntTy_to_string(t);
-                                   },
-                                   [](const FloatTy& t) -> std::string {
-                                       return FloatTy_to_string(t);
-                                   },
-                                   [](const auto& t) { return "buhhhhh"; }},
-                        ft);
+                        overloaded{
+                            [](const FunctionType* const& t) {
+                                return function_type_to_string(t);
+                            },
+                            [](const NeverTy& t) { return "!"s; },
+                            [](const UnitTy& t) { return "()"s; },
+                            [](const BoolTy& t) { return "bool"s; },
+                            [](const UnknownTy& t) { return "{unknown}"s; },
+                            [](const InferTy& t) -> std::string {
+                                return t.infer_ty_to_string();
+                            },
+                            [](const IntTy& t) -> std::string {
+                                return IntTy_to_string(t);
+                            },
+                            [](const UIntTy& t) -> std::string {
+                                return UIntTy_to_string(t);
+                            },
+                            [](const FloatTy& t) -> std::string {
+                                return FloatTy_to_string(t);
+                            },
+                            [](const auto& t) { return "buhhhhh"; }
+                        },
+                        ft
+                    );
                     return o;
                 }
             };
@@ -248,6 +260,8 @@ namespace mr {
     } // namespace middle
 
 } // namespace mr
+
+template <> struct fmt::formatter<mr::middle::types::Ty> : fmt::ostream_formatter {};
 
 namespace std {
 

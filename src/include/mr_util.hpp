@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <source_location>
+#include <spdlog/spdlog.h>
 #include <variant>
 
 namespace mr {
@@ -19,11 +20,11 @@ namespace mr {
     }
 
     template <typename T> constexpr inline std::optional<T> some(T t) {
-        return std::make_optional(t);
+        return std::make_optional(std::move(t));
     }
 
     inline void todo(
-        std::string                message,
+        std::string                message = "",
         const std::source_location location = std::source_location::current()
     ) {
         std::cerr << "TODO: " << message << " in " << location.file_name() << ':'
@@ -130,51 +131,6 @@ namespace mr {
         return std::unique_ptr<T>(p);
     }
 
-    template <typename T> class slice {
-        const T* _p;
-        size_t   _len;
-
-      public:
-        slice(const T* p, size_t len) : _p(p), _len(len) {}
-
-        struct Iterator {
-            using iterator_category = std::forward_iterator_tag;
-            using difference_type = std::ptrdiff_t;
-            using value_type = T;
-            using pointer = const value_type*;
-            using reference = const value_type&;
-
-            // Iterator constructors here...
-            Iterator(const pointer p) : _ptr(p) {}
-            reference operator*() const { return *_ptr; }
-            pointer   operator->() { return _ptr; }
-
-            // Prefix increment
-            Iterator& operator++() {
-                _ptr++;
-                return *this;
-            }
-
-            // Postfix increment
-            Iterator operator++(int) {
-                Iterator tmp = *this;
-                ++(*this);
-                return tmp;
-            }
-
-            friend bool operator==(const Iterator& a, const Iterator& b) {
-                return a._ptr == b._ptr;
-            };
-            friend bool operator!=(const Iterator& a, const Iterator& b) {
-                return a._ptr != b._ptr;
-            };
-
-          private:
-            pointer _ptr;
-        };
-        Iterator begin() { return Iterator(_p); };
-        Iterator end() { return Iterator(_p + _len); }; // 200 is out of bounds
-    };
 } // namespace mr
 
 // MACROS:
@@ -246,3 +202,6 @@ namespace mr {
 #define VARIANT_CONSTR(ty, v, v_t)                                                       \
     ty(v _value) : v_t(_value) {                                                         \
     }
+
+#define OSTREAM_FORMATTER(t)                                                             \
+    template <> struct fmt::formatter<t> : ostream_formatter {};

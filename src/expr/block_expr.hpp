@@ -14,8 +14,7 @@ namespace mr {
             Unique<Expr>              _implicit_return;
 
           public:
-            BlockExpr(std::vector<Unique<Stmt>> statements,
-                      Unique<Expr>              imlplicit_ret)
+            BlockExpr(std::vector<Unique<Stmt>> statements, Unique<Expr> imlplicit_ret)
                 : Expr(), _statements(std::move(statements)),
                   _implicit_return(std::move(imlplicit_ret)) {};
 
@@ -27,19 +26,13 @@ namespace mr {
                 for (const auto& stmt : _statements) {
                     stmt->print(depth + 1);
                 }
-                if (_implicit_return) {
-                    std::cout << indent << "Implicit Return expression:\n";
-                    _implicit_return->print(depth + 1);
-                }
+                std::cout << indent << "Implicit Return expression:\n";
+                if (_implicit_return) _implicit_return->print(depth + 1);
             }
 
-            const auto& statements() const{
-                return _statements;
-            }
+            const auto& statements() const { return _statements; }
 
-            const Expr* tail_expr() const{
-                return _implicit_return.get();
-            }
+            const Expr* tail_expr() const { return _implicit_return.get(); }
         };
     } // namespace expr
 

@@ -8,6 +8,7 @@
 #include "type.hpp"
 #include "type_inference.hpp"
 #include <optional>
+#include <spdlog/spdlog.h>
 #include <variant>
 
 namespace mr {
@@ -30,6 +31,7 @@ namespace mr {
             ~TAstBuilder() = default;
 
             TAst build(const ast::FunDecl& fun_decl) {
+                spdlog::info("Beginning build of function {}", fun_decl.name());
                 std::vector<Param> args{};
                 _scoped_types.push_scope();
                 _inferer.push_scope();
@@ -40,19 +42,28 @@ namespace mr {
                 for (auto&& arg : fun_decl.args()) {
                     const auto type = _inferer.from_ast_type(arg.type);
                     _scoped_types.insert(arg.id, type);
-                    args.emplace_back(arg.id, type, arg.mut);
+                    args.emplace_back(
+                        arg.id,
+                        type,
+                        arg.mut ? Mutability::Mutable : Mutability::Immutable
+                    );
                 }
+                spdlog::debug("visiting block expr");
                 auto block_expr = visit_block_expr(fun_decl.body());
                 // check implicit return of body to return type
+                spdlog::debug("Equating types in build");
                 if (!_inferer.eq(return_type, block_expr.type)) {
                     type_error(block_expr.type, return_type);
                 }
+                spdlog::debug("Done equating");
 
                 _inferer.pop_scope();
                 _scoped_types.pop_scope();
                 return TAst{
-                    fun_decl.name(), std::move(args),
-                    std::move(std::get<BlockExpr>(block_expr.kind)), return_type
+                    fun_decl.name(),
+                    std::move(args),
+                    std::move(std::get<BlockExpr>(block_expr.kind)),
+                    return_type
                 };
             }
 
@@ -79,24 +90,26 @@ namespace mr {
 
                 if (!initializer) {
                     return Stmt::let(
-                        let.id(), user_decl_type,
-                        std::make_unique<Expr>(std::move(*initializer)), let.is_mutable()
+                        let.id(),
+                        user_decl_type,
+                        std::make_unique<Expr>(std::move(*initializer)),
+                        let.is_mutable() ? Mutability::Mutable : Mutability::Immutable
                     );
                 }
                 // the initializer must match the user defined type
-                // if there is no user defined type, this will create a
-                // type variable which will point to the type of the
-                // expression if there is one, the initalizer will be
-                // inferred/checked against that
+                spdlog::debug("Equating types");
                 const auto equated = _inferer.eq(user_decl_type, (*initializer).type);
-
+                spdlog::debug("Done");
                 if (!equated) { type_error(initializer->type, user_decl_type); }
 
                 _scoped_types.insert(let.id(), *equated);
 
                 auto init = std::make_unique<Expr>(std::move(initializer.value()));
                 return Stmt::let(
-                    let.id(), user_decl_type, std::move(init), let.is_mutable()
+                    let.id(),
+                    user_decl_type,
+                    std::move(init),
+                    let.is_mutable() ? Mutability::Mutable : Mutability::Immutable
                 );
             }
 
@@ -146,6 +159,7 @@ namespace mr {
                         std::make_unique<Stmt>(std::move(visit_statement(*stmt)))
                     );
                 }
+                spdlog::trace("Getting here");
                 auto tail_expr = block.tail_expr()
                                      ? std::make_optional<Expr>(
                                            std::move(visit_expr(*block.tail_expr()))
@@ -156,14 +170,59 @@ namespace mr {
                 _scoped_types.pop_scope();
                 _inferer.pop_scope();
                 auto tail_p = map_optional_or(
-                    std::move(tail_expr), std::make_unique<Expr, Expr>,
+                    std::move(tail_expr),
+                    std::make_unique<Expr, Expr>,
                     std::unique_ptr<Expr>(nullptr)
                 );
                 return Expr(BlockExpr(std::move(statements), std::move(tail_p)), ty);
             }
 
             Expr visit_while_expr(const expr::WhileLoop& expr) override {
-                TODO("Check while loops");
+                /*
+                 so lowering a while expression to a loop expression
+
+                 a while expression looks like this:
+                    while `condition` {
+                        `body`
+                    }
+                We have to create a loop expression, with the first statement a branch
+                checking wether we can enter the loop body, something like this:
+                    loop{
+                        if `condition` { `body` } else { break (); }
+                    }
+                where `condition` is the original while condition
+                and `body` is the body of the while expression
+                and the break value is unit because of a loop always has unit type
+                this can then easely be converted to IR
+                */
+                auto condition = visit_expr(*expr._cond);
+                // condition is always of boolean type
+                if (!_inferer.eq(condition.type, _inferer.bool_t())) {
+                    type_error(condition.type, _inferer.bool_t());
+                };
+
+                auto cond_p = std::make_unique<Expr>(std::move(condition));
+                auto block_expr = visit_block_expr(*expr._body);
+                // body is always of unit type
+                if (!_inferer.eq(block_expr.type, _inferer.unit())) {
+                    type_error(block_expr.type, _inferer.unit());
+                }
+                auto body = std::get<BlockExpr>(std::move(block_expr.kind));
+                auto break_branch = std::make_unique<Expr>(
+                    BlockExpr(std::make_unique<Expr>(
+                        Break(std::make_unique<Expr>(Unit(), _inferer.unit())),
+                        _inferer.unit()
+                    )),
+                    _inferer.unit()
+                );
+
+                auto loop_body = std::make_unique<Expr>(
+                    ExprKind(IfElse(
+                        std::move(cond_p), std::move(body), some(std::move(break_branch))
+                    )),
+                    _inferer.unit()
+                );
+                return Expr(ExprKind(Loop(std::move(loop_body))), _inferer.unit());
             }
 
             Expr visit_unit_expr(const expr::Unit& lit) override {
@@ -220,7 +279,8 @@ namespace mr {
                         if (ty)
                             return Expr(
                                 std::move(BinOpExpr(
-                                    std::move(left), bin_op_from_ast(bin_op.op),
+                                    std::move(left),
+                                    bin_op_from_ast(bin_op.op),
                                     std::move(right)
                                 )),
                                 *ty
@@ -327,7 +387,8 @@ namespace mr {
                 auto kind = assign._op == expr::AssignOp::Eq
                                 ? ExprKind(AssignExpr(assign._id, std::move(value_p)))
                                 : ExprKind(AssignOpExpr(
-                                      assign._id, *bin_op_from_assign_op(assign._op),
+                                      assign._id,
+                                      *bin_op_from_assign_op(assign._op),
                                       std::move(value_p)
                                   ));
                 return Expr(std::move(kind), _inferer.unit());
@@ -349,17 +410,17 @@ namespace mr {
             }
 
             Expr visit_call_expr(const expr::CallExpr& expr) override {
-                const auto ret_type = _scoped_types.look_up(expr._id);
-                if (!ret_type.has_value()) {
+                const auto type = _scoped_types.look_up(expr._id);
+                if (!type.has_value()) {
                     std::cerr << "No function found with name " << expr._id << std::endl;
                     std::exit(1);
                 }
-                if (!has_variant<const FunctionType*>(*ret_type)) {
+                if (!has_variant<const FunctionType*>(*type)) {
                     std::cerr << "Cant call `" << expr._id
                               << "` which is not a function\n";
                     throw std::runtime_error("Cant call non callable");
                 }
-                const auto ft = std::get<const FunctionType*>(*ret_type);
+                const auto ft = std::get<const FunctionType*>(*type);
                 if (ft->arg_types.size() != expr._args.size()) {
                     std::cerr << "Expected " << ft->arg_types.size()
                               << " amount of arguments, "
@@ -377,8 +438,7 @@ namespace mr {
                     call_operands.push_back(std::make_unique<Expr>(std::move(call_op)));
                 }
                 return Expr(
-                    std::move(CallExpr(expr._id, std::move(call_operands))),
-                    _inferer.resolve(*ret_type)
+                    std::move(CallExpr(expr._id, std::move(call_operands))), ft->ret_ty
                 );
             }
             Expr visit_litt_expr(const expr::Literal& lit) override {

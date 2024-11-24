@@ -9,9 +9,9 @@ namespace mr {
         namespace tast {
 
             struct Param {
-                std::string id;
-                types::Ty   type;
-                bool        mut;
+                std::string    id;
+                types::Ty      type;
+                ir::Mutability mut;
             };
             // Typed AST of a single function
             struct TAst {

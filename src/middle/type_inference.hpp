@@ -4,7 +4,10 @@
 #include "symbol_table.hpp"
 #include "type.hpp"
 #include "unification_table.hpp"
+#include <algorithm>
+#include <fmt/format.h>
 #include <optional>
+#include <set>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -30,48 +33,51 @@ namespace mr {
                 }
 
                 void insert_type(std::string name, Ty ty) { _types.insert(name, ty); }
-                Ty   look_up_type(std::string name) { _types.look_up(name); }
+                Ty   look_up_type(std::string name) { return *_types.look_up(name); }
 
                 std::string ty_to_string(const Ty& t) {
-                    return std::visit(overloaded{
-                                          [&](const InferTy& ti) {
-                                              std::ostringstream o;
-                                              std::visit(overloaded{
-                                                             [&](const TypeVar& ttv) {
-                                                                 o << ty_of_type_var(ttv);
-                                                             },
-                                                             [&](const IntVar& tiv) {
-                                                                 o << ty_of_int_var(tiv);
-                                                             },
-                                                             [&](const FloatVar& tfv) {
-                                                                 o << ty_of_float_var(
-                                                                     tfv);
-                                                             },
-                                                         },
-                                                         ti);
-                                              return o.str();
-                                          },
-                                          [&](const auto& _) {
-                                              std::ostringstream o;
-                                              o << t;
-                                              return o.str();
-                                          },
-                                      },
-                                      t);
+                    return std::visit(
+                        overloaded{
+                            [&](const InferTy& ti) {
+                                std::ostringstream o;
+                                std::visit(
+                                    overloaded{
+                                        [&](const TypeVar& ttv) {
+                                            o << ty_of_type_var(ttv);
+                                        },
+                                        [&](const IntVar& tiv) {
+                                            o << ty_of_int_var(tiv);
+                                        },
+                                        [&](const FloatVar& tfv) {
+                                            o << ty_of_float_var(tfv);
+                                        },
+                                    },
+                                    ti
+                                );
+                                return o.str();
+                            },
+                            [&](const auto& _) {
+                                std::ostringstream o;
+                                o << t;
+                                return o.str();
+                            },
+                        },
+                        t
+                    );
                 }
 
-                Ty i8() const noexcept { return Ty{IntTy::I8}; }
-                Ty i16() const noexcept { return Ty{IntTy::I16}; }
-                Ty i32() const noexcept { return Ty{IntTy::I32}; }
-                Ty i64() const noexcept { return Ty{IntTy::I64}; }
-                Ty isize() const noexcept { return Ty{IntTy::ISIZE}; }
-                Ty u8() const noexcept { return Ty{UIntTy::U8}; }
-                Ty u16() const noexcept { return Ty{UIntTy::U16}; }
-                Ty u32() const noexcept { return Ty{UIntTy::U32}; }
-                Ty u64() const noexcept { return Ty{UIntTy::U64}; }
+                Ty i8() const noexcept { return Ty{IntTy::i8}; }
+                Ty i16() const noexcept { return Ty{IntTy::i16}; }
+                Ty i32() const noexcept { return Ty{IntTy::i32}; }
+                Ty i64() const noexcept { return Ty{IntTy::i64}; }
+                Ty isize() const noexcept { return Ty{IntTy::isize}; }
+                Ty u8() const noexcept { return Ty{UIntTy::u8}; }
+                Ty u16() const noexcept { return Ty{UIntTy::u16}; }
+                Ty u32() const noexcept { return Ty{UIntTy::u32}; }
+                Ty u64() const noexcept { return Ty{UIntTy::u64}; }
                 Ty f32() const noexcept { return Ty{FloatTy::F32}; }
                 Ty f64() const noexcept { return Ty{FloatTy::F64}; }
-                Ty usize() const noexcept { return Ty{UIntTy::USIZE}; }
+                Ty usize() const noexcept { return Ty{UIntTy::usize}; }
                 Ty bool_t() const noexcept { return Ty{BoolTy{}}; }
                 Ty unit() const noexcept { return Ty{UnitTy{}}; }
 
@@ -85,18 +91,21 @@ namespace mr {
                             [&](const TypeVar& tv) {
                                 const auto t = _type_vars.get(tv);
                                 if (!t)
-                                    throw std::runtime_error(
-                                        "TypeVariable does not exist");
+                                    throw std::runtime_error("TypeVariable does not exist"
+                                    );
                                 return std::visit(
                                     overloaded{
                                         [&](const UnknownTy& _) {
                                             throw std::runtime_error(
-                                                "Cant resolve type variable");
+                                                "Cant resolve type variable"
+                                            );
                                             return ty;
                                         },
                                         [&](const InferTy& _) { return resolve(*t); },
-                                        [&](const auto& ty) { return Ty{ty}; }},
-                                    *t);
+                                        [&](const auto& ty) { return Ty{ty}; }
+                                    },
+                                    *t
+                                );
                             },
                             [&](const IntVar& tv) {
                                 const auto ty = _int_vars.get(tv);
@@ -105,8 +114,8 @@ namespace mr {
                                 if (auto i = std::get_if<IntTy>(&*ty)) { return Ty{*i}; }
                                 if (auto u = std::get_if<UIntTy>(&*ty)) { return Ty{*u}; }
                                 // default of int is I32
-                                _int_vars.assign(tv, IntVarValue{IntTy::I32});
-                                return Ty{IntTy::I32};
+                                _int_vars.assign(tv, IntVarValue{IntTy::i32});
+                                return Ty{IntTy::i32};
                             },
                             [&](const FloatVar& tv) {
                                 const auto ty = _float_vars.get(tv);
@@ -120,7 +129,8 @@ namespace mr {
                                 return Ty{FloatTy::F64};
                             },
                         },
-                        infer);
+                        infer
+                    );
                 }
 
                 Ty shallow_resolve(const Ty ty) {
@@ -131,13 +141,15 @@ namespace mr {
                             [&](const TypeVar& tv) {
                                 const auto t = _type_vars.get(tv);
                                 if (!t)
-                                    throw std::runtime_error(
-                                        "TypeVariable does not exist");
+                                    throw std::runtime_error("TypeVariable does not exist"
+                                    );
                                 return std::visit(
                                     overloaded{
                                         [&](const InferTy& _) { return resolve(*t); },
-                                        [&](const auto& _) { return ty; }},
-                                    *t);
+                                        [&](const auto& _) { return ty; }
+                                    },
+                                    *t
+                                );
                             },
                             [&](const IntVar& tv) {
                                 const auto t = _int_vars.get(tv);
@@ -156,7 +168,8 @@ namespace mr {
                                 return ty;
                             },
                         },
-                        infer);
+                        infer
+                    );
                 }
 
                 Ty create_type_var() {
@@ -187,47 +200,50 @@ namespace mr {
 
                 types::Ty from_ast_type(const ast::Type& ast_type) {
                     using a_pt = ast::primitive_type;
-                    return std::visit(overloaded{
-                                          [](const a_pt& pt) {
-                                              switch (pt) {
-                                              case a_pt::Unit:
-                                                  return Ty{UnitTy{}};
-                                              case a_pt::I8:
-                                                  return Ty{IntTy::I8};
-                                              case a_pt::I16:
-                                                  return Ty{IntTy::I16};
-                                              case a_pt::I32:
-                                                  return Ty{IntTy::I32};
-                                              case a_pt::I64:
-                                                  return Ty{IntTy::I64};
-                                              case a_pt::ISIZE:
-                                                  return Ty{IntTy::ISIZE};
-                                              case a_pt::U8:
-                                                  return Ty{UIntTy::U8};
-                                              case a_pt::U16:
-                                                  return Ty{UIntTy::U16};
-                                              case a_pt::U32:
-                                                  return Ty{UIntTy::U32};
-                                              case a_pt::U64:
-                                                  return Ty{UIntTy::U64};
-                                              case a_pt::USIZE:
-                                                  return Ty{UIntTy::USIZE};
-                                              case a_pt::Char:
-                                                  throw std::runtime_error(
-                                                      "Char type not supported");
-                                              case a_pt::Bool:
-                                                  return Ty{BoolTy{}};
-                                              default:
-                                                  TODO(std::string("UNSUPPORTED TYPE ") +
-                                                       primitive_type_to_string(pt));
-                                                  return Ty{NeverTy{}};
-                                              }
-                                          },
-                                          [&](const std::string& s) -> Ty {
-                                              TODO("USER DEFINED TYPES NOT SUPPORTED");
-                                          },
-                                      },
-                                      ast_type);
+                    return std::visit(
+                        overloaded{
+                            [](const a_pt& pt) {
+                                switch (pt) {
+                                case a_pt::Unit:
+                                    return Ty{UnitTy{}};
+                                case a_pt::I8:
+                                    return Ty{IntTy::i8};
+                                case a_pt::I16:
+                                    return Ty{IntTy::i16};
+                                case a_pt::I32:
+                                    return Ty{IntTy::i32};
+                                case a_pt::I64:
+                                    return Ty{IntTy::i64};
+                                case a_pt::ISIZE:
+                                    return Ty{IntTy::isize};
+                                case a_pt::U8:
+                                    return Ty{UIntTy::u8};
+                                case a_pt::U16:
+                                    return Ty{UIntTy::u16};
+                                case a_pt::U32:
+                                    return Ty{UIntTy::u32};
+                                case a_pt::U64:
+                                    return Ty{UIntTy::u64};
+                                case a_pt::USIZE:
+                                    return Ty{UIntTy::usize};
+                                case a_pt::Char:
+                                    throw std::runtime_error("Char type not supported");
+                                case a_pt::Bool:
+                                    return Ty{BoolTy{}};
+                                default:
+                                    TODO(
+                                        std::string("UNSUPPORTED TYPE ") +
+                                        primitive_type_to_string(pt)
+                                    );
+                                    return Ty{NeverTy{}};
+                                }
+                            },
+                            [&](const std::string& s) -> Ty {
+                                TODO("USER DEFINED TYPES NOT SUPPORTED");
+                            },
+                        },
+                        ast_type
+                    );
                 }
                 /**
                  * sets a type `t` to be equal to a type `u`, if this can't
@@ -267,8 +283,11 @@ namespace mr {
                                         },
                                         [](const auto& _t, const auto& _u) {
                                             return no_type();
-                                        }},
-                                    ti, ui);
+                                        }
+                                    },
+                                    ti,
+                                    ui
+                                );
                             },
                             [&](const InferTy& it, const IntTy& iu) {
                                 if (auto intvar = std::get_if<IntVar>(&it)) {
@@ -340,8 +359,11 @@ namespace mr {
                                 if (!ut.is_infer_var()) return no_type();
                                 return some(u);
                             },
-                            [&](const auto& _t, const auto& _u) { return no_type(); }},
-                        t, u);
+                            [&](const auto& _t, const auto& _u) { return no_type(); }
+                        },
+                        t,
+                        u
+                    );
                 }
 
                 std::optional<Ty> eq_infer_and_ty(const InferTy& it, const Ty& u) {
@@ -377,46 +399,74 @@ namespace mr {
                     return Ty{InferTy{iv}};
                 }
 
-                std::optional<Ty> eq_floatvar_type_var(const FloatVar& iv,
-                                                       const TypeVar   tv) {
+                std::optional<Ty>
+                eq_floatvar_type_var(const FloatVar& iv, const TypeVar tv) {
                     TODO("EQ FLOAT VAR WITH TYPE VAR NOT SUPPORTED YET");
                 }
 
+                // returns NULL if error occured
+                // error will be included later on
                 const FunctionType* create_function_type(const ast::FunDecl& decl) {
-                    std::vector<Ty> arg_types;
+                    std::vector<Ty> arg_types{};
                     arg_types.reserve(decl.args().size());
                     // just "insert" middle types into above vector with
                     // transform
+                    std::unordered_map<std::string, int> seen_args; // for names
                     std::transform(
-                        decl.args().cbegin(), decl.args().cend(),
+                        decl.args().cbegin(),
+                        decl.args().cend(),
                         std::back_inserter(arg_types),
-                        [&](const ast::FunArg& arg) { return from_ast_type(arg.type); });
+                        [&](const ast::FunArg& arg) {
+                            seen_args[arg.id] += 1;
+                            return from_ast_type(arg.type);
+                        }
+                    );
+                    // we can iterate over this map and collect every arg
+                    // but we don't care about that right now.
+                    if (const auto val = std::find_if(
+                            seen_args.cbegin(),
+                            seen_args.cend(),
+                            [](const auto& v) { return v.second > 1; }
+                        );
+                        val != seen_args.cend()) {
+                        spdlog::critical(
+                            "Argument `{}` in function `{}`, is declared more than once",
+                            val->first,
+                            decl.name()
+                        );
+                        TODO("COLLECT `ARGUMENT DECLARED MORE THAN ONCE` ERROR");
+                    }
+
                     Ty ret_ty = from_ast_type(decl.return_type());
 
-                    const auto ty =
-                        new FunctionType{std::string(decl.name()), std::move(arg_types),
-                                         std::move(ret_ty)};
+                    const auto ty = new FunctionType{
+                        std::string(decl.name()), std::move(arg_types), std::move(ret_ty)
+                    };
                     _types.insert(decl.name(), Ty{ty});
                     return ty;
                 }
                 bool is_integer_type(const Ty& ty) {
                     return std::visit(
-                        overloaded{[](const NeverTy& t) { return true; }, // can be
-                                   [&](const InferTy& t) {
-                                       return std::visit(
-                                           overloaded{
-                                               [](const IntVar& t) { return true; },
-                                               [](const FloatVar& t) { return false; },
-                                               [&](const TypeVar& t) {
-                                                   return is_integer_type(
-                                                       ty_of_type_var(t));
-                                               }},
-                                           t);
-                                   },
-                                   [](const IntTy& t) { return true; },
-                                   [](const UIntTy& t) { return true; },
-                                   [](const auto& t) { return false; }},
-                        ty);
+                        overloaded{
+                            [](const NeverTy& t) { return true; }, // can be
+                            [&](const InferTy& t) {
+                                return std::visit(
+                                    overloaded{
+                                        [](const IntVar& t) { return true; },
+                                        [](const FloatVar& t) { return false; },
+                                        [&](const TypeVar& t) {
+                                            return is_integer_type(ty_of_type_var(t));
+                                        }
+                                    },
+                                    t
+                                );
+                            },
+                            [](const IntTy& t) { return true; },
+                            [](const UIntTy& t) { return true; },
+                            [](const auto& t) { return false; }
+                        },
+                        ty
+                    );
                 }
 
                 static inline std::optional<Ty> no_type() { return none<Ty>(); }

@@ -37,4 +37,6 @@ int main(int argc, char** argv) {
     ast->print();
     auto lowerer = middle::AstLowerer();
     lowerer.lower(std::move(ast));
+
+    auto inf = mr::middle::inference::TyInferer();
 }

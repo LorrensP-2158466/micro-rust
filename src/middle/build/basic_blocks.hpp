@@ -9,8 +9,9 @@
  */
 
 #include "../ir/module.hpp"
+#include "../type.hpp"
 #include "mr_util.hpp"
-#include <unordered_map>
+#include <vector>
 
 namespace mr {
     namespace middle {
@@ -23,13 +24,16 @@ namespace mr {
                 size_t operator()(const BlockId& p) const { return p.id; }
             };
             class BasicBlocks {
-                std::unordered_map<BlockId, Block, BlockIdHasher> _blocks;
+                std::vector<Block> _blocks;
 
                 void push_stmt(BlockId block, Statement stmt) {
-                    _blocks.at(block).statements.push_back(std::move(stmt));
+                    _blocks.at(block.id).statements.push_back(std::move(stmt));
                 }
 
               public:
+                BasicBlocks() = default;
+                BasicBlocks(BasicBlocks&& other) : _blocks(std::move(other._blocks)) {}
+
                 auto begin() { return _blocks.begin(); }
                 auto end() { return _blocks.end(); }
 
@@ -42,12 +46,32 @@ namespace mr {
 
                 BlockId create_new_block() {
                     const auto id = BlockId{_blocks.size()};
-                    _blocks.insert({id, Block()});
+                    _blocks.emplace_back();
                     return id;
+                }
+
+                void terminate(BlockId block, Terminator term) {
+                    _blocks.at(block.id).terminator =
+                        std::make_unique<Terminator>(Terminator(term));
+                }
+
+                void go_to(BlockId from, BlockId target) {
+                    assert(target.id < _blocks.size());
+                    terminate(from, Terminator(GoTo{target}));
                 }
 
                 void push_assign(BlockId block, Place lhs, RValue rhs) {
                     return push_stmt(block, Assign{lhs, rhs});
+                }
+
+                void push_unit_assign(BlockId block, Place lhs) {
+                    return push_stmt(
+                        block,
+                        Assign{
+                            lhs,
+                            RValue(AsIs(Operand::const_(Scalar{0}, types::Ty::unit())))
+                        }
+                    );
                 }
             };
         } // namespace build

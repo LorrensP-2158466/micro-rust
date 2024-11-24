@@ -3,7 +3,12 @@
 #include "../../ir/module.hpp"
 #include "../../type.hpp"
 #include "../../type_inference.hpp"
+#include "mr_util.hpp"
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <variant>
 
 namespace mr {
@@ -14,9 +19,14 @@ namespace mr {
     ExprKind(type value) : expr_variant_t(std::move(value)) {                            \
     }
             struct Expr;
+            std::ostream& operator<<(std::ostream& o, const Expr& e);
             struct Stmt;
-
-            struct Unit {};
+            struct Unit {
+                friend std::ostream& operator<<(std::ostream& o, const Unit& as) {
+                    o << "Unit Expr";
+                    return o;
+                }
+            };
             struct AssignExpr {
                 std::string  id;
                 Unique<Expr> expr;
@@ -24,6 +34,7 @@ namespace mr {
                 AssignExpr(std::string id, Unique<Expr> ex)
                     : id(id), expr(std::move(ex)) {}
                 friend std::ostream& operator<<(std::ostream& o, const AssignExpr& as) {
+                    o << "ASSIGN: " << as.id << " = " << as.expr;
                     return o;
                 }
             };
@@ -37,6 +48,8 @@ namespace mr {
                     : id(id), op(op), expr(std::move(ex)) {}
 
                 friend std::ostream& operator<<(std::ostream& o, const AssignOpExpr& as) {
+                    o << BinOp_to_string(as.op) << "ASSIGN: " << as.id << " = "
+                      << as.expr;
                     return o;
                 }
             };
@@ -47,7 +60,9 @@ namespace mr {
 
                 BlockExpr(std::vector<Unique<Stmt>> s, Unique<Expr> tail)
                     : _statements(std::move(s)), _tail(std::move(tail)) {}
+                BlockExpr(Unique<Expr> tail) : _statements{}, _tail(std::move(tail)) {}
                 friend std::ostream& operator<<(std::ostream& o, const BlockExpr& as) {
+                    o << "BLOCK EXPR" << "** to lazy**";
                     return o;
                 }
             };
@@ -57,6 +72,7 @@ namespace mr {
 
                 Identifier(std::string s) : symbol(s) {}
                 friend std::ostream& operator<<(std::ostream& o, const Identifier& as) {
+                    o << "IDENTIFIER " << as.symbol;
                     return o;
                 }
             };
@@ -67,7 +83,14 @@ namespace mr {
 
                 CallExpr(std::string i, std::vector<Unique<Expr>> a)
                     : id(i), args(std::move(a)) {}
-                friend std::ostream& operator<<(std::ostream& o, const CallExpr& as) {
+                friend std::ostream& operator<<(std::ostream& o, const CallExpr& call) {
+                    o << "CALL EXPR: " << call.id << " WITH ARGS: (";
+                    std::copy(
+                        call.args.begin(),
+                        call.args.end(),
+                        std::ostream_iterator<Unique<Expr>>(o, " ")
+                    );
+                    o << ')';
                     return o;
                 }
             };
@@ -131,6 +154,7 @@ namespace mr {
             struct Literal {
                 LiteralKind          kind;
                 friend std::ostream& operator<<(std::ostream& o, const Literal& as) {
+                    o << "LITERAL";
                     return o;
                 }
 
@@ -172,39 +196,39 @@ namespace mr {
                         throw std::runtime_error("Char literal not supported");
                     case expr::LiteralKind::Integer: {
                         // check suffix
-                        const auto [v, t, s] =
-                            !lit.suffix ? std::make_tuple(
-                                              std::stoul(lit.symbol),
-                                              inf.create_int_var(), std::nullopt
-                                          )
-                                        : [&]()
-                            -> std::tuple<
-                                uint64_t, types::Ty, std::optional<LitIntType>> {
-                            const auto uval = std::stoul(lit.symbol);
-                            const auto ival = std::stol(lit.symbol);
-                            switch (*lit.suffix) {
-                            case expr::Suffix::i8:
-                                CREATE_LITERAL_VALUES(ival, i8, int8_t);
-                            case expr::Suffix::i16:
-                                CREATE_LITERAL_VALUES(ival, i16, int16_t);
-                            case expr::Suffix::i32:
-                                CREATE_LITERAL_VALUES(ival, i32, int32_t);
-                            case expr::Suffix::i64:
-                                CREATE_LITERAL_VALUES(ival, i64, int64_t)
-                            case expr::Suffix::u8:
-                                CREATE_LITERAL_VALUES(uval, u8, u_int8_t)
-                            case expr::Suffix::u16:
-                                CREATE_LITERAL_VALUES(uval, u16, u_int16_t)
-                            case expr::Suffix::u32:
-                                CREATE_LITERAL_VALUES(uval, u32, u_int32_t)
-                            case expr::Suffix::u64:
-                                CREATE_LITERAL_VALUES(uval, u64, u_int64_t)
-                            case expr::Suffix::isize:
-                                CREATE_LITERAL_VALUES(ival, isize, intmax_t)
-                            case expr::Suffix::usize:
-                                CREATE_LITERAL_VALUES(uval, usize, uintmax_t)
-                            };
-                        }();
+                        const auto [v, t, s] = !lit.suffix ? std::make_tuple(
+                                                                 std::stoul(lit.symbol),
+                                                                 inf.create_int_var(),
+                                                                 std::nullopt
+                                                             )
+                                                           : [&]()
+                            -> std::
+                                tuple<uint64_t, types::Ty, std::optional<LitIntType>> {
+                                    const auto uval = std::stoul(lit.symbol);
+                                    const auto ival = std::stol(lit.symbol);
+                                    switch (*lit.suffix) {
+                                    case expr::Suffix::i8:
+                                        CREATE_LITERAL_VALUES(ival, i8, int8_t);
+                                    case expr::Suffix::i16:
+                                        CREATE_LITERAL_VALUES(ival, i16, int16_t);
+                                    case expr::Suffix::i32:
+                                        CREATE_LITERAL_VALUES(ival, i32, int32_t);
+                                    case expr::Suffix::i64:
+                                        CREATE_LITERAL_VALUES(ival, i64, int64_t)
+                                    case expr::Suffix::u8:
+                                        CREATE_LITERAL_VALUES(uval, u8, u_int8_t)
+                                    case expr::Suffix::u16:
+                                        CREATE_LITERAL_VALUES(uval, u16, u_int16_t)
+                                    case expr::Suffix::u32:
+                                        CREATE_LITERAL_VALUES(uval, u32, u_int32_t)
+                                    case expr::Suffix::u64:
+                                        CREATE_LITERAL_VALUES(uval, u64, u_int64_t)
+                                    case expr::Suffix::isize:
+                                        CREATE_LITERAL_VALUES(ival, isize, intmax_t)
+                                    case expr::Suffix::usize:
+                                        CREATE_LITERAL_VALUES(uval, usize, uintmax_t)
+                                    };
+                                }();
                         return {
                             Literal(LiteralKind{Int{v, s}}
                             ), t
@@ -249,7 +273,9 @@ namespace mr {
                 IfElse(Unique<Expr> c_expr, BlockExpr tb, OptUnique<Expr> eb)
                     : conditional_expr(std::move(c_expr)), then_block(std::move(tb)),
                       else_block(std::move(eb)) {}
+
                 friend std::ostream& operator<<(std::ostream& o, const IfElse& as) {
+                    o << "If Else: cond:" << *as.conditional_expr << " fuck die blocks";
                     return o;
                 }
             };
@@ -274,6 +300,7 @@ namespace mr {
                 UnaryOpExpr(expr::UnaryOp o, Unique<Expr> e)
                     : op(un_op_from_ast(o)), expr(std::move(e)) {}
                 friend std::ostream& operator<<(std::ostream& o, const UnaryOpExpr& as) {
+                    o << UnOp_to_string(as.op) << "Unary Operation ON " << as.expr;
                     return o;
                 }
             };
@@ -286,31 +313,53 @@ namespace mr {
                     : left(std::move(l)), op(op), right(std::move(r)) {}
 
                 friend std::ostream& operator<<(std::ostream& o, const BinOpExpr& as) {
+                    o << BinOp_to_string(as.op) << "Binary Operation ON " << as.left
+                      << " AND " << as.right;
                     return o;
                 }
             };
 
-            struct WhileLoop {
-                Unique<Expr> cond;
-                BlockExpr    body;
+            struct Loop {
+                Unique<Expr> body;
 
-                WhileLoop(Unique<Expr> c, BlockExpr b)
-                    : cond(std::move(c)), body(std::move(b)) {}
-                friend std::ostream& operator<<(std::ostream& o, const WhileLoop& as) {
+                Loop(Unique<Expr> b) : body(std::move(b)) {}
+                friend std::ostream& operator<<(std::ostream& o, const Loop& as) {
+                    o << "Loop ";
+                    return o;
+                }
+            };
+
+            struct Break {
+                Unique<Expr> val;
+
+                Break(Unique<Expr> v) : val(std::move(v)) {}
+                friend std::ostream& operator<<(std::ostream& o, const Break& as) {
+                    o << "Break ";
                     return o;
                 }
             };
 
             using ExprKind = std::variant<
                 AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier,
-                IfElse, Literal, UnaryOpExpr, Unit, WhileLoop>;
+                IfElse, Literal, UnaryOpExpr, Unit, Loop, Break>;
             struct Expr {
                 types::Ty type;
                 ExprKind  kind;
                 Expr(ExprKind k, types::Ty t) : kind(std::move(k)), type(t) {}
                 Expr(Expr&& other) noexcept = default;
             };
+            std::ostream& operator<<(std::ostream& o, const Expr& e) {
+                o << "Expr: \n"
+                  << "  Type: " << e.type << '\n'
+                  << "  kind: ??\n";
+                return o;
+            }
+
         } // namespace tast
     } // namespace middle
 
 } // namespace mr
+#define FORMAT_TAST_TYPE(ty) OSTREAM_FORMATTER(mr::middle::tast::ty)
+
+MAP(FORMAT_TAST_TYPE, AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr,
+    Identifier, IfElse, Literal, UnaryOpExpr, Unit, Loop, Break, ExprKind, Expr)
