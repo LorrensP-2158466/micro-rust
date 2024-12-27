@@ -1,12 +1,10 @@
 #pragma once
 
-#include "terminator.hpp"
-// this space is needed to keep terminator in front of block
-#include "block.hpp"
+#include "basic_blocks.hpp"
+#include "block_id.hpp"
 #include "function.hpp"
-#include "local.hpp"
-#include "scalar.hpp"
-#include "statement.hpp"
-#include "values.hpp"
-
 #include "ir.hpp"
+#include "local.hpp"
+#include "statement.hpp"
+#include "terminator.hpp"
+#include "values.hpp"

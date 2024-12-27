@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../type.hpp"
-#include "./expr/module.hpp"
+#include "types/type.hpp"
+#include "expr.hpp"
 #include "stmt.hpp"
 
 namespace mr {

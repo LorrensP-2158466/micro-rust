@@ -34,8 +34,7 @@ namespace mr {
                 auto cend() const { return symbols.cend(); }
 
                 auto insert(const std::string& symbol, T value) {
-                    return symbols.insert(std::make_pair(symbol, std::move(value)));
-                    ;
+                    return update(symbol, std::move(value));
                 }
 
                 auto update(const std::string& symbol, T value) {

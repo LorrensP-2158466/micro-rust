@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ops.hpp"
+#include "optional_util.hpp"
+#include <fmt/format.h>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -9,19 +12,7 @@
 #include <variant>
 
 namespace mr {
-
-    // this is taken from rust, but it is tedious to constantly do:
-    // - std::make_optional
-    // - std::null_opt;
-    // this makes it easier, espaccially in lambdas, which have limited
-    // typing support
-    template <typename T> constexpr inline std::optional<T> none() {
-        return std::nullopt;
-    }
-
-    template <typename T> constexpr inline std::optional<T> some(T t) {
-        return std::make_optional(std::move(t));
-    }
+    template <typename T> using Ref = std::reference_wrapper<T>;
 
     inline void todo(
         std::string                message = "",
@@ -49,7 +40,7 @@ namespace mr {
                   << ':' << location.column() << ": " << expr << " = " << t << std::endl;
         return t;
     }
-    template <typename T> [[noreturn]] inline T unreachable() {
+    template <typename T = void> [[noreturn]] inline T unreachable() {
 // Uses compiler specific extensions if possible.
 // Even if no extension is used, undefined behavior is still raised by
 // an empty function body and the noreturn attribute.
@@ -58,17 +49,6 @@ namespace mr {
 #else // GCC, Clang
         __builtin_unreachable();
 #endif
-    }
-
-    template <typename T, typename U, typename MapF>
-    std::optional<U> map_optional(std::optional<T> o, MapF f) {
-        if (o) return f(*o);
-        else return std::nullopt;
-    }
-    template <typename T, typename U, typename MapF>
-    U map_optional_or(std::optional<T> o, MapF&& f, U u) {
-        if (o) return f(std::move(*o));
-        else return u;
     }
 
     template <typename Variant, typename... Variants>
@@ -86,14 +66,14 @@ namespace mr {
     // https://stackoverflow.com/questions/46893056/how-do-i-write-operator-for-stdvariant
     template <typename T, typename... Ts>
     std::ostream& operator<<(std::ostream& os, const std::variant<T, Ts...>& v) {
-        std::visit([&os](auto&& arg) { os << arg; }, v);
+        std::visit([&os](const auto& arg) { os << arg; }, v);
         return os;
     }
 
     // i hate typing "std::unique_ptr" constantly
-    template <typename T> using Unique = std::unique_ptr<T>;
+    template <typename T> using U = std::unique_ptr<T>;
 
-    template <typename T> using OptUnique = std::optional<Unique<T>>;
+    template <typename T> using OptUnique = std::optional<U<T>>;
 
     inline const char* const bool_to_str(const bool b) {
         return b ? "true" : "false";

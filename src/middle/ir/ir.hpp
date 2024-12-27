@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../type.hpp"
 #include "function.hpp"
 #include "mr_util.hpp"
+#include "types/type.hpp"
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <span>
@@ -21,8 +21,25 @@ namespace mr {
                 std::unordered_map<std::string, Function> _functions;
 
               public:
+                auto&       functions() { return _functions; }
+                const auto& functions() const { return _functions; }
+
                 void register_function(std::string name, Function fn) {
                     _functions.emplace(std::move(name), std::move(fn));
+                }
+
+                void register_functions(std::vector<std::pair<std::string, Function>> fns
+                ) {
+                    _functions.reserve(_functions.size() + fns.size());
+                    for (auto& [name, fn] : fns) {
+                        register_function(std::move(name), std::move(fn));
+                    }
+                }
+
+                bool has_main() const noexcept { return _functions.contains("main"); }
+
+                Function& get_function_by_name(const std::string& name) {
+                    return _functions.at(name);
                 }
 
                 void dump() {
@@ -52,14 +69,9 @@ namespace mr {
                         for (auto& bb : ir_fn._blocks) {
                             fmt::println("  bb{}: {{", i++);
                             for (const auto& stmt : bb.statements) {
-                                std::cout << "\t";
-                                stmt.print();
+                                std::cout << "\t" << stmt;
                             }
-                            if (!bb.terminator) {
-                                spdlog::critical("Terminator Doesnt Exist");
-                                std::runtime_error("");
-                            }
-                            fmt::println("\t{}", *bb.terminator);
+                            fmt::println("\t{}", bb.terminator());
                             fmt::println("  }}\n");
                         }
                         fmt::println("}}\n");

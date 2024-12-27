@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../expr/module.hpp"
+#include "high/expr/module.hpp"
 #include "symbol_table.hpp"
-#include "type.hpp"
+#include "types/type.hpp"
 #include "unification_table.hpp"
 #include <algorithm>
 #include <fmt/format.h>
@@ -66,25 +66,28 @@ namespace mr {
                     );
                 }
 
-                Ty i8() const noexcept { return Ty{IntTy::i8}; }
-                Ty i16() const noexcept { return Ty{IntTy::i16}; }
-                Ty i32() const noexcept { return Ty{IntTy::i32}; }
-                Ty i64() const noexcept { return Ty{IntTy::i64}; }
-                Ty isize() const noexcept { return Ty{IntTy::isize}; }
-                Ty u8() const noexcept { return Ty{UIntTy::u8}; }
-                Ty u16() const noexcept { return Ty{UIntTy::u16}; }
-                Ty u32() const noexcept { return Ty{UIntTy::u32}; }
-                Ty u64() const noexcept { return Ty{UIntTy::u64}; }
-                Ty f32() const noexcept { return Ty{FloatTy::F32}; }
-                Ty f64() const noexcept { return Ty{FloatTy::F64}; }
-                Ty usize() const noexcept { return Ty{UIntTy::usize}; }
-                Ty bool_t() const noexcept { return Ty{BoolTy{}}; }
-                Ty unit() const noexcept { return Ty{UnitTy{}}; }
+                inline Ty i8() const noexcept { return Ty{IntTy::i8}; }
+                inline Ty i16() const noexcept { return Ty{IntTy::i16}; }
+                inline Ty i32() const noexcept { return Ty{IntTy::i32}; }
+                inline Ty i64() const noexcept { return Ty{IntTy::i64}; }
+                inline Ty isize() const noexcept { return Ty{IntTy::isize}; }
+                inline Ty u8() const noexcept { return Ty{UIntTy::u8}; }
+                inline Ty u16() const noexcept { return Ty{UIntTy::u16}; }
+                inline Ty u32() const noexcept { return Ty{UIntTy::u32}; }
+                inline Ty u64() const noexcept { return Ty{UIntTy::u64}; }
+                inline Ty f32() const noexcept { return Ty{FloatTy::F32}; }
+                inline Ty f64() const noexcept { return Ty{FloatTy::F64}; }
+                inline Ty usize() const noexcept { return Ty{UIntTy::usize}; }
+                inline Ty bool_t() const noexcept { return Ty{BoolTy{}}; }
+                inline Ty unit() const noexcept { return Ty{UnitTy{}}; }
+                inline Ty never() const noexcept { return Ty{NeverTy{}}; }
 
-                // it is possible that a type cannot be inferred so then we return
-                // optional it is up to the caller to deal with this
+                Ty never_to_unit(const Ty ty) {
+                    return has_variant<NeverTy>(ty) ? unit() : ty;
+                }
                 Ty resolve(const Ty ty) {
-                    if (!has_variant<InferTy>(ty)) return ty;
+                    fmt::println("Resolver: {}", ty);
+                    if (!has_variant<InferTy>(ty)) return never_to_unit(ty);
                     const auto infer = std::get<InferTy>(ty);
                     return std::visit(
                         overloaded{
@@ -101,7 +104,11 @@ namespace mr {
                                             );
                                             return ty;
                                         },
-                                        [&](const InferTy& _) { return resolve(*t); },
+                                        [&](const InferTy& _) {
+                                            exit(1);
+                                            return resolve(*t);
+                                        },
+                                        [&](const NeverTy& _) { return unit(); },
                                         [&](const auto& ty) { return Ty{ty}; }
                                     },
                                     *t
@@ -228,7 +235,7 @@ namespace mr {
                                     return Ty{UIntTy::usize};
                                 case a_pt::Char:
                                     throw std::runtime_error("Char type not supported");
-                                case a_pt::Bool:
+                                case a_pt::BOOL:
                                     return Ty{BoolTy{}};
                                 default:
                                     TODO(
@@ -238,23 +245,27 @@ namespace mr {
                                     return Ty{NeverTy{}};
                                 }
                             },
-                            [&](const std::string& s) -> Ty {
-                                TODO("USER DEFINED TYPES NOT SUPPORTED");
+                            [&](const auto& s) -> Ty {
+                                TODO("UNSUPPORTED TYPE");
+                                return unreachable<Ty>();
                             },
                         },
-                        ast_type
+                        ast_type.kind
                     );
                 }
+
                 /**
                  * sets a type `t` to be equal to a type `u`, if this can't
                  * If eq can't happen, nothing is returned
                  */
-                std::optional<Ty> eq(Ty t, Ty u) {
-                    t = shallow_resolve(t);
-                    u = shallow_resolve(u);
+                std::optional<Ty> eq(const Ty& in_t, const Ty& in_u) {
+                    const auto& t = shallow_resolve(in_t);
+                    const auto& u = shallow_resolve(in_u);
                     if (t == u) { return {t}; }
+                    fmt::println("{} eq {}", t, u);
                     return std::visit(
                         overloaded{
+                            [&](const NeverTy& _t, const NeverTy& _u) { return some(t); },
                             [&](const InferTy& ti, const InferTy& ui) {
                                 return std::visit(
                                     overloaded{
@@ -275,8 +286,8 @@ namespace mr {
                                             return eq_floatvar_type_var(ufv, tfv);
                                         },
                                         [&](const IntVar& tiv, const IntVar& uiv) {
-                                            eq_int_vars(tiv, uiv);
-                                            return some(t);
+                                            _int_vars.unionize(tiv, uiv);
+                                            return some(t); // one of the two
                                         },
                                         [&](const FloatVar& tfv, const FloatVar& utf) {
                                             return eq_float_vars(tfv, utf);
@@ -317,7 +328,7 @@ namespace mr {
                                     return some(u); // return the correct type
                                 }
                                 if (auto var = std::get_if<TypeVar>(&it)) {
-                                    _type_vars.assign(*var, t);
+                                    _type_vars.assign(*var, u);
                                     return some(u);
                                 }
                                 return no_type();
@@ -351,14 +362,34 @@ namespace mr {
                                 }
                                 return no_type();
                             },
-                            [&](const InferTy& it, const auto& _u) {
-                                if (!it.is_infer_var()) return no_type();
+                            [&](const InferTy& it, const UnitTy& uu) {
+                                if (auto type_var = std::get_if<TypeVar>(&it)) {
+                                    _type_vars.assign(*type_var, u);
+                                    return some(u);
+                                }
+                                return no_type();
+                            },
+                            [&](const UnitTy& it, const InferTy& ut) {
+                                if (auto type_var = std::get_if<TypeVar>(&ut)) {
+                                    _type_vars.assign(*type_var, t);
+                                    return some(t);
+                                }
+                                return no_type();
+                            },
+                            [&](const NeverTy& _t, const InferTy& iu) {
+                                if (auto type_var = std::get_if<TypeVar>(&iu)) {
+                                    _type_vars.assign(*type_var, t);
+                                }
                                 return some(u);
                             },
-                            [&](const auto& _i, const InferTy& ut) {
-                                if (!ut.is_infer_var()) return no_type();
-                                return some(u);
+                            [&](const InferTy& it, const NeverTy& _u) {
+                                if (auto type_var = std::get_if<TypeVar>(&it)) {
+                                    _type_vars.assign(*type_var, u);
+                                }
+                                return some(t);
                             },
+                            [&](const NeverTy& _t, const auto& _u) { return some(u); },
+                            [&](const auto& _t, const NeverTy& _u) { return some(t); },
                             [&](const auto& _t, const auto& _u) { return no_type(); }
                         },
                         t,
@@ -368,30 +399,12 @@ namespace mr {
 
                 std::optional<Ty> eq_infer_and_ty(const InferTy& it, const Ty& u) {
                     TODO("Cant infer from InferTy and auto _u");
+                    return unreachable<std::optional<Ty>>();
                 }
 
                 std::optional<Ty> eq_float_vars(const FloatVar& tf, const FloatVar& uf) {
                     TODO("EQ FLOAT VARS NOT SUPPORTED");
-                }
-                std::optional<Ty> eq_int_vars(const IntVar& ti, const IntVar& ui) {
-                    // an example of why we need to do this (same applies to floats)
-                    // valid rust (but not valid in types):
-                    /*
-                        let x = 10; // 1: {integer}
-                        let y = 20; // 2: {integer}
-                        // this says that 1 and 2 must be equal to eachother
-                        let cond = x == y;
-
-                        // here `x` is inferred to be usize, so y also must be a usize
-                        let z: usize = x;
-                        let u: isize = y; // `y` is inferred to be usize
-                       but we want isize **error**
-                    */
-                    // i don't know how to do this yet so im going of intuition
-                    // like we cant just let `y` point to `x` in the _int_vars
-                    // because switch the let statements of `z` and `u`, `x` won't know
-                    // so we unionize these 2
-                    _int_vars.unionize(ti, ui);
+                    return unreachable<std::optional<Ty>>();
                 }
 
                 std::optional<Ty> eq_intvar_type_var(const IntVar& iv, const TypeVar tv) {
@@ -402,11 +415,12 @@ namespace mr {
                 std::optional<Ty>
                 eq_floatvar_type_var(const FloatVar& iv, const TypeVar tv) {
                     TODO("EQ FLOAT VAR WITH TYPE VAR NOT SUPPORTED YET");
+                    return none<Ty>();
                 }
 
                 // returns NULL if error occured
                 // error will be included later on
-                const FunctionType* create_function_type(const ast::FunDecl& decl) {
+                FunctionType* create_function_type(const ast::FunDecl& decl) {
                     std::vector<Ty> arg_types{};
                     arg_types.reserve(decl.args().size());
                     // just "insert" middle types into above vector with
@@ -470,7 +484,7 @@ namespace mr {
                 }
 
                 static inline std::optional<Ty> no_type() { return none<Ty>(); }
-            };
+            }; // namespace middle
         } // namespace inference
 
     } // namespace middle

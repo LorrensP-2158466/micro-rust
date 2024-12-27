@@ -31,12 +31,12 @@
 // version 2.2 of Bison.
 
 /**
- ** \file parser/location.hh
+ ** \file /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/location.hh
  ** Define the mr::location class.
  */
 
-#ifndef YY_YY_PARSER_LOCATION_HH_INCLUDED
-# define YY_YY_PARSER_LOCATION_HH_INCLUDED
+#ifndef YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_LOCATION_HH_INCLUDED
+# define YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_LOCATION_HH_INCLUDED
 
 # include <iostream>
 # include <string>
@@ -53,9 +53,9 @@
 #  endif
 # endif
 
-#line 39 "parser/yaccfile.yy"
+#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 namespace mr {
-#line 59 "parser/location.hh"
+#line 59 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/location.hh"
 
   /// A point in a source file.
   class position
@@ -299,8 +299,8 @@ namespace mr {
     return ostr;
   }
 
-#line 39 "parser/yaccfile.yy"
+#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 } // mr
-#line 305 "parser/location.hh"
+#line 305 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/location.hh"
 
-#endif // !YY_YY_PARSER_LOCATION_HH_INCLUDED
+#endif // !YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_LOCATION_HH_INCLUDED

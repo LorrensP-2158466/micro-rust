@@ -32,7 +32,7 @@
 
 
 /**
- ** \file parser/parser.tab.hpp
+ ** \file /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp
  ** Define the mr::parser class.
  */
 
@@ -42,33 +42,28 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_PARSER_PARSER_TAB_HPP_INCLUDED
-# define YY_YY_PARSER_PARSER_TAB_HPP_INCLUDED
+#ifndef YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_PARSER_TAB_HPP_INCLUDED
+# define YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_PARSER_TAB_HPP_INCLUDED
 // "%code requires" blocks.
-#line 4 "parser/yaccfile.yy"
+#line 16 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 
-
-
-#include "../ast/module.hpp"
-#include "../expr/module.hpp"
-#include "mr_util.hpp"
-#include "../lexer/span.hpp"
-#include "../lexer/token.hpp"
-#include <string>
-#include <variant>
-#include <cstddef>
-#include <memory>
-#include <assert.h>
 namespace mr {
-  class Lexer; // Forward declaration
+    class Lexer;
+    namespace driver {
+        class MRDriver;
+    }
 }
+#include "lexer/span.hpp"
+#include "lexer/token.hpp"
+#include "high/ast/module.hpp"
+#include "high/expr/module.hpp"
+#include "mr_util.hpp"
 
-// this makes everything cleaner even though im against this
+using namespace mr;
 using namespace mr::ast;
 using namespace mr::expr;
 
-
-#line 72 "parser/parser.tab.hpp"
+#line 67 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -202,9 +197,9 @@ using namespace mr::expr;
 # define YYDEBUG 1
 #endif
 
-#line 39 "parser/yaccfile.yy"
+#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 namespace mr {
-#line 208 "parser/parser.tab.hpp"
+#line 203 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 
@@ -442,6 +437,9 @@ namespace mr {
       // ARROW
       // IF
       // ELSE
+      // RETURN
+      // BREAK
+      // CONTINUE
       // L_AND
       // L_OR
       // PLUS_EQ
@@ -464,52 +462,52 @@ namespace mr {
       char dummy3[sizeof (Type)];
 
       // assignment
-      char dummy4[sizeof (Unique<AssignExpr>)];
+      char dummy4[sizeof (U<AssignExpr>)];
 
       // program
-      char dummy5[sizeof (Unique<Ast>)];
+      char dummy5[sizeof (U<Ast>)];
 
       // bin_op_expr
-      char dummy6[sizeof (Unique<BinOpExpr>)];
+      char dummy6[sizeof (U<BinOpExpr>)];
 
       // block_expr
-      char dummy7[sizeof (Unique<BlockExpr>)];
+      char dummy7[sizeof (U<BlockExpr>)];
 
       // call_expr
-      char dummy8[sizeof (Unique<CallExpr>)];
+      char dummy8[sizeof (U<CallExpr>)];
 
       // expr
       // expr_stmt
       // expr_w_block
       // expr_wo_block
-      char dummy9[sizeof (Unique<Expr>)];
+      char dummy9[sizeof (U<Expr>)];
 
       // function_decl
-      char dummy10[sizeof (Unique<FunDecl>)];
+      char dummy10[sizeof (U<FunDecl>)];
 
       // if_expr
-      char dummy11[sizeof (Unique<IfElse>)];
+      char dummy11[sizeof (U<IfElse>)];
 
       // item
-      char dummy12[sizeof (Unique<Item>)];
+      char dummy12[sizeof (U<Item>)];
 
       // let
-      char dummy13[sizeof (Unique<LetStmt>)];
+      char dummy13[sizeof (U<LetStmt>)];
 
       // literal
-      char dummy14[sizeof (Unique<Literal>)];
+      char dummy14[sizeof (U<Literal>)];
 
       // print_ln
-      char dummy15[sizeof (Unique<PrintLn>)];
+      char dummy15[sizeof (U<PrintLn>)];
 
       // stmt
-      char dummy16[sizeof (Unique<Stmt>)];
+      char dummy16[sizeof (U<Stmt>)];
 
       // unary_op_expr
-      char dummy17[sizeof (Unique<UnaryOpExpr>)];
+      char dummy17[sizeof (U<UnaryOpExpr>)];
 
       // while_expr
-      char dummy18[sizeof (Unique<WhileLoop>)];
+      char dummy18[sizeof (U<WhileLoop>)];
 
       // opt_mut
       char dummy19[sizeof (bool)];
@@ -522,16 +520,13 @@ namespace mr {
       char dummy21[sizeof (std::vector<FunArg>)];
 
       // call_expr_args
-      char dummy22[sizeof (std::vector<Unique<Expr>>)];
+      char dummy22[sizeof (std::vector<U<Expr>>)];
 
       // item_list
-      char dummy23[sizeof (std::vector<Unique<Item>>)];
+      char dummy23[sizeof (std::vector<U<Item>>)];
 
       // stmt_list
-      char dummy24[sizeof (std::vector<Unique<Stmt>>)];
-
-      // ref_add
-      char dummy25[sizeof (uint8_t)];
+      char dummy24[sizeof (std::vector<U<Stmt>>)];
     };
 
     /// The size of the largest semantic type.
@@ -620,26 +615,40 @@ namespace mr {
     ARROW = 294,                   // ARROW
     IF = 295,                      // IF
     ELSE = 296,                    // ELSE
-    L_AND = 297,                   // L_AND
-    L_OR = 298,                    // L_OR
-    PLUS_EQ = 299,                 // PLUS_EQ
-    MIN_EQ = 300,                  // MIN_EQ
-    MUL_EQ = 301,                  // MUL_EQ
-    DIV_EQ = 302,                  // DIV_EQ
-    LBRACE = 303,                  // LBRACE
-    RBRACE = 304,                  // RBRACE
-    LPAREN = 305,                  // LPAREN
-    RPAREN = 306,                  // RPAREN
-    SEMICOLON = 307,               // SEMICOLON
-    COLON = 308,                   // COLON
-    AMPERSAND = 309,               // AMPERSAND
-    OR = 310,                      // OR
-    AMPERSAND_MUT = 311,           // AMPERSAND_MUT
-    REF = 312,                     // REF
-    REF_MUT = 313,                 // REF_MUT
-    DEREF = 314,                   // DEREF
-    UMINUS = 315,                  // UMINUS
-    NOT = 316                      // NOT
+    RETURN = 297,                  // RETURN
+    BREAK = 298,                   // BREAK
+    CONTINUE = 299,                // CONTINUE
+    L_AND = 300,                   // L_AND
+    L_OR = 301,                    // L_OR
+    PLUS_EQ = 302,                 // PLUS_EQ
+    MIN_EQ = 303,                  // MIN_EQ
+    MUL_EQ = 304,                  // MUL_EQ
+    DIV_EQ = 305,                  // DIV_EQ
+    LBRACE = 306,                  // LBRACE
+    RBRACE = 307,                  // RBRACE
+    LPAREN = 308,                  // LPAREN
+    RPAREN = 309,                  // RPAREN
+    SEMICOLON = 310,               // SEMICOLON
+    COLON = 311,                   // COLON
+    AMPERSAND = 312,               // AMPERSAND
+    OR = 313,                      // OR
+    AMPERSAND_MUT = 314,           // AMPERSAND_MUT
+    MOD_EQ = 315,                  // MOD_EQ
+    BIT_AND_EQ = 316,              // BIT_AND_EQ
+    BIT_OR_EQ = 317,               // BIT_OR_EQ
+    BIT_XOR_EQ = 318,              // BIT_XOR_EQ
+    SHL_EQ = 319,                  // SHL_EQ
+    SHR_EQ = 320,                  // SHR_EQ
+    MOD = 321,                     // MOD
+    UMINUS = 322,                  // UMINUS
+    DEREF = 323,                   // DEREF
+    NOT = 324,                     // NOT
+    REF = 325,                     // REF
+    REF_MUT = 326,                 // REF_MUT
+    CALL_INDEX = 327,              // CALL_INDEX
+    UNARY = 328,                   // UNARY
+    BIN_OP = 329,                  // BIN_OP
+    CONTROL_FLOW = 330             // CONTROL_FLOW
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -656,7 +665,7 @@ namespace mr {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 62, ///< Number of tokens.
+        YYNTOKENS = 76, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -700,56 +709,69 @@ namespace mr {
         S_ARROW = 39,                            // ARROW
         S_IF = 40,                               // IF
         S_ELSE = 41,                             // ELSE
-        S_L_AND = 42,                            // L_AND
-        S_L_OR = 43,                             // L_OR
-        S_PLUS_EQ = 44,                          // PLUS_EQ
-        S_MIN_EQ = 45,                           // MIN_EQ
-        S_MUL_EQ = 46,                           // MUL_EQ
-        S_DIV_EQ = 47,                           // DIV_EQ
-        S_LBRACE = 48,                           // LBRACE
-        S_RBRACE = 49,                           // RBRACE
-        S_LPAREN = 50,                           // LPAREN
-        S_RPAREN = 51,                           // RPAREN
-        S_SEMICOLON = 52,                        // SEMICOLON
-        S_COLON = 53,                            // COLON
-        S_AMPERSAND = 54,                        // AMPERSAND
-        S_OR = 55,                               // OR
-        S_AMPERSAND_MUT = 56,                    // AMPERSAND_MUT
-        S_REF = 57,                              // REF
-        S_REF_MUT = 58,                          // REF_MUT
-        S_DEREF = 59,                            // DEREF
-        S_UMINUS = 60,                           // UMINUS
-        S_NOT = 61,                              // NOT
-        S_YYACCEPT = 62,                         // $accept
-        S_program = 63,                          // program
-        S_item_list = 64,                        // item_list
-        S_item = 65,                             // item
-        S_function_decl = 66,                    // function_decl
-        S_func_ret_type = 67,                    // func_ret_type
-        S_func_decl_args = 68,                   // func_decl_args
-        S_func_arg_list = 69,                    // func_arg_list
-        S_func_arg = 70,                         // func_arg
-        S_stmt = 71,                             // stmt
-        S_stmt_list = 72,                        // stmt_list
-        S_print_ln = 73,                         // print_ln
-        S_type_decl = 74,                        // type_decl
-        S_opt_mut = 75,                          // opt_mut
-        S_let = 76,                              // let
-        S_if_expr = 77,                          // if_expr
-        S_ref_add = 78,                          // ref_add
-        S_type = 79,                             // type
-        S_block_expr = 80,                       // block_expr
-        S_assignment = 81,                       // assignment
-        S_unary_op_expr = 82,                    // unary_op_expr
-        S_bin_op_expr = 83,                      // bin_op_expr
-        S_literal = 84,                          // literal
-        S_call_expr_args = 85,                   // call_expr_args
-        S_call_expr = 86,                        // call_expr
-        S_while_expr = 87,                       // while_expr
-        S_expr = 88,                             // expr
-        S_expr_stmt = 89,                        // expr_stmt
-        S_expr_w_block = 90,                     // expr_w_block
-        S_expr_wo_block = 91                     // expr_wo_block
+        S_RETURN = 42,                           // RETURN
+        S_BREAK = 43,                            // BREAK
+        S_CONTINUE = 44,                         // CONTINUE
+        S_L_AND = 45,                            // L_AND
+        S_L_OR = 46,                             // L_OR
+        S_PLUS_EQ = 47,                          // PLUS_EQ
+        S_MIN_EQ = 48,                           // MIN_EQ
+        S_MUL_EQ = 49,                           // MUL_EQ
+        S_DIV_EQ = 50,                           // DIV_EQ
+        S_LBRACE = 51,                           // LBRACE
+        S_RBRACE = 52,                           // RBRACE
+        S_LPAREN = 53,                           // LPAREN
+        S_RPAREN = 54,                           // RPAREN
+        S_SEMICOLON = 55,                        // SEMICOLON
+        S_COLON = 56,                            // COLON
+        S_AMPERSAND = 57,                        // AMPERSAND
+        S_OR = 58,                               // OR
+        S_AMPERSAND_MUT = 59,                    // AMPERSAND_MUT
+        S_MOD_EQ = 60,                           // MOD_EQ
+        S_BIT_AND_EQ = 61,                       // BIT_AND_EQ
+        S_BIT_OR_EQ = 62,                        // BIT_OR_EQ
+        S_BIT_XOR_EQ = 63,                       // BIT_XOR_EQ
+        S_SHL_EQ = 64,                           // SHL_EQ
+        S_SHR_EQ = 65,                           // SHR_EQ
+        S_MOD = 66,                              // MOD
+        S_UMINUS = 67,                           // UMINUS
+        S_DEREF = 68,                            // DEREF
+        S_NOT = 69,                              // NOT
+        S_REF = 70,                              // REF
+        S_REF_MUT = 71,                          // REF_MUT
+        S_CALL_INDEX = 72,                       // CALL_INDEX
+        S_UNARY = 73,                            // UNARY
+        S_BIN_OP = 74,                           // BIN_OP
+        S_CONTROL_FLOW = 75,                     // CONTROL_FLOW
+        S_YYACCEPT = 76,                         // $accept
+        S_program = 77,                          // program
+        S_item_list = 78,                        // item_list
+        S_item = 79,                             // item
+        S_function_decl = 80,                    // function_decl
+        S_func_ret_type = 81,                    // func_ret_type
+        S_func_decl_args = 82,                   // func_decl_args
+        S_func_arg_list = 83,                    // func_arg_list
+        S_func_arg = 84,                         // func_arg
+        S_stmt = 85,                             // stmt
+        S_stmt_list = 86,                        // stmt_list
+        S_print_ln = 87,                         // print_ln
+        S_type_decl = 88,                        // type_decl
+        S_opt_mut = 89,                          // opt_mut
+        S_let = 90,                              // let
+        S_if_expr = 91,                          // if_expr
+        S_type = 92,                             // type
+        S_block_expr = 93,                       // block_expr
+        S_assignment = 94,                       // assignment
+        S_unary_op_expr = 95,                    // unary_op_expr
+        S_bin_op_expr = 96,                      // bin_op_expr
+        S_literal = 97,                          // literal
+        S_call_expr_args = 98,                   // call_expr_args
+        S_call_expr = 99,                        // call_expr
+        S_while_expr = 100,                      // while_expr
+        S_expr = 101,                            // expr
+        S_expr_stmt = 102,                       // expr_stmt
+        S_expr_w_block = 103,                    // expr_w_block
+        S_expr_wo_block = 104                    // expr_wo_block
       };
     };
 
@@ -829,6 +851,9 @@ namespace mr {
       case symbol_kind::S_ARROW: // ARROW
       case symbol_kind::S_IF: // IF
       case symbol_kind::S_ELSE: // ELSE
+      case symbol_kind::S_RETURN: // RETURN
+      case symbol_kind::S_BREAK: // BREAK
+      case symbol_kind::S_CONTINUE: // CONTINUE
       case symbol_kind::S_L_AND: // L_AND
       case symbol_kind::S_L_OR: // L_OR
       case symbol_kind::S_PLUS_EQ: // PLUS_EQ
@@ -853,66 +878,66 @@ namespace mr {
         break;
 
       case symbol_kind::S_assignment: // assignment
-        value.move< Unique<AssignExpr> > (std::move (that.value));
+        value.move< U<AssignExpr> > (std::move (that.value));
         break;
 
       case symbol_kind::S_program: // program
-        value.move< Unique<Ast> > (std::move (that.value));
+        value.move< U<Ast> > (std::move (that.value));
         break;
 
       case symbol_kind::S_bin_op_expr: // bin_op_expr
-        value.move< Unique<BinOpExpr> > (std::move (that.value));
+        value.move< U<BinOpExpr> > (std::move (that.value));
         break;
 
       case symbol_kind::S_block_expr: // block_expr
-        value.move< Unique<BlockExpr> > (std::move (that.value));
+        value.move< U<BlockExpr> > (std::move (that.value));
         break;
 
       case symbol_kind::S_call_expr: // call_expr
-        value.move< Unique<CallExpr> > (std::move (that.value));
+        value.move< U<CallExpr> > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_stmt: // expr_stmt
       case symbol_kind::S_expr_w_block: // expr_w_block
       case symbol_kind::S_expr_wo_block: // expr_wo_block
-        value.move< Unique<Expr> > (std::move (that.value));
+        value.move< U<Expr> > (std::move (that.value));
         break;
 
       case symbol_kind::S_function_decl: // function_decl
-        value.move< Unique<FunDecl> > (std::move (that.value));
+        value.move< U<FunDecl> > (std::move (that.value));
         break;
 
       case symbol_kind::S_if_expr: // if_expr
-        value.move< Unique<IfElse> > (std::move (that.value));
+        value.move< U<IfElse> > (std::move (that.value));
         break;
 
       case symbol_kind::S_item: // item
-        value.move< Unique<Item> > (std::move (that.value));
+        value.move< U<Item> > (std::move (that.value));
         break;
 
       case symbol_kind::S_let: // let
-        value.move< Unique<LetStmt> > (std::move (that.value));
+        value.move< U<LetStmt> > (std::move (that.value));
         break;
 
       case symbol_kind::S_literal: // literal
-        value.move< Unique<Literal> > (std::move (that.value));
+        value.move< U<Literal> > (std::move (that.value));
         break;
 
       case symbol_kind::S_print_ln: // print_ln
-        value.move< Unique<PrintLn> > (std::move (that.value));
+        value.move< U<PrintLn> > (std::move (that.value));
         break;
 
       case symbol_kind::S_stmt: // stmt
-        value.move< Unique<Stmt> > (std::move (that.value));
+        value.move< U<Stmt> > (std::move (that.value));
         break;
 
       case symbol_kind::S_unary_op_expr: // unary_op_expr
-        value.move< Unique<UnaryOpExpr> > (std::move (that.value));
+        value.move< U<UnaryOpExpr> > (std::move (that.value));
         break;
 
       case symbol_kind::S_while_expr: // while_expr
-        value.move< Unique<WhileLoop> > (std::move (that.value));
+        value.move< U<WhileLoop> > (std::move (that.value));
         break;
 
       case symbol_kind::S_opt_mut: // opt_mut
@@ -929,19 +954,15 @@ namespace mr {
         break;
 
       case symbol_kind::S_call_expr_args: // call_expr_args
-        value.move< std::vector<Unique<Expr>> > (std::move (that.value));
+        value.move< std::vector<U<Expr>> > (std::move (that.value));
         break;
 
       case symbol_kind::S_item_list: // item_list
-        value.move< std::vector<Unique<Item>> > (std::move (that.value));
+        value.move< std::vector<U<Item>> > (std::move (that.value));
         break;
 
       case symbol_kind::S_stmt_list: // stmt_list
-        value.move< std::vector<Unique<Stmt>> > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_ref_add: // ref_add
-        value.move< uint8_t > (std::move (that.value));
+        value.move< std::vector<U<Stmt>> > (std::move (that.value));
         break;
 
       default:
@@ -1010,13 +1031,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<AssignExpr>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<AssignExpr>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<AssignExpr>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<AssignExpr>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1024,13 +1045,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<Ast>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<Ast>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<Ast>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<Ast>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1038,13 +1059,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<BinOpExpr>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<BinOpExpr>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<BinOpExpr>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<BinOpExpr>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1052,13 +1073,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<BlockExpr>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<BlockExpr>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<BlockExpr>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<BlockExpr>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1066,13 +1087,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<CallExpr>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<CallExpr>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<CallExpr>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<CallExpr>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1080,13 +1101,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<Expr>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<Expr>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<Expr>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<Expr>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1094,13 +1115,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<FunDecl>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<FunDecl>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<FunDecl>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<FunDecl>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1108,13 +1129,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<IfElse>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<IfElse>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<IfElse>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<IfElse>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1122,13 +1143,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<Item>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<Item>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<Item>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<Item>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1136,13 +1157,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<LetStmt>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<LetStmt>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<LetStmt>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<LetStmt>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1150,13 +1171,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<Literal>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<Literal>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<Literal>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<Literal>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1164,13 +1185,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<PrintLn>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<PrintLn>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<PrintLn>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<PrintLn>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1178,13 +1199,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<Stmt>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<Stmt>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<Stmt>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<Stmt>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1192,13 +1213,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<UnaryOpExpr>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<UnaryOpExpr>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<UnaryOpExpr>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<UnaryOpExpr>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1206,13 +1227,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, Unique<WhileLoop>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, U<WhileLoop>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const Unique<WhileLoop>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const U<WhileLoop>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1262,13 +1283,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, std::vector<Unique<Expr>>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, std::vector<U<Expr>>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const std::vector<Unique<Expr>>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const std::vector<U<Expr>>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1276,13 +1297,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, std::vector<Unique<Item>>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, std::vector<U<Item>>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const std::vector<Unique<Item>>& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const std::vector<U<Item>>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1290,27 +1311,13 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, std::vector<Unique<Stmt>>&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, std::vector<U<Stmt>>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const std::vector<Unique<Stmt>>& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, uint8_t&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const uint8_t& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const std::vector<U<Stmt>>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1384,6 +1391,9 @@ switch (yykind)
       case symbol_kind::S_ARROW: // ARROW
       case symbol_kind::S_IF: // IF
       case symbol_kind::S_ELSE: // ELSE
+      case symbol_kind::S_RETURN: // RETURN
+      case symbol_kind::S_BREAK: // BREAK
+      case symbol_kind::S_CONTINUE: // CONTINUE
       case symbol_kind::S_L_AND: // L_AND
       case symbol_kind::S_L_OR: // L_OR
       case symbol_kind::S_PLUS_EQ: // PLUS_EQ
@@ -1408,66 +1418,66 @@ switch (yykind)
         break;
 
       case symbol_kind::S_assignment: // assignment
-        value.template destroy< Unique<AssignExpr> > ();
+        value.template destroy< U<AssignExpr> > ();
         break;
 
       case symbol_kind::S_program: // program
-        value.template destroy< Unique<Ast> > ();
+        value.template destroy< U<Ast> > ();
         break;
 
       case symbol_kind::S_bin_op_expr: // bin_op_expr
-        value.template destroy< Unique<BinOpExpr> > ();
+        value.template destroy< U<BinOpExpr> > ();
         break;
 
       case symbol_kind::S_block_expr: // block_expr
-        value.template destroy< Unique<BlockExpr> > ();
+        value.template destroy< U<BlockExpr> > ();
         break;
 
       case symbol_kind::S_call_expr: // call_expr
-        value.template destroy< Unique<CallExpr> > ();
+        value.template destroy< U<CallExpr> > ();
         break;
 
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_stmt: // expr_stmt
       case symbol_kind::S_expr_w_block: // expr_w_block
       case symbol_kind::S_expr_wo_block: // expr_wo_block
-        value.template destroy< Unique<Expr> > ();
+        value.template destroy< U<Expr> > ();
         break;
 
       case symbol_kind::S_function_decl: // function_decl
-        value.template destroy< Unique<FunDecl> > ();
+        value.template destroy< U<FunDecl> > ();
         break;
 
       case symbol_kind::S_if_expr: // if_expr
-        value.template destroy< Unique<IfElse> > ();
+        value.template destroy< U<IfElse> > ();
         break;
 
       case symbol_kind::S_item: // item
-        value.template destroy< Unique<Item> > ();
+        value.template destroy< U<Item> > ();
         break;
 
       case symbol_kind::S_let: // let
-        value.template destroy< Unique<LetStmt> > ();
+        value.template destroy< U<LetStmt> > ();
         break;
 
       case symbol_kind::S_literal: // literal
-        value.template destroy< Unique<Literal> > ();
+        value.template destroy< U<Literal> > ();
         break;
 
       case symbol_kind::S_print_ln: // print_ln
-        value.template destroy< Unique<PrintLn> > ();
+        value.template destroy< U<PrintLn> > ();
         break;
 
       case symbol_kind::S_stmt: // stmt
-        value.template destroy< Unique<Stmt> > ();
+        value.template destroy< U<Stmt> > ();
         break;
 
       case symbol_kind::S_unary_op_expr: // unary_op_expr
-        value.template destroy< Unique<UnaryOpExpr> > ();
+        value.template destroy< U<UnaryOpExpr> > ();
         break;
 
       case symbol_kind::S_while_expr: // while_expr
-        value.template destroy< Unique<WhileLoop> > ();
+        value.template destroy< U<WhileLoop> > ();
         break;
 
       case symbol_kind::S_opt_mut: // opt_mut
@@ -1484,19 +1494,15 @@ switch (yykind)
         break;
 
       case symbol_kind::S_call_expr_args: // call_expr_args
-        value.template destroy< std::vector<Unique<Expr>> > ();
+        value.template destroy< std::vector<U<Expr>> > ();
         break;
 
       case symbol_kind::S_item_list: // item_list
-        value.template destroy< std::vector<Unique<Item>> > ();
+        value.template destroy< std::vector<U<Item>> > ();
         break;
 
       case symbol_kind::S_stmt_list: // stmt_list
-        value.template destroy< std::vector<Unique<Stmt>> > ();
-        break;
-
-      case symbol_kind::S_ref_add: // ref_add
-        value.template destroy< uint8_t > ();
+        value.template destroy< std::vector<U<Stmt>> > ();
         break;
 
       default:
@@ -1606,7 +1612,7 @@ switch (yykind)
     };
 
     /// Build a parser object.
-    Parser (Lexer &lexer_yyarg, const bool debug_yyarg, const char* input_file_name_yyarg);
+    Parser (driver::MRDriver& driver_yyarg, Lexer &lexer_yyarg, const bool debug_yyarg, const char* input_file_name_yyarg);
     virtual ~Parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -2284,6 +2290,51 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_RETURN (Token v, location_type l)
+      {
+        return symbol_type (token::RETURN, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_RETURN (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::RETURN, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_BREAK (Token v, location_type l)
+      {
+        return symbol_type (token::BREAK, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_BREAK (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::BREAK, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_CONTINUE (Token v, location_type l)
+      {
+        return symbol_type (token::CONTINUE, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_CONTINUE (const Token& v, const location_type& l)
+      {
+        return symbol_type (token::CONTINUE, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_L_AND (Token v, location_type l)
       {
         return symbol_type (token::L_AND, std::move (v), std::move (l));
@@ -2509,6 +2560,156 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_MOD_EQ (location_type l)
+      {
+        return symbol_type (token::MOD_EQ, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_MOD_EQ (const location_type& l)
+      {
+        return symbol_type (token::MOD_EQ, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_BIT_AND_EQ (location_type l)
+      {
+        return symbol_type (token::BIT_AND_EQ, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_BIT_AND_EQ (const location_type& l)
+      {
+        return symbol_type (token::BIT_AND_EQ, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_BIT_OR_EQ (location_type l)
+      {
+        return symbol_type (token::BIT_OR_EQ, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_BIT_OR_EQ (const location_type& l)
+      {
+        return symbol_type (token::BIT_OR_EQ, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_BIT_XOR_EQ (location_type l)
+      {
+        return symbol_type (token::BIT_XOR_EQ, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_BIT_XOR_EQ (const location_type& l)
+      {
+        return symbol_type (token::BIT_XOR_EQ, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_SHL_EQ (location_type l)
+      {
+        return symbol_type (token::SHL_EQ, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_SHL_EQ (const location_type& l)
+      {
+        return symbol_type (token::SHL_EQ, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_SHR_EQ (location_type l)
+      {
+        return symbol_type (token::SHR_EQ, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_SHR_EQ (const location_type& l)
+      {
+        return symbol_type (token::SHR_EQ, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_MOD (location_type l)
+      {
+        return symbol_type (token::MOD, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_MOD (const location_type& l)
+      {
+        return symbol_type (token::MOD, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_UMINUS (location_type l)
+      {
+        return symbol_type (token::UMINUS, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_UMINUS (const location_type& l)
+      {
+        return symbol_type (token::UMINUS, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_DEREF (location_type l)
+      {
+        return symbol_type (token::DEREF, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_DEREF (const location_type& l)
+      {
+        return symbol_type (token::DEREF, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_NOT (location_type l)
+      {
+        return symbol_type (token::NOT, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_NOT (const location_type& l)
+      {
+        return symbol_type (token::NOT, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_REF (location_type l)
       {
         return symbol_type (token::REF, std::move (l));
@@ -2539,46 +2740,61 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_DEREF (location_type l)
+      make_CALL_INDEX (location_type l)
       {
-        return symbol_type (token::DEREF, std::move (l));
+        return symbol_type (token::CALL_INDEX, std::move (l));
       }
 #else
       static
       symbol_type
-      make_DEREF (const location_type& l)
+      make_CALL_INDEX (const location_type& l)
       {
-        return symbol_type (token::DEREF, l);
+        return symbol_type (token::CALL_INDEX, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_UMINUS (location_type l)
+      make_UNARY (location_type l)
       {
-        return symbol_type (token::UMINUS, std::move (l));
+        return symbol_type (token::UNARY, std::move (l));
       }
 #else
       static
       symbol_type
-      make_UMINUS (const location_type& l)
+      make_UNARY (const location_type& l)
       {
-        return symbol_type (token::UMINUS, l);
+        return symbol_type (token::UNARY, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_NOT (location_type l)
+      make_BIN_OP (location_type l)
       {
-        return symbol_type (token::NOT, std::move (l));
+        return symbol_type (token::BIN_OP, std::move (l));
       }
 #else
       static
       symbol_type
-      make_NOT (const location_type& l)
+      make_BIN_OP (const location_type& l)
       {
-        return symbol_type (token::NOT, l);
+        return symbol_type (token::BIN_OP, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_CONTROL_FLOW (location_type l)
+      {
+        return symbol_type (token::CONTROL_FLOW, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_CONTROL_FLOW (const location_type& l)
+      {
+        return symbol_type (token::CONTROL_FLOW, l);
       }
 #endif
 
@@ -2911,13 +3127,14 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 475,     ///< Last index in yytable_.
-      yynnts_ = 30,  ///< Number of nonterminal symbols.
+      yylast_ = 590,     ///< Last index in yytable_.
+      yynnts_ = 29,  ///< Number of nonterminal symbols.
       yyfinal_ = 8 ///< Termination state number.
     };
 
 
     // User arguments.
+    driver::MRDriver& driver;
     Lexer &lexer;
     const bool debug;
     const char* input_file_name;
@@ -2925,11 +3142,11 @@ switch (yykind)
   };
 
 
-#line 39 "parser/yaccfile.yy"
+#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 } // mr
-#line 2931 "parser/parser.tab.hpp"
+#line 3148 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 
 
-#endif // !YY_YY_PARSER_PARSER_TAB_HPP_INCLUDED
+#endif // !YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_PARSER_TAB_HPP_INCLUDED

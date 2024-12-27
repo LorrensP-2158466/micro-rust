@@ -1,9 +1,9 @@
 
 #pragma once
 
+#include "../consts/scalar.hpp"
 #include "local.hpp"
 #include "mr_util.hpp"
-#include "scalar.hpp"
 #include <fmt/format.h>
 #include <functional>
 #include <iostream>
@@ -14,8 +14,8 @@ namespace mr {
         namespace ir {
 
             ENUM_DEFINE(
-                BinOp, Add, Sub, Mul, Div, BitXor, BitAnd, BitOr, Eq, Lt, Le, Ne, Ge, Gt,
-                Cmp, Offset,
+                BinOp, Add, Sub, Mul, Div, And, Or, Eq, Lt, Le, Ne,
+                Ge, Gt, Cmp, Offset,
             )
             ENUM_DEFINE(UnOp, Not, Neg)
 
@@ -105,25 +105,12 @@ namespace mr {
                 }
             };
 
-            struct Call {
-                std::string          fun;
-                std::vector<Operand> args;
-                friend std::ostream& operator<<(std::ostream& o, const Call& call) {
-                    o << call.fun << '(';
-                    std::copy(
-                        call.args.begin(),
-                        call.args.end(),
-                        std::ostream_iterator<Operand>(o, " ")
-                    );
-                    o << ')';
-                    return o;
-                }
-            };
 
-            using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp, Call>;
+
+            using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp>;
             struct RValue : public rvalue_variant_t {
 #define RVALUE_CONSTR(ty) VARIANT_CONSTR(RValue, ty, rvalue_variant_t)
-                MAP(RVALUE_CONSTR, AsIs, BinaryOp, UnaryOp, Call)
+                MAP(RVALUE_CONSTR, AsIs, BinaryOp, UnaryOp)
 
                 friend std::ostream& operator<<(std::ostream& o, const RValue& val) {
                     std::visit([&](const auto& v) { o << v; }, val);

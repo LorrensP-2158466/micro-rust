@@ -8,5 +8,5 @@ fn main()
   // blocks are expressions
   // (list of statements followed by expression) 
   // if no final expression: value is ()
-  println!("{x}");
+  println!("{y}");
 }

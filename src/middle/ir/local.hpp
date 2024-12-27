@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../type.hpp"
+#include "types/type.hpp"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <iostream>
@@ -13,14 +13,8 @@ namespace mr {
                 Mutable,
                 Immutable,
             };
-            std::ostream& operator<<(std::ostream& o, const Mutability m) {
-                switch (m) {
-                case Mutability::Mutable:
-                    o << "mut";
-                    break;
-                default: {
-                }
-                }
+            static inline std::ostream& operator<<(std::ostream& o, const Mutability m) {
+                if (m == Mutability::Mutable) o << "mut";
                 return o;
             }
             struct Local {

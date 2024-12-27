@@ -12,7 +12,7 @@ lex file for micro-rust
 using namespace mr;
 
 #undef  YY_DECL
-#define YY_DECL int Lexer::yylex(Parser::semantic_type *yylval, Parser::location_type *yylloc)
+#define YY_DECL int Lexer::yylex(Parser::value_type *yylval, Parser::location_type *yylloc)
 
 // Define YY_USER_ACTION for updating location
 #define YY_USER_ACTION {\
@@ -64,9 +64,19 @@ STR_LITERAL   \"[^\"]*\"
 "fn"                        { return Token_T::FN; }
 "_"                         { return Token_T::UNDERSCORE; }
 "println\!"                 { return Token_T::PRINT_LN; }
+"return"                    { return Token_T::RETURN;}
+"break"                     { return Token_T::BREAK;}
+"continue"                  { return Token_T::CONTINUE;}
 
 {DEC_LITERAL}               { return Token_T::DEC_LITERAL; }
-{STR_LITERAL}               { return Token_T::STR_LITERAL; }
+{STR_LITERAL}               { 
+                              std::string literal(yytext);
+                              literal = literal.substr(1, literal.size() - 2);
+
+                              // Update yylval with the processed string
+                              yylval->build(Token{{literal}, Span{this->prev_token_loc.end, yylloc->end}, (size_t)yyleng});
+                              return Token_T::STR_LITERAL; 
+                            }
 {IDENTIFIER}                { return Token_T::IDENTIFIER; }
 
 "="                         { return Token_T::EQ; }

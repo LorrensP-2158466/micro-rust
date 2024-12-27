@@ -1,19 +1,62 @@
 #pragma once
 
-#include "../type.hpp"
-#include "./expr/module.hpp"
+#include "high/expr/module.hpp"
 #include "mr_util.hpp"
+#include "types/type.hpp"
 #include <string>
 
 namespace mr {
     namespace middle {
         namespace tast {
 
-            // TODO enbed instructions to create format str
             struct PrintLn {
-                std::string _format_str;
+                // first is possible {var}
+                std::optional<std::string> _start_fmt;
+                // (str, {var})
+                std::vector<std::pair<std::string, std::string>> _fmt_structure;
+                // str
+                std::optional<std::string> _end_str;
 
-                PrintLn(std::string s) : _format_str(s) {}
+                static PrintLn from_str(const std::string& format_str) {
+                    std::regex  pattern(R"(\{([^}]+)\})"); // Regex to match {placeholder}
+                    std::smatch matches;
+
+                    PrintLn                     result;
+                    std::string::const_iterator searchStart = format_str.cbegin();
+                    std::string::const_iterator searchEnd = format_str.cend();
+
+                    // First, check for the start_fmt (first placeholder before any other
+                    // content)
+                    if (format_str[0] == '{' &&
+                        std::regex_search(searchStart, searchEnd, matches, pattern)) {
+                        result._start_fmt = matches[1]; // The first matched placeholder
+                        searchStart =
+                            matches[0]
+                                .second; // Move the search start past the first match
+                    }
+
+                    // Now parse the remaining content into fmt_structure
+                    while (std::regex_search(searchStart, searchEnd, matches, pattern)) {
+                        // Add the content before the next placeholder as an actual string
+                        result._fmt_structure.push_back(
+                            {std::string(searchStart, matches[0].first), matches[1]}
+                        );
+                        searchStart =
+                            matches[0].second; // Move past the matched placeholder
+                    }
+
+                    // Add any remaining content after the last placeholder to end_str
+                    if (searchStart != searchEnd) {
+                        result._end_str = std::string(searchStart, searchEnd);
+                    } else {
+                        result._end_str =
+                            std::nullopt; // No content after the last placeholder
+                    }
+                    fmt::println("start: {}", result._start_fmt);
+                    fmt::println("middle: {}", result._fmt_structure);
+                    fmt::println("end: {}", result._end_str);
+                    return result;
+                }
             };
 
             /* let (mut)? ID(: TYPE)? ( = INIT)?;
@@ -24,10 +67,10 @@ namespace mr {
             struct LetStmt {
                 std::string    id;
                 types::Ty      type_decl;
-                Unique<Expr>   initializer;
+                U<Expr>        initializer;
                 ir::Mutability mut;
 
-                LetStmt(std::string i, types::Ty td, Unique<Expr> init, ir::Mutability m)
+                LetStmt(std::string i, types::Ty td, U<Expr> init, ir::Mutability m)
                     : id(i), type_decl(td), initializer(std::move(init)), mut(m) {}
             };
 
@@ -49,7 +92,7 @@ namespace mr {
                 static Stmt expr(Expr e) { return Stmt(std::move(e)); }
 
                 static Stmt
-                let(std::string i, types::Ty td, Unique<Expr> init, ir::Mutability m) {
+                let(std::string i, types::Ty td, U<Expr> init, ir::Mutability m) {
                     return Stmt(LetStmt(i, td, std::move(init), m));
                 }
                 static Stmt print(std::string s) { return Stmt(PrintLn(std::move(s))); }

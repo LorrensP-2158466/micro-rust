@@ -1,6 +1,6 @@
-#line 1 "lexer/lexer.yy.cpp"
+#line 1 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
-#line 3 "lexer/lexer.yy.cpp"
+#line 3 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -321,8 +321,8 @@ int yyFlexLexer::yylex()
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 63
-#define YY_END_OF_BUFFER 64
+#define YY_NUM_RULES 66
+#define YY_END_OF_BUFFER 67
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -330,22 +330,24 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[126] =
+static const flex_int16_t yy_accept[144] =
     {   0,
-        0,    0,    0,    0,   64,   62,   61,   60,   28,   62,
-       35,   47,   48,   39,   37,   51,   38,   40,   22,   50,
-       49,   29,   25,   31,   24,   20,   24,   24,   24,   24,
-       24,   24,   24,   24,   24,   24,   45,   62,   46,   55,
-       56,   57,   61,   27,    0,   23,   33,    0,   43,   41,
-       42,   52,   54,   53,   44,   22,   22,   30,   26,   32,
-       24,   24,   24,   24,   19,   24,   24,   24,    1,   16,
-       24,   24,   24,   24,   24,   24,   24,   24,    6,   24,
-       24,   34,    0,   56,   57,   58,   57,   59,    0,   53,
-       22,   24,   24,   24,    2,    3,    4,   24,   14,   15,
+        0,    0,    0,    0,   67,   65,   64,   63,   31,   65,
+       38,   50,   51,   42,   40,   54,   41,   43,   25,   53,
+       52,   32,   28,   34,   27,   20,   27,   27,   27,   27,
+       27,   27,   27,   27,   27,   27,   27,   27,   48,   65,
+       49,   58,   59,   60,   64,   30,    0,   26,   36,    0,
+       46,   44,   45,   55,   57,   56,   47,   25,   25,   33,
+       29,   35,   27,   27,   27,   27,   27,   27,   19,   27,
+       27,   27,    1,   16,   27,   27,   27,   27,   27,   27,
+       27,   27,   27,    6,   27,   27,   37,    0,   59,   60,
+       61,   60,   62,    0,   56,   25,   27,   27,   27,   27,
 
-       24,   24,    7,    8,    9,   24,   24,   36,   11,   17,
-       24,   24,   24,   12,   24,   24,   13,    5,   24,   10,
-       18,   24,   24,   21,    0
+       27,    2,    3,    4,   27,   14,   15,   27,   27,   27,
+        7,    8,    9,   27,   27,   39,   11,   27,   27,   17,
+       27,   27,   27,   27,   12,   27,   27,   23,   27,   13,
+        5,   27,   27,   10,   18,   27,   27,   22,   27,   27,
+       24,   21,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -359,11 +361,11 @@ static const YY_CHAR yy_ec[256] =
        24,   25,    1,    1,   26,   26,   26,   26,   26,   26,
        26,   26,   26,   26,   26,   26,   26,   26,   26,   26,
        26,   26,   26,   26,   26,   26,   26,   26,   26,   26,
-        1,    1,    1,    1,   27,    1,   28,   29,   26,   26,
+        1,    1,    1,    1,   27,    1,   28,   29,   30,   26,
 
-       30,   31,   26,   32,   33,   26,   26,   34,   35,   36,
-       37,   38,   26,   39,   40,   41,   42,   26,   43,   26,
-       26,   44,   45,   46,   47,    1,    1,    1,    1,    1,
+       31,   32,   26,   33,   34,   26,   35,   36,   37,   38,
+       39,   40,   26,   41,   42,   43,   44,   26,   45,   26,
+       26,   46,   47,   48,   49,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -380,107 +382,115 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static const YY_CHAR yy_meta[48] =
+static const YY_CHAR yy_meta[50] =
     {   0,
         1,    1,    2,    1,    1,    1,    1,    1,    3,    1,
         1,    1,    1,    4,    4,    4,    4,    4,    4,    4,
         1,    1,    1,    1,    1,    4,    4,    4,    4,    4,
         4,    4,    4,    4,    4,    4,    4,    4,    4,    4,
-        4,    4,    4,    4,    1,    1,    1
+        4,    4,    4,    4,    4,    4,    1,    1,    1
     } ;
 
-static const flex_int16_t yy_base[134] =
+static const flex_int16_t yy_base[152] =
     {   0,
-        0,    0,   45,   46,  170,  171,  167,  171,  144,  162,
-       44,  171,  171,  142,  141,  171,   27,   44,   44,  171,
-      171,  140,  139,  138,    0,    0,  124,  126,   37,   52,
-      129,  116,  118,  117,   61,  123,  171,  108,  171,  150,
-      171,   81,  150,  171,  146,  171,  171,  108,  171,  171,
-      171,  171,  171,    0,  171,   88,    0,  171,  171,  171,
-        0,  112,  108,  113,    0,  127,  129,  126,    0,    0,
-      110,  101,  100,  107,   97,  119,  121,  118,    0,  102,
-      101,  171,  130,  171,   82,  171,   84,  171,   91,    0,
-        0,   97,  100,   89,    0,    0,    0,   82,    0,    0,
+        0,    0,   47,   48,  188,  189,  185,  189,  162,  180,
+       46,  189,  189,  160,  159,  189,   29,   46,   46,  189,
+      189,  158,  157,  156,    0,    0,   28,  140,  142,   30,
+       56,  146,  132,  134,  143,  132,   62,  139,  189,  123,
+      189,  167,  189,   71,  167,  189,  163,  189,  189,  123,
+      189,  189,  189,  189,  189,    0,  189,   75,    0,  189,
+      189,  189,    0,  127,  134,  126,  121,  126,    0,  142,
+      144,  141,    0,    0,  124,  114,  113,  121,  111,  109,
+      133,  135,  132,    0,  115,  114,  189,  144,  189,   93,
+      189,   94,  189,  103,    0,    0,  109,  116,  100,  111,
 
-       83,   70,    0,    0,    0,   55,   64,  171,    0,    0,
-       66,   59,   47,    0,   56,   52,    0,    0,   43,    0,
-        0,   39,   70,  171,  171,  108,  112,   66,   62,  116,
-      120,  124,   52
+       99,    0,    0,    0,   94,    0,    0,  101,   94,  106,
+        0,    0,    0,   90,   99,  189,    0,   99,   99,    0,
+      101,  100,   87,   88,    0,   97,   94,    0,   80,    0,
+        0,   69,   63,    0,    0,   56,   61,    0,   56,   82,
+        0,  189,  189,  107,  111,   81,   74,  115,  119,  123,
+       68
     } ;
 
-static const flex_int16_t yy_def[134] =
+static const flex_int16_t yy_def[152] =
     {   0,
-      125,    1,  126,  126,  125,  125,  125,  125,  125,  127,
-      125,  125,  125,  125,  125,  125,  125,  125,  128,  125,
-      125,  125,  125,  125,  129,  129,  129,  129,  129,  129,
-      129,  129,  129,  129,  129,  129,  125,  125,  125,  130,
-      125,  131,  125,  125,  127,  125,  125,  125,  125,  125,
-      125,  125,  125,  132,  125,  128,  133,  125,  125,  125,
-      129,  129,  129,  129,  129,  129,  129,  129,  129,  129,
-      129,  129,  129,  129,  129,  129,  129,  129,  129,  129,
-      129,  125,  130,  125,  131,  125,  131,  125,  125,  132,
-      133,  129,  129,  129,  129,  129,  129,  129,  129,  129,
+      143,    1,  144,  144,  143,  143,  143,  143,  143,  145,
+      143,  143,  143,  143,  143,  143,  143,  143,  146,  143,
+      143,  143,  143,  143,  147,  147,  147,  147,  147,  147,
+      147,  147,  147,  147,  147,  147,  147,  147,  143,  143,
+      143,  148,  143,  149,  143,  143,  145,  143,  143,  143,
+      143,  143,  143,  143,  143,  150,  143,  146,  151,  143,
+      143,  143,  147,  147,  147,  147,  147,  147,  147,  147,
+      147,  147,  147,  147,  147,  147,  147,  147,  147,  147,
+      147,  147,  147,  147,  147,  147,  143,  148,  143,  149,
+      143,  149,  143,  143,  150,  151,  147,  147,  147,  147,
 
-      129,  129,  129,  129,  129,  129,  129,  125,  129,  129,
-      129,  129,  129,  129,  129,  129,  129,  129,  129,  129,
-      129,  129,  129,  125,    0,  125,  125,  125,  125,  125,
-      125,  125,  125
+      147,  147,  147,  147,  147,  147,  147,  147,  147,  147,
+      147,  147,  147,  147,  147,  143,  147,  147,  147,  147,
+      147,  147,  147,  147,  147,  147,  147,  147,  147,  147,
+      147,  147,  147,  147,  147,  147,  147,  147,  147,  147,
+      147,  143,    0,  143,  143,  143,  143,  143,  143,  143,
+      143
     } ;
 
-static const flex_int16_t yy_nxt[219] =
+static const flex_int16_t yy_nxt[239] =
     {   0,
         6,    7,    8,    9,   10,   11,   12,   13,   14,   15,
        16,   17,   18,   19,   19,   19,   19,   19,   19,   19,
        20,   21,   22,   23,   24,   25,   26,   25,   27,   28,
-       29,   25,   30,   31,   32,   25,   25,   33,   25,   25,
-       34,   35,   36,   25,   37,   38,   39,   41,   41,   47,
-       51,   52,   53,   42,   42,   91,   54,   56,   56,   56,
-       56,   56,   56,   56,   64,   61,   66,   55,   67,   57,
-       68,   69,   65,  124,  123,   76,  122,   77,   48,   78,
-       79,  121,   70,   86,   86,  120,   86,  119,  118,   87,
-      125,   71,   87,   88,  125,  117,   88,  116,  115,  114,
+       29,   30,   25,   31,   25,   32,   33,   25,   25,   34,
+       35,   25,   36,   37,   38,   25,   39,   40,   41,   43,
+       43,   49,   53,   54,   55,   44,   44,   68,   56,   58,
+       58,   58,   58,   58,   58,   58,   64,   69,   65,   57,
+       70,   96,   71,   91,   72,   73,   81,   63,   82,   92,
+       83,   84,   50,   93,   59,  142,  141,   74,   58,   58,
+       58,   58,   58,   58,   58,   91,   91,   75,  140,  139,
 
-       80,   56,   56,   56,   56,   56,   56,   56,   40,   40,
-       40,   40,   45,   45,   45,   45,   83,   83,  113,   83,
-       85,   85,   85,   85,   90,  112,   90,   90,  111,  110,
-      109,  108,   84,  107,  106,  105,  104,  103,  102,  101,
-      100,   99,   98,   97,   96,   95,   94,   93,   92,   89,
-       46,   43,   84,   82,   81,   75,   74,   73,   72,   63,
-       62,   60,   59,   58,   50,   49,   46,   44,   43,  125,
-        5,  125,  125,  125,  125,  125,  125,  125,  125,  125,
-      125,  125,  125,  125,  125,  125,  125,  125,  125,  125,
-      125,  125,  125,  125,  125,  125,  125,  125,  125,  125,
+      138,  143,   92,   85,  137,  143,   93,   42,   42,   42,
+       42,   47,   47,   47,   47,   88,   88,  136,   88,   90,
+       90,   90,   90,   95,  135,   95,   95,  134,  133,  132,
+      131,  130,  129,  128,  127,  126,  125,  124,  123,  122,
+      121,  120,  119,  118,  117,  116,   89,  115,  114,  113,
+      112,  111,  110,  109,  108,  107,  106,  105,  104,  103,
+      102,  101,  100,   99,   98,   97,   94,   48,   45,   89,
+       87,   86,   80,   79,   78,   77,   76,   67,   66,   62,
+       61,   60,   52,   51,   48,   46,   45,  143,    5,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
 
-      125,  125,  125,  125,  125,  125,  125,  125,  125,  125,
-      125,  125,  125,  125,  125,  125,  125,  125
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143
     } ;
 
-static const flex_int16_t yy_chk[219] =
+static const flex_int16_t yy_chk[239] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    3,    4,   11,
-       17,   17,   18,    3,    4,  133,   18,   19,   19,   19,
-       19,   19,   19,   19,   29,  129,   30,   18,   30,  128,
-       30,   30,   29,  123,  122,   35,  119,   35,   11,   35,
-       35,  116,   30,   42,   85,  115,   87,  113,  112,   42,
-       85,   30,   87,   42,   85,  111,   87,  107,  106,  102,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    3,
+        4,   11,   17,   17,   18,    3,    4,   30,   18,   19,
+       19,   19,   19,   19,   19,   19,   27,   30,   27,   18,
+       31,  151,   31,   44,   31,   31,   37,  147,   37,   44,
+       37,   37,   11,   44,  146,  140,  139,   31,   58,   58,
+       58,   58,   58,   58,   58,   90,   92,   31,  137,  136,
 
-       35,   56,   56,   56,   56,   56,   56,   56,  126,  126,
-      126,  126,  127,  127,  127,  127,  130,  130,  101,  130,
-      131,  131,  131,  131,  132,   98,  132,  132,   94,   93,
-       92,   89,   83,   81,   80,   78,   77,   76,   75,   74,
-       73,   72,   71,   68,   67,   66,   64,   63,   62,   48,
-       45,   43,   40,   38,   36,   34,   33,   32,   31,   28,
-       27,   24,   23,   22,   15,   14,   10,    9,    7,    5,
-      125,  125,  125,  125,  125,  125,  125,  125,  125,  125,
-      125,  125,  125,  125,  125,  125,  125,  125,  125,  125,
-      125,  125,  125,  125,  125,  125,  125,  125,  125,  125,
+      133,   90,   92,   37,  132,   90,   92,  144,  144,  144,
+      144,  145,  145,  145,  145,  148,  148,  129,  148,  149,
+      149,  149,  149,  150,  127,  150,  150,  126,  124,  123,
+      122,  121,  119,  118,  115,  114,  110,  109,  108,  105,
+      101,  100,   99,   98,   97,   94,   88,   86,   85,   83,
+       82,   81,   80,   79,   78,   77,   76,   75,   72,   71,
+       70,   68,   67,   66,   65,   64,   50,   47,   45,   42,
+       40,   38,   36,   35,   34,   33,   32,   29,   28,   24,
+       23,   22,   15,   14,   10,    9,    7,    5,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
 
-      125,  125,  125,  125,  125,  125,  125,  125,  125,  125,
-      125,  125,  125,  125,  125,  125,  125,  125
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -490,8 +500,8 @@ static const flex_int16_t yy_chk[219] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "lexer/lexfile.lex"
-#line 2 "lexer/lexfile.lex"
+#line 1 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 2 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 
 /* 
 lex file for micro-rust
@@ -505,7 +515,7 @@ lex file for micro-rust
 using namespace mr;
 
 #undef  YY_DECL
-#define YY_DECL int Lexer::yylex(Parser::semantic_type *yylval, Parser::location_type *yylloc)
+#define YY_DECL int Lexer::yylex(Parser::value_type *yylval, Parser::location_type *yylloc)
 
 // Define YY_USER_ACTION for updating location
 #define YY_USER_ACTION {\
@@ -515,9 +525,9 @@ using namespace mr;
   }
 
 
-#line 518 "lexer/lexer.yy.cpp"
+#line 528 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
-#line 520 "lexer/lexer.yy.cpp"
+#line 530 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
 #define INITIAL 0
 #define comment 1
@@ -650,16 +660,16 @@ YY_DECL
 		}
 
 	{
-#line 39 "lexer/lexfile.lex"
+#line 39 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 
 
 
-#line 43 "lexer/lexfile.lex"
+#line 43 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
   using Token_T = Parser::token;
 
 
 
-#line 662 "lexer/lexer.yy.cpp"
+#line 672 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -686,13 +696,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 126 )
+				if ( yy_current_state >= 144 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 171 );
+		while ( yy_base[yy_current_state] != 189 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -718,316 +728,338 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 47 "lexer/lexfile.lex"
+#line 47 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I8;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 48 "lexer/lexfile.lex"
+#line 48 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I16;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 49 "lexer/lexfile.lex"
+#line 49 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I32;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 50 "lexer/lexfile.lex"
+#line 50 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I64;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 51 "lexer/lexfile.lex"
+#line 51 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::ISIZE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 52 "lexer/lexfile.lex"
+#line 52 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U8;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 53 "lexer/lexfile.lex"
+#line 53 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U16;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 54 "lexer/lexfile.lex"
+#line 54 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U32;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 55 "lexer/lexfile.lex"
+#line 55 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U64;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "lexer/lexfile.lex"
+#line 56 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::USIZE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "lexer/lexfile.lex"
+#line 57 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::BOOL; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "lexer/lexfile.lex"
+#line 58 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::TRUE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 59 "lexer/lexfile.lex"
+#line 59 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::FALSE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 60 "lexer/lexfile.lex"
+#line 60 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::LET; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 61 "lexer/lexfile.lex"
+#line 61 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::MUT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 62 "lexer/lexfile.lex"
+#line 62 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::IF; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 63 "lexer/lexfile.lex"
+#line 63 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::ELSE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 64 "lexer/lexfile.lex"
+#line 64 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::WHILE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 65 "lexer/lexfile.lex"
+#line 65 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::FN; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 66 "lexer/lexfile.lex"
+#line 66 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::UNDERSCORE; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 67 "lexer/lexfile.lex"
+#line 67 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::PRINT_LN; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 69 "lexer/lexfile.lex"
-{ return Token_T::DEC_LITERAL; }
+#line 68 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::RETURN;}
 	YY_BREAK
 case 23:
-/* rule 23 can match eol */
 YY_RULE_SETUP
-#line 70 "lexer/lexfile.lex"
-{ return Token_T::STR_LITERAL; }
+#line 69 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::BREAK;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 71 "lexer/lexfile.lex"
-{ return Token_T::IDENTIFIER; }
+#line 70 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::CONTINUE;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 73 "lexer/lexfile.lex"
-{ return Token_T::EQ; }
+#line 72 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::DEC_LITERAL; }
 	YY_BREAK
 case 26:
+/* rule 26 can match eol */
 YY_RULE_SETUP
-#line 74 "lexer/lexfile.lex"
-{ return Token_T::EQEQ; }
+#line 73 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ 
+                              std::string literal(yytext);
+                              literal = literal.substr(1, literal.size() - 2);
+
+                              // Update yylval with the processed string
+                              yylval->build(Token{{literal}, Span{this->prev_token_loc.end, yylloc->end}, (size_t)yyleng});
+                              return Token_T::STR_LITERAL; 
+                            }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 75 "lexer/lexfile.lex"
-{ return Token_T::NE; }
+#line 81 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::IDENTIFIER; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 76 "lexer/lexfile.lex"
-{ return Token_T::BANG; }
+#line 83 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::EQ; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 77 "lexer/lexfile.lex"
-{ return Token_T::LT; }
+#line 84 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::EQEQ; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 78 "lexer/lexfile.lex"
-{ return Token_T::LE; }
+#line 85 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::NE; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 79 "lexer/lexfile.lex"
-{ return Token_T::GT; }
+#line 86 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::BANG; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 80 "lexer/lexfile.lex"
-{ return Token_T::GE; }
+#line 87 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::LT; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 81 "lexer/lexfile.lex"
-{ return Token_T::L_AND; }
+#line 88 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::LE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 82 "lexer/lexfile.lex"
-{ return Token_T::L_OR; }
+#line 89 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::GT; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 83 "lexer/lexfile.lex"
-{ return Token_T::AMPERSAND; }
+#line 90 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::GE; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 84 "lexer/lexfile.lex"
-{ return Token_T::AMPERSAND_MUT; }
+#line 91 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::L_AND; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 86 "lexer/lexfile.lex"
-{ return Token_T::PLUS; }
+#line 92 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::L_OR; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 87 "lexer/lexfile.lex"
-{ return Token_T::MINUS; }
+#line 93 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::AMPERSAND; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 88 "lexer/lexfile.lex"
-{ return Token_T::STAR; }
+#line 94 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::AMPERSAND_MUT; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 89 "lexer/lexfile.lex"
-{ return Token_T::SLASH; }
+#line 96 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::PLUS; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 90 "lexer/lexfile.lex"
-{ return Token_T::PLUS_EQ; }
+#line 97 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::MINUS; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 91 "lexer/lexfile.lex"
-{ return Token_T::MIN_EQ; }
+#line 98 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::STAR; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 92 "lexer/lexfile.lex"
-{ return Token_T::MUL_EQ; }
+#line 99 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::SLASH; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 93 "lexer/lexfile.lex"
-{ return Token_T::DIV_EQ; }
+#line 100 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::PLUS_EQ; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 95 "lexer/lexfile.lex"
-{ return Token_T::LBRACE; }
+#line 101 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::MIN_EQ; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 96 "lexer/lexfile.lex"
-{ return Token_T::RBRACE; }
+#line 102 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::MUL_EQ; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 97 "lexer/lexfile.lex"
-{ return Token_T::LPAREN; }
+#line 103 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::DIV_EQ; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 98 "lexer/lexfile.lex"
-{ return Token_T::RPAREN; }
+#line 105 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::LBRACE; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 99 "lexer/lexfile.lex"
-{ return Token_T::SEMICOLON; }
+#line 106 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::RBRACE; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 100 "lexer/lexfile.lex"
-{ return Token_T::COLON; }
+#line 107 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::LPAREN; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 101 "lexer/lexfile.lex"
-{ return Token_T::COMMA; }
+#line 108 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::RPAREN; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 102 "lexer/lexfile.lex"
-{ return Token_T::ARROW; }
+#line 109 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::SEMICOLON; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 104 "lexer/lexfile.lex"
-{ /* ignore comments */ }
+#line 110 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::COLON; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 105 "lexer/lexfile.lex"
-BEGIN(comment);
+#line 111 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::COMMA; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 106 "lexer/lexfile.lex"
-{ /* skip */ }
+#line 112 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ return Token_T::ARROW; }
 	YY_BREAK
 case 56:
-/* rule 56 can match eol */
 YY_RULE_SETUP
-#line 107 "lexer/lexfile.lex"
-{ yylloc->lines(1); }
+#line 114 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ /* ignore comments */ }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 108 "lexer/lexfile.lex"
-{ /* skip */ }
+#line 115 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+BEGIN(comment);
 	YY_BREAK
 case 58:
-/* rule 58 can match eol */
 YY_RULE_SETUP
-#line 109 "lexer/lexfile.lex"
-{ yylloc->lines(1); }
+#line 116 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ /* skip */ }
 	YY_BREAK
 case 59:
+/* rule 59 can match eol */
 YY_RULE_SETUP
-#line 110 "lexer/lexfile.lex"
-BEGIN(INITIAL);
+#line 117 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ yylloc->lines(1); }
 	YY_BREAK
 case 60:
-/* rule 60 can match eol */
 YY_RULE_SETUP
-#line 112 "lexer/lexfile.lex"
-{ yylloc->lines(1); yylloc->step();  /* update line and col number but ignore it the actual 'token' */ }
+#line 118 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ /* skip */ }
 	YY_BREAK
 case 61:
+/* rule 61 can match eol */
 YY_RULE_SETUP
-#line 113 "lexer/lexfile.lex"
-{ /* ignore whitespace */ }
+#line 119 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ yylloc->lines(1); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 117 "lexer/lexfile.lex"
+#line 120 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+BEGIN(INITIAL);
+	YY_BREAK
+case 63:
+/* rule 63 can match eol */
+YY_RULE_SETUP
+#line 122 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ yylloc->lines(1); yylloc->step();  /* update line and col number but ignore it the actual 'token' */ }
+	YY_BREAK
+case 64:
+YY_RULE_SETUP
+#line 123 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+{ /* ignore whitespace */ }
+	YY_BREAK
+case 65:
+YY_RULE_SETUP
+#line 127 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 {
   if (yytext[0] < ' '){ /* non-printable char */
     /*yyerror*/ fprintf(stderr,"illegal character: ^%c",yytext[0] + '@'); 
@@ -1045,12 +1077,12 @@ YY_RULE_SETUP
     std::cerr << " at " << *yylloc << std::endl;
 	}
 	YY_BREAK
-case 63:
+case 66:
 YY_RULE_SETUP
-#line 133 "lexer/lexfile.lex"
+#line 143 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1053 "lexer/lexer.yy.cpp"
+#line 1085 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(comment):
 	yyterminate();
@@ -1468,7 +1500,7 @@ int yyFlexLexer::yy_get_next_buffer()
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 126 )
+			if ( yy_current_state >= 144 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1496,11 +1528,11 @@ int yyFlexLexer::yy_get_next_buffer()
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 126 )
+		if ( yy_current_state >= 144 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 125);
+	yy_is_jam = (yy_current_state == 143);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -2014,7 +2046,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 133 "lexer/lexfile.lex"
+#line 143 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 
 
 

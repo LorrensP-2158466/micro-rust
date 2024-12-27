@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 project(MicroRust CXX)
 set(CMAKE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -11,15 +12,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(
     /opt/homebrew/include/
     /opt/homebrew/opt/flex/include
+    ${CMAKE_SOURCE_DIR}/
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/lexer
     ${CMAKE_SOURCE_DIR}/parser
     ${CMAKE_SOURCE_DIR}/ast
     ${CMAKE_SOURCE_DIR}/expr
     ${CMAKE_SOURCE_DIR}/middle
-    ${CMAKE_SOURCE_DIR}/middle/ir
-    ${CMAKE_SOURCE_DIR}/middle/build
-    ${CMAKE_SOURCE_DIR}/middle/tast
+    ${CMAKE_SOURCE_DIR}/driver
+    ${CMAKE_SOURCE_DIR}/middle_interpreter
 )
 
 # Find required packages
@@ -43,6 +44,7 @@ BISON_TARGET(Parser
 # Add executable
 add_executable(mr 
     ${CMAKE_SOURCE_DIR}/main.cpp
+    ${CMAKE_SOURCE_DIR}/driver/mr_driver.cpp
     ${FLEX_Lexer_OUTPUTS}
     ${BISON_Parser_OUTPUTS}
 )
@@ -54,7 +56,7 @@ target_link_libraries(mr
 
 # Compiler flags
 target_compile_options(mr PRIVATE 
-    -g 
+    -O3
     -ferror-limit=40
 )
 
