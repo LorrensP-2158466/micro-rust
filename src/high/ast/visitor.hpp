@@ -70,6 +70,8 @@ namespace mr {
                     return visit_while_expr(*while_l);
                 else if (auto id = dynamic_cast<const expr::Identifier*>(&expr))
                     return visit_identifier_expr(*id);
+                else if (auto tup = dynamic_cast<const expr::TupleExpr*>(&expr))
+                    return visit_tuple_expr(*tup);
                 else if (auto unit = dynamic_cast<const expr::Unit*>(&expr))
                     return visit_unit_expr(*unit);
                 else if (auto ret = dynamic_cast<const expr::Return*>(&expr))
@@ -97,6 +99,7 @@ namespace mr {
             virtual ExprT visit_return_expr(const expr::Return& ret) = 0;
             virtual ExprT visit_break_expr(const expr::Break& brk) = 0;
             virtual ExprT visit_continue_expr(const expr::Continue& cont) = 0;
+            virtual ExprT visit_tuple_expr(const expr::TupleExpr& cont) = 0;
         };
     } // namespace ast
 

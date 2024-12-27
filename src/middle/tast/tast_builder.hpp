@@ -191,8 +191,8 @@ namespace mr {
                 auto error = false;
                 auto check_name = [&](const std::string& name) {
                     if (!_scoped_types.look_up(name).has_value()) {
-                        std::cerr << "In print Statement identifier `"
-                                  << name << "` not found\n";
+                        std::cerr << "In print Statement identifier `" << name
+                                  << "` not found\n";
                         error = true;
                     }
                 };
@@ -586,6 +586,20 @@ namespace mr {
                 spdlog::info("Building Litt Expr in to TAST: `{}`", lit.symbol);
                 const auto [l, ty] = Literal::from_ast_lit(lit, _inferer);
                 return Expr(std::move(l), ty);
+            }
+
+            Expr visit_tuple_expr(const expr::TupleExpr& tup) override {
+                std::vector<Expr> exprs;
+                std::vector<Ty>   tys;
+                exprs.reserve(tup.values.size());
+                tys.reserve(tup.values.size());
+                // Transform and append results
+                for (const auto& e : tup.values) {
+                    auto tast_expr = visit_expr(*e);
+                    tys.push_back(tast_expr.type);
+                    exprs.push_back(std::move(tast_expr));
+                }
+                return Expr(TupleExpr{std::move(exprs)}, Ty{TupleTy{std::move(tys)}});
             }
 
             Expr visit_identifier_expr(const expr::Identifier& id) override {

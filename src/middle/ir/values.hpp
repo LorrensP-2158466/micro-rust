@@ -14,8 +14,7 @@ namespace mr {
         namespace ir {
 
             ENUM_DEFINE(
-                BinOp, Add, Sub, Mul, Div, And, Or, Eq, Lt, Le, Ne,
-                Ge, Gt, Cmp, Offset,
+                BinOp, Add, Sub, Mul, Div, And, Or, Eq, Lt, Le, Ne, Ge, Gt, Cmp, Offset,
             )
             ENUM_DEFINE(UnOp, Not, Neg)
 
@@ -105,12 +104,42 @@ namespace mr {
                 }
             };
 
+            ENUM_DEFINE(AggrKind, Tuple, Array)
+            // for tuples/arrays/structs
+            struct Aggregate {
+                AggrKind kind;
+                // TODO: VariantIdx for enums
+                // always in order of declaration, because im not doing reordering for
+                // optimizations so for tuple (10, 20, 30): .0 is always 10, .1 is always
+                // 20 and .2 is always 30 (same for arrays) for a strcut: struct Foo{ a:
+                // i32, b: bool } aggr: Foo{ a: 10, b: false} .0 is always a and .1 is
+                // always b
+                std::vector<Operand> values;
+                friend std::ostream& operator<<(std::ostream& o, const Aggregate& aggr) {
+                    switch (aggr.kind) {
+                    case AggrKind::Tuple: {
+                        o << '(';
+                        for (const auto& op : aggr.values) {
+                            o << op << ", ";
+                        }
+                        o << ')';
+                    } break;
+                    case AggrKind::Array: {
+                        o << '[';
+                        for (const auto& op : aggr.values) {
+                            o << op << ", ";
+                        }
+                        o << ']';
+                    } break;
+                    }
+                    return o;
+                }
+            };
 
-
-            using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp>;
+            using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp, Aggregate>;
             struct RValue : public rvalue_variant_t {
 #define RVALUE_CONSTR(ty) VARIANT_CONSTR(RValue, ty, rvalue_variant_t)
-                MAP(RVALUE_CONSTR, AsIs, BinaryOp, UnaryOp)
+                MAP(RVALUE_CONSTR, AsIs, BinaryOp, UnaryOp, Aggregate)
 
                 friend std::ostream& operator<<(std::ostream& o, const RValue& val) {
                     std::visit([&](const auto& v) { o << v; }, val);

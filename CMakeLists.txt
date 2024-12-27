@@ -45,6 +45,7 @@ BISON_TARGET(Parser
 add_executable(mr 
     ${CMAKE_SOURCE_DIR}/main.cpp
     ${CMAKE_SOURCE_DIR}/driver/mr_driver.cpp
+    ${CMAKE_SOURCE_DIR}/middle/types/type.cpp
     ${FLEX_Lexer_OUTPUTS}
     ${BISON_Parser_OUTPUTS}
 )

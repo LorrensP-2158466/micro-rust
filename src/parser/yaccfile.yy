@@ -75,9 +75,11 @@ using namespace mr::expr;
 %nterm <U<BlockExpr>> block_expr
 %nterm <U<FunDecl>> function_decl
 %nterm <U<LetStmt>> let 
+%nterm <std::vector<U<Expr>>> expr_list
 %nterm <FunArg> func_arg
 %nterm <std::vector<FunArg>> func_arg_list func_decl_args
 %nterm <Type> type 
+%nterm <std::vector<Type>> type_list
 %nterm <Type> func_ret_type
 %nterm <std::optional<Type>> type_decl
 %nterm <bool> opt_mut
@@ -179,7 +181,6 @@ stmt: SEMICOLON {$$ = std::make_unique<EmptyStmt>();}
     | expr_stmt { DEFAULT_ACTION($$, $1);}
     | print_ln SEMICOLON { DEFAULT_ACTION($$, $1);}
     | item { DEFAULT_ACTION($$, $1); }
-    | error SEMICOLON {/* just keep going */}
     ;
 
 stmt_list
@@ -197,6 +198,7 @@ print_ln
 
 type_decl
     : COLON type { DEFAULT_ACTION($$, $2); } // set type to output
+    | COLON error { $$ = Type(); printf("failure"); } // set type to output
     | { $$ = {}; } // no type decl no type
     ;
 
@@ -230,18 +232,24 @@ if_expr
     | { $$ = 0; }
     ; */
 
+type_list
+    : type_list COMMA type {$$ = std::move($1); $$.push_back(std::move($3));}
+    | type {$$ = std::vector<Type>(); $$.push_back(std::move($1));}
+    ;
+
 type
-    :  I8 { $$ = Type(primitive_type::I8); }
-    |  I16 { $$ = Type(primitive_type::I16); }
-    |  I32{ $$ = Type(primitive_type::I32); }
-    |  I64 { $$ = Type(primitive_type::I64); }
-    |  ISIZE { $$ = Type(primitive_type::ISIZE); }
-    |  U8 { $$ = Type(primitive_type::U8); }
-    |  U16 { $$ = Type(primitive_type::U16); }
-    |  U32{ $$ = Type(primitive_type::U32); }
-    |  U64 { $$ = Type(primitive_type::U64); }
-    |  USIZE { $$ = Type(primitive_type::USIZE); }
-    |  BOOL { $$ = Type(primitive_type::BOOL); }
+    : I8 { $$ = Type(primitive_type::I8); }
+    | I16 { $$ = Type(primitive_type::I16); }
+    | I32{ $$ = Type(primitive_type::I32); }
+    | I64 { $$ = Type(primitive_type::I64); }
+    | ISIZE { $$ = Type(primitive_type::ISIZE); }
+    | U8 { $$ = Type(primitive_type::U8); }
+    | U16 { $$ = Type(primitive_type::U16); }
+    | U32{ $$ = Type(primitive_type::U32); }
+    | U64 { $$ = Type(primitive_type::U64); }
+    | USIZE { $$ = Type(primitive_type::USIZE); }
+    | BOOL { $$ = Type(primitive_type::BOOL); }
+    | LPAREN type_list RPAREN { $$ = Type(std::move($2));}
     |  LPAREN RPAREN { $$ = Type(); }
  //   |  IDENTIFIER { $$ = Type($2.string_value(), $1); }
     ;
@@ -312,11 +320,16 @@ while_expr
     : WHILE expr block_expr {$$ = std::make_unique<WhileLoop>(std::move($2), std::move($3)); }
     ;
 
+
 expr
     : expr_w_block { DEFAULT_ACTION($$, $1);}
     | expr_wo_block { DEFAULT_ACTION($$, $1);}
     ;
 
+expr_list
+    : expr_list COMMA expr { $1.push_back(std::move($3)); $$ = std::move($1);}
+    | expr {$$ = std::vector<U<Expr>>(); $$.push_back(std::move($1));}
+    ;
 
 expr_stmt
     : expr_w_block  { DEFAULT_ACTION($$, $1);}
@@ -328,7 +341,6 @@ expr_w_block
     | if_expr { DEFAULT_ACTION($$, $1); }
     | block_expr { DEFAULT_ACTION($$, $1); }
     ;
-
 expr_wo_block
     : assignment %prec BIN_OP { DEFAULT_ACTION($$, $1); }
     | bin_op_expr %prec BIN_OP{ DEFAULT_ACTION($$, $1); }
@@ -340,9 +352,15 @@ expr_wo_block
     | RETURN expr %prec CONTROL_FLOW { $$ = std::make_unique<Return>(std::move($2)); }
     | BREAK expr %prec CONTROL_FLOW { $$ = std::make_unique<Break>(std::move($2)); }
     | CONTINUE %prec CONTROL_FLOW { $$ = std::make_unique<Continue>(); }
+    | LPAREN expr_list opt_comma  RPAREN { $$ = std::make_unique<TupleExpr>(std::move($2)); }
     | literal { DEFAULT_ACTION($$, $1); }
     ;
 
+
+opt_comma
+    : COMMA {}
+    | {}
+    ;
 %%
 
 namespace mr

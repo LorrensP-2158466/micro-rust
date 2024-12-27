@@ -1,6 +1,7 @@
 #pragma once
 
 #include "high/expr/module.hpp"
+#include "iterators.hpp"
 #include "symbol_table.hpp"
 #include "types/type.hpp"
 #include "unification_table.hpp"
@@ -85,60 +86,86 @@ namespace mr {
                 Ty never_to_unit(const Ty ty) {
                     return has_variant<NeverTy>(ty) ? unit() : ty;
                 }
-                Ty resolve(const Ty ty) {
+                Ty resolve(Ty ty) {
                     fmt::println("Resolver: {}", ty);
-                    if (!has_variant<InferTy>(ty)) return never_to_unit(ty);
-                    const auto infer = std::get<InferTy>(ty);
                     return std::visit(
                         overloaded{
-                            [&](const TypeVar& tv) {
-                                const auto t = _type_vars.get(tv);
-                                if (!t)
-                                    throw std::runtime_error("TypeVariable does not exist"
-                                    );
+                            [&](InferTy& infer) {
                                 return std::visit(
                                     overloaded{
-                                        [&](const UnknownTy& _) {
-                                            throw std::runtime_error(
-                                                "Cant resolve type variable"
+                                        [&](const TypeVar& tv) {
+                                            const auto t = _type_vars.get(tv);
+                                            if (!t)
+                                                throw std::runtime_error(
+                                                    "TypeVariable does not exist"
+                                                );
+                                            return std::visit(
+                                                overloaded{
+                                                    [&](const UnknownTy& _) {
+                                                        throw std::runtime_error(
+                                                            "Cant resolve type variable"
+                                                        );
+                                                        return ty;
+                                                    },
+                                                    [&](const InferTy& _) {
+                                                        exit(1);
+                                                        return resolve(*t);
+                                                    },
+                                                    [&](const NeverTy& _) {
+                                                        return unit();
+                                                    },
+                                                    [&](const auto& ty) { return *t; }
+                                                },
+                                                *t
                                             );
-                                            return ty;
                                         },
-                                        [&](const InferTy& _) {
-                                            exit(1);
-                                            return resolve(*t);
+                                        [&](const IntVar& tv) {
+                                            const auto ty = _int_vars.get(tv);
+                                            if (!ty)
+                                                throw std::runtime_error(
+                                                    "IntVar does not exist"
+                                                );
+                                            if (auto i = std::get_if<IntTy>(&*ty)) {
+                                                return Ty{*i};
+                                            }
+                                            if (auto u = std::get_if<UIntTy>(&*ty)) {
+                                                return Ty{*u};
+                                            }
+                                            // default of int is I32
+                                            _int_vars.assign(tv, IntVarValue{IntTy::i32});
+                                            return Ty{IntTy::i32};
                                         },
-                                        [&](const NeverTy& _) { return unit(); },
-                                        [&](const auto& ty) { return Ty{ty}; }
+                                        [&](const FloatVar& tv) {
+                                            const auto ty = _float_vars.get(tv);
+                                            if (!ty)
+                                                throw std::runtime_error(
+                                                    "FloatVar does not exist"
+                                                );
+                                            if (auto ft = std::get_if<FloatTy>(&*ty)) {
+                                                return Ty{*ft};
+                                            }
+                                            // default of float is f64
+                                            _float_vars.assign(
+                                                tv, FloatVarValue{FloatTy::F64}
+                                            );
+                                            return Ty{FloatTy::F64};
+                                        },
                                     },
-                                    *t
+                                    infer
                                 );
                             },
-                            [&](const IntVar& tv) {
-                                const auto ty = _int_vars.get(tv);
-                                if (!ty)
-                                    throw std::runtime_error("IntVar does not exist");
-                                if (auto i = std::get_if<IntTy>(&*ty)) { return Ty{*i}; }
-                                if (auto u = std::get_if<UIntTy>(&*ty)) { return Ty{*u}; }
-                                // default of int is I32
-                                _int_vars.assign(tv, IntVarValue{IntTy::i32});
-                                return Ty{IntTy::i32};
-                            },
-                            [&](const FloatVar& tv) {
-                                const auto ty = _float_vars.get(tv);
-                                if (!ty)
-                                    throw std::runtime_error("FloatVar does not exist");
-                                if (auto ft = std::get_if<FloatTy>(&*ty)) {
-                                    return Ty{*ft};
+                            [&](TupleTy& tt) {
+                                for (auto& t : tt.tys) {
+                                    t = resolve(t);
                                 }
-                                // default of float is f64
-                                _float_vars.assign(tv, FloatVarValue{FloatTy::F64});
-                                return Ty{FloatTy::F64};
+                                return ty;
                             },
+                            [&](auto _) { return ty; }
                         },
-                        infer
+                        ty
                     );
-                }
+
+                } // namespace inference
 
                 Ty shallow_resolve(const Ty ty) {
                     if (!has_variant<InferTy>(ty)) return ty;
@@ -245,6 +272,17 @@ namespace mr {
                                     return Ty{NeverTy{}};
                                 }
                             },
+                            [&](const ast::Type::Tuple& tup) {
+                                std::vector<Ty> tys;
+                                tys.reserve(tup.size());
+                                std::transform(
+                                    tup.cbegin(),
+                                    tup.cend(),
+                                    std::back_inserter(tys),
+                                    [&](const auto& t) { return from_ast_type(t); }
+                                );
+                                return Ty{TupleTy{std::move(tys)}};
+                            },
                             [&](const auto& s) -> Ty {
                                 TODO("UNSUPPORTED TYPE");
                                 return unreachable<Ty>();
@@ -263,6 +301,14 @@ namespace mr {
                     const auto& u = shallow_resolve(in_u);
                     if (t == u) { return {t}; }
                     fmt::println("{} eq {}", t, u);
+                    auto handle_infer = [&](const auto& infer_type,
+                                            const auto& assign_type) {
+                        if (auto type_var = std::get_if<TypeVar>(&infer_type)) {
+                            _type_vars.assign(*type_var, assign_type);
+                            return some(assign_type);
+                        }
+                        return no_type();
+                    };
                     return std::visit(
                         overloaded{
                             [&](const NeverTy& _t, const NeverTy& _u) { return some(t); },
@@ -349,32 +395,37 @@ namespace mr {
                                 return eq_infer_and_ty(it, u);
                             },
                             [&](const InferTy& it, const BoolTy& _u) {
-                                if (auto type_var = std::get_if<TypeVar>(&it)) {
-                                    _type_vars.assign(*type_var, u);
-                                    return some(u);
-                                }
-                                return no_type();
+                                return handle_infer(it, u);
                             },
                             [&](const BoolTy& _t, const InferTy& ut) {
-                                if (auto type_var = std::get_if<TypeVar>(&ut)) {
-                                    _type_vars.assign(*type_var, t);
-                                    return some(t);
-                                }
-                                return no_type();
+                                return handle_infer(ut, t);
                             },
                             [&](const InferTy& it, const UnitTy& uu) {
-                                if (auto type_var = std::get_if<TypeVar>(&it)) {
-                                    _type_vars.assign(*type_var, u);
-                                    return some(u);
-                                }
-                                return no_type();
+                                return handle_infer(it, u);
                             },
-                            [&](const UnitTy& it, const InferTy& ut) {
-                                if (auto type_var = std::get_if<TypeVar>(&ut)) {
-                                    _type_vars.assign(*type_var, t);
-                                    return some(t);
+                            [&](const UnitTy& it, const InferTy& iu) {
+                                return handle_infer(iu, t);
+                            },
+                            [&](const InferTy& it, const TupleTy ut) {
+                                return handle_infer(it, u);
+                            },
+                            [&](const TupleTy& it, const InferTy iu) {
+                                return handle_infer(iu, t);
+                            },
+                            // it is possible that tuple need to be inferred recursively
+                            // ({integer}, {float}) eq {i32, f32}
+                            // ({var}, {var}) = ({integer}, {var})
+                            [&](const TupleTy& tt, const TupleTy ut) {
+                                if (tt.tys.size() != ut.tys.size()) return no_type();
+                                std::vector<Ty> tys;
+                                tys.reserve(tt.tys.size());
+                                for (const auto& [sub_t, sub_u] :
+                                     iterators::zip(tt.tys, ut.tys)) {
+                                    const auto eq_ty = eq(sub_t, sub_u);
+                                    if (!eq_ty) return no_type();
+                                    tys.push_back(std::move(*eq_ty));
                                 }
-                                return no_type();
+                                return some(Ty{TupleTy{std::move(tys)}});
                             },
                             [&](const NeverTy& _t, const InferTy& iu) {
                                 if (auto type_var = std::get_if<TypeVar>(&iu)) {

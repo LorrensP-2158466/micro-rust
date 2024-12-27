@@ -386,10 +386,18 @@ namespace mr {
                 }
             };
 
+            struct TupleExpr {
+                std::vector<Expr>    exprs;
+                friend std::ostream& operator<<(std::ostream& o, const TupleExpr& as) {
+                    o << "TAsT Tuple ";
+                    return o;
+                }
+            };
+
             using ExprKind = std::variant<
                 AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier,
                 IfElse, Literal, UnaryOpExpr, Unit, Loop, Break, Return, Continue,
-                LogicalOpExpr>;
+                LogicalOpExpr, TupleExpr>;
             struct Expr {
                 types::Ty type;
                 ExprKind  kind;
@@ -409,7 +417,6 @@ namespace mr {
 } // namespace mr
 #define FORMAT_TAST_TYPE(ty) OSTREAM_FORMATTER(mr::middle::tast::ty)
 
-MAP(FORMAT_TAST_TYPE, Return, Continue, Break)
+MAP(FORMAT_TAST_TYPE, Return, Continue, Break, TupleExpr)
 MAP(FORMAT_TAST_TYPE, AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr,
-    Identifier, IfElse, Literal, UnaryOpExpr, Unit, Loop, LogicalOpExpr, ExprKind,
-    Expr)
+    Identifier, IfElse, Literal, UnaryOpExpr, Unit, Loop, LogicalOpExpr, ExprKind, Expr)

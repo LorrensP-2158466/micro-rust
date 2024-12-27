@@ -72,18 +72,18 @@ namespace mr {
                     const ir::Place& place, const ir::RValue& value
                 ) {
                     // visit place
-                    std::visit(
-                        overloaded{
-                            [&](const ir::AsIs& as_is) {
+                    // std::visit(
+                    //     overloaded{
+                    //         [&](const ir::AsIs& as_is) {
 
-                            },
-                            [&](const ir::BinaryOp& bin_op) {
+                    //         },
+                    //         [&](const ir::BinaryOp& bin_op) {
 
-                            },
-                            [&](const ir::UnaryOp& un_op) {}
-                        },
-                        value
-                    );
+                    //         },
+                    //         [&](const ir::UnaryOp& un_op) {}
+                    //     },
+                    //     value
+                    // );
                 }
             };
 

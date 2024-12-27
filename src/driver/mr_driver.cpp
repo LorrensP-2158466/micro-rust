@@ -32,10 +32,8 @@ int mr::driver::MRDriver::start() {
 
     Parser parser(*this, lexer, false, file_name);
 
-    parser.parse();
-
-    if (!_ast) {
-        std::cerr << "No AST was generated.\n";
+    if (parser.parse()) {
+        std::cerr << "Parsing failure\n";
         return 1;
     }
     _ast->print();
@@ -55,4 +53,3 @@ int mr::driver::MRDriver::start() {
 
     return 0;
 };
-

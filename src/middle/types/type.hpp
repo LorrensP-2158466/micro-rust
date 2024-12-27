@@ -2,9 +2,11 @@
 
 #include "high/ast/module.hpp"
 #include "mr_util.hpp"
+#include <algorithm>
 #include <assert.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <numeric>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -35,6 +37,8 @@ namespace mr {
     namespace middle {
         namespace types {
             using namespace std::literals;
+            struct Ty;
+
             // first forward-declare the types than create the variant type
 
             // a defined type like:
@@ -165,12 +169,19 @@ namespace mr {
             };
             STANDARD_TYPE_VARIANT(UnitTy);
 
+            struct TupleTy {
+                std::vector<Ty> tys;
+
+                friend bool operator==(const TupleTy& l, const TupleTy& r) = default;
+                friend bool operator!=(const TupleTy& l, const TupleTy& r) = default;
+            };
+
             struct FunctionType;
             static std::string function_type_to_string(const FunctionType* ft);
 
             using type_variant_t = std::variant<
                 UnknownTy, NeverTy, InferTy, BoolTy, IntTy, UIntTy, UnitTy, FloatTy,
-                const FunctionType*>;
+                TupleTy, const FunctionType*>;
             struct Ty : public type_variant_t {
 
                 bool is_known() const noexcept {
@@ -198,6 +209,17 @@ namespace mr {
                             [](const IntTy& t) { return size_of_int_ty(t); },
                             [](const UIntTy& t) { return size_of_u_int_ty(t); },
                             [](const FloatTy& t) { return size_of_float_ty(t); },
+                            [](const TupleTy& t) {
+                                return std::accumulate(
+                                    t.tys.cbegin(),
+                                    t.tys.cend(),
+                                    0ul,
+                                    [](size_t sum, const Ty& ty) {
+                                        // yeah were keeping it simple
+                                        return sum + std::max(ty.size(), 8ul);
+                                    }
+                                );
+                            },
                             [](const auto& t) {
                                 std::runtime_error("SIZE OF UNKOWN WTF?!");
                                 return 0ul;
@@ -228,6 +250,15 @@ namespace mr {
                             },
                             [](const FloatTy& t) -> std::string {
                                 return FloatTy_to_string(t);
+                            },
+                            [](const TupleTy& t) -> std::string {
+                                std::stringstream s;
+                                s << "(";
+                                for (const auto& ty : t.tys) {
+                                    s << ty << ", ";
+                                }
+                                s << ')';
+                                return s.str();
                             },
                             [](const auto& t) { return "buhhhhh"; }
                         },

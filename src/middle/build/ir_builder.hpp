@@ -255,30 +255,15 @@ namespace mr {
 
                 // introduces a temporary if expr is a place
                 BlockWith<Operand> expr_as_operand(const Expr& expr, BlockId block) {
+                    auto handle_temp_move = [&](const auto& expr_type) {
+                        const auto temp_place = Place(create_local(
+                            "temp", _inferer.resolve(expr.type), Mutability::Immutable
+                        ));
+                        unpack(block, expr_into_place(Place(temp_place), expr, block));
+                        return block.with(Operand::move(Place(temp_place)));
+                    };
                     return std::visit(
                         overloaded{
-                            [&](const LogicalOpExpr& log_op) {
-                                const auto temp_place = Place(create_local(
-                                    "temp",
-                                    _inferer.resolve(expr.type),
-                                    Mutability::Immutable
-                                ));
-                                unpack(
-                                    block, expr_into_place(Place(temp_place), expr, block)
-                                );
-                                return block.with(Operand::move(Place(temp_place)));
-                            },
-                            [&](const BinOpExpr& bin_op) {
-                                const auto temp_place = Place(create_local(
-                                    "temp",
-                                    _inferer.resolve(expr.type),
-                                    Mutability::Immutable
-                                ));
-                                unpack(
-                                    block, expr_into_place(Place(temp_place), expr, block)
-                                );
-                                return block.with(Operand::move(Place(temp_place)));
-                            },
                             [&](const Literal& lit) {
                                 return block.with(Operand::const_(
                                     from_tast_literal(lit), _inferer.resolve(expr.type)
@@ -293,31 +278,7 @@ namespace mr {
                                 const auto ty = _inferer.resolve(expr.type);
                                 return block.with(Operand::copy(Place(*local)));
                             },
-                            [&](const CallExpr& call) {
-                                // create terminator temp
-                                const auto temp_place = Place(create_local(
-                                    "temp",
-                                    _inferer.resolve(expr.type),
-                                    Mutability::Immutable
-                                ));
-                                // yeah this doesnt matter, keeps creating function
-                                // terminators in 1 place and doesn't add another function
-                                unpack(block, expr_into_place(temp_place, expr, block));
-                                return block.with(Operand::move(temp_place));
-                            },
-                            [&](const IfElse& if_else) {
-                                const auto temp_place = Place(create_local(
-                                    "temp",
-                                    _inferer.resolve(expr.type),
-                                    Mutability::Immutable
-                                ));
-                                unpack(block, expr_into_place(temp_place, expr, block));
-                                return block.with(Operand::move(temp_place));
-                            },
-                            [](const auto& buh) {
-                                spdlog::critical("Cant build expr: {} as operand", buh);
-                                return mr::unreachable<BlockWith<Operand>>();
-                            },
+                            [&](const auto& buh) { return handle_temp_move(expr); },
                         },
                         expr.kind
                     );
@@ -343,12 +304,30 @@ namespace mr {
                                 return block.with(RValue(AsIs{Operand::move(Place(local))}
                                 ));
                             },
-                            [&](const auto& _skip) {
+                            [&](const TupleExpr& tup) {
+                                std::vector<Operand> operands;
+                                operands.reserve(tup.exprs.size());
+                                for (const auto& expr : tup.exprs) {
+                                    operands.push_back(std::move(
+                                        unpack(block, expr_as_operand(expr, block))
+                                    ));
+                                }
+                                return block.with(RValue(
+                                    Aggregate{AggrKind::Tuple, std::move(operands)}
+                                ));
+                            },
+                            [&](const Literal& lit) {
+                                const auto operand = Operand::const_(
+                                    from_tast_literal(lit), _inferer.resolve(expr.type)
+                                );
+                                return block.with(RValue(AsIs{std::move(operand)}));
+                            },
+                            [&](const auto& s) {
                                 // these are not rvalues, rustc creates an operand and
                                 // returns that as is guess that's the simplest way
                                 const auto operand =
                                     unpack(block, expr_as_operand(expr, block));
-                                return block.with(RValue(AsIs{operand}));
+                                return block.with(RValue(AsIs{std::move(operand)}));
                             }
                         },
                         expr.kind
@@ -409,42 +388,6 @@ namespace mr {
                                 _blocks.go_to(short_circuit, join);
                                 _blocks.go_to(rhs, join);
                                 return join.empty();
-                            },
-                            [&](const BinOpExpr& bin_op) {
-                                const auto lhs =
-                                    unpack(block, expr_as_operand(*bin_op.left, block));
-                                const auto rhs =
-                                    unpack(block, expr_as_operand(*bin_op.right, block));
-                                _blocks.push_assign(
-                                    block, place, RValue(BinaryOp{bin_op.op, lhs, rhs})
-                                );
-                                return block.empty();
-                            },
-                            [&](const UnaryOpExpr& un_op) {
-                                const auto operand =
-                                    unpack(block, expr_as_operand(*un_op.expr, block));
-                                _blocks.push_assign(
-                                    block, place, RValue(ir::UnaryOp{un_op.op, operand})
-                                );
-                                return block.empty();
-                            },
-                            [&](const Literal& lit) {
-                                const auto operand = Operand::const_(
-                                    from_tast_literal(lit), _inferer.resolve(expr.type)
-                                );
-                                _blocks.push_assign(
-                                    block, place, RValue(AsIs{std::move(operand)})
-                                );
-                                return block.empty();
-                            },
-                            [&](const Identifier& id) {
-                                const auto local = local_by_name(id.symbol);
-                                _blocks.push_assign(
-                                    block,
-                                    place,
-                                    RValue(AsIs{Operand::move(Place(local))})
-                                );
-                                return block.empty();
                             },
                             [&](const CallExpr& call) {
                                 // Using std::transform
@@ -609,14 +552,11 @@ namespace mr {
                                 //_blocks.push_unit_assign(block, unit_temp());
                                 return block.empty();
                             },
-                            [&](const auto& buh) {
-                                spdlog::critical(
-                                    "Cant build expr: `{}` into place: `{}`",
-                                    buh,
-                                    place.local.id
-                                );
-                                throw std::runtime_error("COMPILER NOT YET IMPLEMENTED");
-                                return mr::unreachable<BlockWith<void>>();
+                            [&](const auto& _) {
+                                const auto rvalue =
+                                    unpack(block, expr_as_rvalue(expr, block));
+                                _blocks.push_assign(block, place, std::move(rvalue));
+                                return block.empty();
                             },
                         },
                         expr.kind

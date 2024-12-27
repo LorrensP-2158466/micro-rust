@@ -519,14 +519,18 @@ namespace mr {
       // func_arg_list
       char dummy21[sizeof (std::vector<FunArg>)];
 
+      // type_list
+      char dummy22[sizeof (std::vector<Type>)];
+
       // call_expr_args
-      char dummy22[sizeof (std::vector<U<Expr>>)];
+      // expr_list
+      char dummy23[sizeof (std::vector<U<Expr>>)];
 
       // item_list
-      char dummy23[sizeof (std::vector<U<Item>>)];
+      char dummy24[sizeof (std::vector<U<Item>>)];
 
       // stmt_list
-      char dummy24[sizeof (std::vector<U<Stmt>>)];
+      char dummy25[sizeof (std::vector<U<Stmt>>)];
     };
 
     /// The size of the largest semantic type.
@@ -759,19 +763,22 @@ namespace mr {
         S_opt_mut = 89,                          // opt_mut
         S_let = 90,                              // let
         S_if_expr = 91,                          // if_expr
-        S_type = 92,                             // type
-        S_block_expr = 93,                       // block_expr
-        S_assignment = 94,                       // assignment
-        S_unary_op_expr = 95,                    // unary_op_expr
-        S_bin_op_expr = 96,                      // bin_op_expr
-        S_literal = 97,                          // literal
-        S_call_expr_args = 98,                   // call_expr_args
-        S_call_expr = 99,                        // call_expr
-        S_while_expr = 100,                      // while_expr
-        S_expr = 101,                            // expr
-        S_expr_stmt = 102,                       // expr_stmt
-        S_expr_w_block = 103,                    // expr_w_block
-        S_expr_wo_block = 104                    // expr_wo_block
+        S_type_list = 92,                        // type_list
+        S_type = 93,                             // type
+        S_block_expr = 94,                       // block_expr
+        S_assignment = 95,                       // assignment
+        S_unary_op_expr = 96,                    // unary_op_expr
+        S_bin_op_expr = 97,                      // bin_op_expr
+        S_literal = 98,                          // literal
+        S_call_expr_args = 99,                   // call_expr_args
+        S_call_expr = 100,                       // call_expr
+        S_while_expr = 101,                      // while_expr
+        S_expr = 102,                            // expr
+        S_expr_list = 103,                       // expr_list
+        S_expr_stmt = 104,                       // expr_stmt
+        S_expr_w_block = 105,                    // expr_w_block
+        S_expr_wo_block = 106,                   // expr_wo_block
+        S_opt_comma = 107                        // opt_comma
       };
     };
 
@@ -953,7 +960,12 @@ namespace mr {
         value.move< std::vector<FunArg> > (std::move (that.value));
         break;
 
+      case symbol_kind::S_type_list: // type_list
+        value.move< std::vector<Type> > (std::move (that.value));
+        break;
+
       case symbol_kind::S_call_expr_args: // call_expr_args
+      case symbol_kind::S_expr_list: // expr_list
         value.move< std::vector<U<Expr>> > (std::move (that.value));
         break;
 
@@ -1283,6 +1295,20 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::vector<Type>&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::vector<Type>& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, std::vector<U<Expr>>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -1493,7 +1519,12 @@ switch (yykind)
         value.template destroy< std::vector<FunArg> > ();
         break;
 
+      case symbol_kind::S_type_list: // type_list
+        value.template destroy< std::vector<Type> > ();
+        break;
+
       case symbol_kind::S_call_expr_args: // call_expr_args
+      case symbol_kind::S_expr_list: // expr_list
         value.template destroy< std::vector<U<Expr>> > ();
         break;
 
@@ -3127,8 +3158,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 590,     ///< Last index in yytable_.
-      yynnts_ = 29,  ///< Number of nonterminal symbols.
+      yylast_ = 618,     ///< Last index in yytable_.
+      yynnts_ = 32,  ///< Number of nonterminal symbols.
       yyfinal_ = 8 ///< Termination state number.
     };
 
@@ -3144,7 +3175,7 @@ switch (yykind)
 
 #line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 } // mr
-#line 3148 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 3179 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 

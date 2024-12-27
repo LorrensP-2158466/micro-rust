@@ -200,7 +200,8 @@ namespace mr {
                         [&](const ir::BinaryOp& bin_op) { return interp_bin_op(bin_op); },
                         [&](const ir::UnaryOp& un_op) {
                             return interp_un_op(un_op.op, interp_operand(un_op.operand));
-                        }
+                        },
+                        [&](const ir::Aggregate aggr) { return Value::from_bool(false); }
                     },
                     value
                 );
