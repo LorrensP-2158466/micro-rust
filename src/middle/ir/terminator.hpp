@@ -35,7 +35,7 @@ namespace mr {
                 std::span<const BlockId> successors() const { return {}; }
                 std::span<BlockId>       successors() { return {}; }
 
-                friend std::ostream& operator<<(std::ostream& o, const Return& t) {
+                friend std::ostream& operator<<(std::ostream& o, const Return&) {
                     o << "return;";
                     return o;
                 }
@@ -45,7 +45,7 @@ namespace mr {
             struct Assert {
                 std::span<const BlockId> successors() const { return {}; }
                 std::span<BlockId>       successors() { return {}; }
-                friend std::ostream&     operator<<(std::ostream& o, const Assert& t) {
+                friend std::ostream&     operator<<(std::ostream& o, const Assert&) {
                     o << "ASSERT";
                     return o;
                 }

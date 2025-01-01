@@ -11,8 +11,8 @@ namespace mr {
     namespace driver {
         class MRDriver {
             // file stuff
-            std::ifstream _input_file;
             const char*   file_name;
+            std::ifstream _input_file;
             U<ast::Ast>   _ast;
             // middle stuff
             middle::MiddlePhase _middle_phase{};

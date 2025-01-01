@@ -21,34 +21,45 @@ namespace mr {
             struct Expr;
             std::ostream& operator<<(std::ostream& o, const Expr& e);
             struct Stmt;
+
+            struct Identifier {
+                std::string symbol;
+
+                Identifier(std::string s) : symbol(s) {}
+                friend std::ostream& operator<<(std::ostream& o, const Identifier& as) {
+                    o << "IDENTIFIER " << as.symbol;
+                    return o;
+                }
+            };
+
             struct Unit {
-                friend std::ostream& operator<<(std::ostream& o, const Unit& as) {
+                friend std::ostream& operator<<(std::ostream& o, const Unit&) {
                     o << "Unit Expr";
                     return o;
                 }
             };
             struct AssignExpr {
-                std::string id;
-                U<Expr>     expr;
+                U<Expr> lhs;
+                U<Expr> rhs;
 
-                AssignExpr(std::string id, U<Expr> ex) : id(id), expr(std::move(ex)) {}
+                AssignExpr(U<Expr> _lhs, U<Expr> _rhs)
+                    : lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
                 friend std::ostream& operator<<(std::ostream& o, const AssignExpr& as) {
-                    o << "ASSIGN: " << as.id << " = " << as.expr;
+                    o << "ASSIGN:";
                     return o;
                 }
             };
 
             struct AssignOpExpr {
-                std::string id;
-                ir::BinOp   op;
-                U<Expr>     expr;
+                U<Expr>   lhs;
+                ir::BinOp op;
+                U<Expr>   rhs;
 
-                AssignOpExpr(std::string id, ir::BinOp op, U<Expr> ex)
-                    : id(id), op(op), expr(std::move(ex)) {}
+                AssignOpExpr(U<Expr> _lhs, ir::BinOp op, U<Expr> _rhs)
+                    : lhs(std::move(_lhs)), op(op), rhs(std::move(std::move(_rhs))) {}
 
                 friend std::ostream& operator<<(std::ostream& o, const AssignOpExpr& as) {
-                    o << BinOp_to_string(as.op) << "ASSIGN: " << as.id << " = "
-                      << as.expr;
+                    o << BinOp_to_string(as.op) << "ASSIGN: ";
                     return o;
                 }
             };
@@ -60,18 +71,8 @@ namespace mr {
                 BlockExpr(std::vector<U<Stmt>> s, U<Expr> tail)
                     : _statements(std::move(s)), _tail(std::move(tail)) {}
                 BlockExpr(U<Expr> tail) : _statements{}, _tail(std::move(tail)) {}
-                friend std::ostream& operator<<(std::ostream& o, const BlockExpr& as) {
+                friend std::ostream& operator<<(std::ostream& o, const BlockExpr&) {
                     o << "BLOCK EXPR" << "** to lazy**";
-                    return o;
-                }
-            };
-
-            struct Identifier {
-                std::string symbol;
-
-                Identifier(std::string s) : symbol(s) {}
-                friend std::ostream& operator<<(std::ostream& o, const Identifier& as) {
-                    o << "IDENTIFIER " << as.symbol;
                     return o;
                 }
             };
@@ -96,8 +97,8 @@ namespace mr {
 
             ENUM_DEFINE(
                 LitIntType, i8, i16, i32, i64, u8, u16, u32, u64, isize, usize, none
-            );
-            ENUM_DEFINE(LitFloatType, f32, f64);
+            )
+            ENUM_DEFINE(LitFloatType, f32, f64)
 
             struct StrLit {
                 std::string value;
@@ -152,7 +153,7 @@ namespace mr {
             struct LiteralKind : literal_variant_t {};
             struct Literal {
                 LiteralKind          kind;
-                friend std::ostream& operator<<(std::ostream& o, const Literal& as) {
+                friend std::ostream& operator<<(std::ostream& o, const Literal&) {
                     o << "LITERAL";
                     return o;
                 }
@@ -163,7 +164,7 @@ namespace mr {
                 uint64_t raw_value() const {
                     return std::visit(
                         overloaded{
-                            [](const StrLit& s) {
+                            [](const StrLit&) {
                                 throw std::runtime_error("THIS CAN't HAPPEN");
                                 return 0ull;
                             },
@@ -329,10 +330,9 @@ namespace mr {
                 LogicalOp op;
 
                 LogicalOpExpr(U<Expr> l, LogicalOp op, U<Expr> r)
-                    : left(std::move(l)), op(op), right(std::move(r)) {}
+                    : left(std::move(l)), right(std::move(r)), op(op) {}
 
-                friend std::ostream&
-                operator<<(std::ostream& o, const LogicalOpExpr& as) {
+                friend std::ostream& operator<<(std::ostream& o, const LogicalOpExpr&) {
                     return o;
                 }
             };
@@ -342,7 +342,7 @@ namespace mr {
                 ir::BinOp op;
 
                 BinOpExpr(U<Expr> l, ir::BinOp op, U<Expr> r)
-                    : left(std::move(l)), op(op), right(std::move(r)) {}
+                    : left(std::move(l)), right(std::move(r)), op(op) {}
 
                 friend std::ostream& operator<<(std::ostream& o, const BinOpExpr& as) {
                     o << BinOp_to_string(as.op) << "Binary Operation ON " << as.left
@@ -355,7 +355,7 @@ namespace mr {
                 U<Expr> body;
 
                 Loop(U<Expr> b) : body(std::move(b)) {}
-                friend std::ostream& operator<<(std::ostream& o, const Loop& as) {
+                friend std::ostream& operator<<(std::ostream& o, const Loop&) {
                     o << "Loop ";
                     return o;
                 }
@@ -365,7 +365,7 @@ namespace mr {
                 U<Expr> val;
 
                 Break(U<Expr> v) : val(std::move(v)) {}
-                friend std::ostream& operator<<(std::ostream& o, const Break& as) {
+                friend std::ostream& operator<<(std::ostream& o, const Break&) {
                     o << "Break ";
                     return o;
                 }
@@ -374,13 +374,13 @@ namespace mr {
                 U<Expr> val;
 
                 Return(U<Expr> v) : val(std::move(v)) {}
-                friend std::ostream& operator<<(std::ostream& o, const Return& as) {
+                friend std::ostream& operator<<(std::ostream& o, const Return&) {
                     o << "Return ";
                     return o;
                 }
             };
             struct Continue {
-                friend std::ostream& operator<<(std::ostream& o, const Continue& as) {
+                friend std::ostream& operator<<(std::ostream& o, const Continue&) {
                     o << "continue ";
                     return o;
                 }
@@ -388,8 +388,19 @@ namespace mr {
 
             struct TupleExpr {
                 std::vector<Expr>    exprs;
-                friend std::ostream& operator<<(std::ostream& o, const TupleExpr& as) {
+                friend std::ostream& operator<<(std::ostream& o, const TupleExpr&) {
                     o << "TAsT Tuple ";
+                    return o;
+                }
+            };
+
+            // field acces of tuple/enum/struct (for now )
+            struct FieldExpr {
+                U<Expr> expr;
+                size_t  idx;
+
+                friend std::ostream& operator<<(std::ostream& o, const FieldExpr&) {
+                    o << "FIeld Expr ";
                     return o;
                 }
             };
@@ -397,10 +408,10 @@ namespace mr {
             using ExprKind = std::variant<
                 AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier,
                 IfElse, Literal, UnaryOpExpr, Unit, Loop, Break, Return, Continue,
-                LogicalOpExpr, TupleExpr>;
+                LogicalOpExpr, TupleExpr, FieldExpr>;
             struct Expr {
-                types::Ty type;
                 ExprKind  kind;
+                types::Ty type;
                 Expr(ExprKind k, types::Ty t) : kind(std::move(k)), type(t) {}
                 Expr(Expr&& other) noexcept = default;
             };
@@ -417,6 +428,6 @@ namespace mr {
 } // namespace mr
 #define FORMAT_TAST_TYPE(ty) OSTREAM_FORMATTER(mr::middle::tast::ty)
 
-MAP(FORMAT_TAST_TYPE, Return, Continue, Break, TupleExpr)
+MAP(FORMAT_TAST_TYPE, Return, Continue, Break, TupleExpr, FieldExpr)
 MAP(FORMAT_TAST_TYPE, AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr,
     Identifier, IfElse, Literal, UnaryOpExpr, Unit, Loop, LogicalOpExpr, ExprKind, Expr)

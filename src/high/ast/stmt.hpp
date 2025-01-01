@@ -18,7 +18,7 @@ namespace mr {
         };
 
         class EmptyStmt final : public Stmt {
-            void print(const int depth) const {}
+            void print(const int) const {}
         };
 
     } // namespace ast

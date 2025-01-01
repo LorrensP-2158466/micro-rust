@@ -79,6 +79,7 @@ STR_LITERAL   \"[^\"]*\"
                             }
 {IDENTIFIER}                { return Token_T::IDENTIFIER; }
 
+"."                         { return Token_T::DOT;}
 "="                         { return Token_T::EQ; }
 "=="                        { return Token_T::EQEQ; }
 "!="                        { return Token_T::NE; }

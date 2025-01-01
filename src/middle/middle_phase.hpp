@@ -119,8 +119,7 @@ namespace mr {
                 for (const auto& [fn_name, function] : _functions.get_current_scope()) {
                     auto [outer_tast, inners] = tast_builder.build_everything(*function);
                     generated_ir.register_function(
-                        fn_name,
-                        std::move(ir_builder.build_function(std::move(outer_tast)))
+                        fn_name, ir_builder.build_function(std::move(outer_tast))
                     );
 
                     std::vector<std::pair<std::string, ir::Function>> ir_functions{};

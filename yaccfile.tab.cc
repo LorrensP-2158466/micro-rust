@@ -35,7 +35,7 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 39 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 39 "src/parser/yaccfile.yy"
 
 #include <string>
 #include <variant>
@@ -48,12 +48,12 @@
     #define yylex lexer.yylex
     #define DEFAULT_ACTION(to, from) do { to = std::move(from);} while(0)
 
-#line 52 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 52 "yaccfile.tab.cc"
 
 
 
 
-#include "parser.tab.hpp"
+#include "yaccfile.tab.hh"
 
 
 
@@ -146,9 +146,9 @@
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 5 "src/parser/yaccfile.yy"
 namespace mr {
-#line 152 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 152 "yaccfile.tab.cc"
 
   /// Build a parser object.
   Parser::Parser (driver::MRDriver& driver_yyarg, Lexer &lexer_yyarg, const bool debug_yyarg, const char* input_file_name_yyarg)
@@ -1758,702 +1758,702 @@ namespace mr {
           switch (yyn)
             {
   case 2: // program: item_list
-#line 130 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 130 "src/parser/yaccfile.yy"
                 { driver.set_ast(std::make_unique<Ast>(std::move(yystack_[0].value.as < std::vector<U<Item>> > ()))); }
-#line 1764 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1764 "yaccfile.tab.cc"
     break;
 
   case 3: // item_list: item_list item
-#line 134 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 134 "src/parser/yaccfile.yy"
                      {yystack_[1].value.as < std::vector<U<Item>> > ().push_back(std::move(yystack_[0].value.as < U<Item> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Item>> > (), yystack_[1].value.as < std::vector<U<Item>> > ());}
-#line 1770 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1770 "yaccfile.tab.cc"
     break;
 
   case 4: // item_list: item_list error item
-#line 136 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 136 "src/parser/yaccfile.yy"
                            {yystack_[2].value.as < std::vector<U<Item>> > ().push_back(std::move(yystack_[0].value.as < U<Item> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Item>> > (), yystack_[2].value.as < std::vector<U<Item>> > ());}
-#line 1776 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1776 "yaccfile.tab.cc"
     break;
 
   case 5: // item_list: item
-#line 137 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 137 "src/parser/yaccfile.yy"
            {
         auto vec = std::vector<U<Item>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Item> > ()));
         yylhs.value.as < std::vector<U<Item>> > () = std::move(vec) ;}
-#line 1785 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1785 "yaccfile.tab.cc"
     break;
 
   case 6: // item_list: error
-#line 141 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 141 "src/parser/yaccfile.yy"
             { std::cerr << "Expected Item\n"; }
-#line 1791 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1791 "yaccfile.tab.cc"
     break;
 
   case 7: // item: function_decl
-#line 145 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 145 "src/parser/yaccfile.yy"
                   { DEFAULT_ACTION(yylhs.value.as < U<Item> > (), yystack_[0].value.as < U<FunDecl> > ()); }
-#line 1797 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1797 "yaccfile.tab.cc"
     break;
 
   case 8: // function_decl: FN IDENTIFIER func_decl_args func_ret_type block_expr
-#line 151 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 151 "src/parser/yaccfile.yy"
     { 
         yylhs.value.as < U<FunDecl> > () = FunDecl::make_unique(yystack_[3].value.as < Token > ().string_value(), std::move(yystack_[2].value.as < std::vector<FunArg> > ()), std::move(yystack_[1].value.as < Type > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ()));
     }
-#line 1805 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1805 "yaccfile.tab.cc"
     break;
 
   case 9: // func_ret_type: ARROW type
-#line 157 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 157 "src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < Type > (), yystack_[0].value.as < Type > ()); }
-#line 1811 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1811 "yaccfile.tab.cc"
     break;
 
   case 10: // func_ret_type: %empty
-#line 158 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 158 "src/parser/yaccfile.yy"
       { yylhs.value.as < Type > () = Type(); }
-#line 1817 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1817 "yaccfile.tab.cc"
     break;
 
   case 11: // func_decl_args: LPAREN func_arg_list RPAREN
-#line 163 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 163 "src/parser/yaccfile.yy"
                                   {yylhs.value.as < std::vector<FunArg> > () = std::move(yystack_[1].value.as < std::vector<FunArg> > ());}
-#line 1823 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1823 "yaccfile.tab.cc"
     break;
 
   case 12: // func_decl_args: LPAREN RPAREN
-#line 164 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 164 "src/parser/yaccfile.yy"
                     { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
-#line 1829 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1829 "yaccfile.tab.cc"
     break;
 
   case 13: // func_decl_args: error
-#line 165 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 165 "src/parser/yaccfile.yy"
             { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
-#line 1835 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1835 "yaccfile.tab.cc"
     break;
 
   case 14: // func_arg_list: func_arg_list COMMA func_arg
-#line 169 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 169 "src/parser/yaccfile.yy"
                                    { yystack_[2].value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<FunArg> > (), yystack_[2].value.as < std::vector<FunArg> > ());}
-#line 1841 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1841 "yaccfile.tab.cc"
     break;
 
   case 15: // func_arg_list: func_arg
-#line 170 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 170 "src/parser/yaccfile.yy"
                { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{}; yylhs.value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); }
-#line 1847 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1847 "yaccfile.tab.cc"
     break;
 
   case 16: // func_arg: opt_mut IDENTIFIER COLON type
-#line 174 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 174 "src/parser/yaccfile.yy"
                                     { yylhs.value.as < FunArg > () = FunArg{yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[0].value.as < Type > ()), yystack_[3].value.as < bool > ()}; }
-#line 1853 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1853 "yaccfile.tab.cc"
     break;
 
   case 17: // func_arg: opt_mut IDENTIFIER error
-#line 175 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 175 "src/parser/yaccfile.yy"
                                { std::cerr << "Expected type declaration\n";}
-#line 1859 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1859 "yaccfile.tab.cc"
     break;
 
   case 18: // stmt: SEMICOLON
-#line 178 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 178 "src/parser/yaccfile.yy"
                 {yylhs.value.as < U<Stmt> > () = std::make_unique<EmptyStmt>();}
-#line 1865 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1865 "yaccfile.tab.cc"
     break;
 
   case 19: // stmt: let
-#line 179 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 179 "src/parser/yaccfile.yy"
           { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<LetStmt> > ()); }
-#line 1871 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1871 "yaccfile.tab.cc"
     break;
 
   case 20: // stmt: RETURN SEMICOLON
-#line 180 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 180 "src/parser/yaccfile.yy"
                        {  yylhs.value.as < U<Stmt> > () = std::make_unique<Return>(std::make_unique<Unit>()); }
-#line 1877 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1877 "yaccfile.tab.cc"
     break;
 
   case 21: // stmt: BREAK SEMICOLON
-#line 181 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 181 "src/parser/yaccfile.yy"
                       {  yylhs.value.as < U<Stmt> > () = std::make_unique<Break>(std::make_unique<Unit>()); }
-#line 1883 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1883 "yaccfile.tab.cc"
     break;
 
   case 22: // stmt: CONTINUE SEMICOLON
-#line 182 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 182 "src/parser/yaccfile.yy"
                          {  yylhs.value.as < U<Stmt> > () = std::make_unique<Continue>(); }
-#line 1889 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1889 "yaccfile.tab.cc"
     break;
 
   case 23: // stmt: expr_stmt
-#line 183 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 183 "src/parser/yaccfile.yy"
                 { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 1895 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1895 "yaccfile.tab.cc"
     break;
 
   case 24: // stmt: print_ln SEMICOLON
-#line 184 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 184 "src/parser/yaccfile.yy"
                          { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[1].value.as < U<PrintLn> > ());}
-#line 1901 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1901 "yaccfile.tab.cc"
     break;
 
   case 25: // stmt: item
-#line 185 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 185 "src/parser/yaccfile.yy"
            { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Item> > ()); }
-#line 1907 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1907 "yaccfile.tab.cc"
     break;
 
   case 26: // stmt_list: stmt_list stmt
-#line 189 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 189 "src/parser/yaccfile.yy"
                      { yystack_[1].value.as < std::vector<U<Stmt>> > ().push_back(std::move(yystack_[0].value.as < U<Stmt> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Stmt>> > (), yystack_[1].value.as < std::vector<U<Stmt>> > ()); }
-#line 1913 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1913 "yaccfile.tab.cc"
     break;
 
   case 27: // stmt_list: stmt
-#line 190 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 190 "src/parser/yaccfile.yy"
            {
         auto vec = std::vector<U<Stmt>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Stmt> > ()));
         yylhs.value.as < std::vector<U<Stmt>> > () = std::move(vec); 
       }
-#line 1923 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1923 "yaccfile.tab.cc"
     break;
 
   case 28: // print_ln: PRINT_LN LPAREN STR_LITERAL RPAREN
-#line 198 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 198 "src/parser/yaccfile.yy"
                                          { yylhs.value.as < U<PrintLn> > () = std::make_unique<PrintLn>(yystack_[1].value.as < Token > ().string_value()); }
-#line 1929 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1929 "yaccfile.tab.cc"
     break;
 
   case 29: // type_decl: COLON type
-#line 202 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 202 "src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < std::optional<Type> > (), yystack_[0].value.as < Type > ()); }
-#line 1935 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1935 "yaccfile.tab.cc"
     break;
 
   case 30: // type_decl: COLON error
-#line 203 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 203 "src/parser/yaccfile.yy"
                   { yylhs.value.as < std::optional<Type> > () = Type(); printf("failure"); }
-#line 1941 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1941 "yaccfile.tab.cc"
     break;
 
   case 31: // type_decl: %empty
-#line 204 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 204 "src/parser/yaccfile.yy"
       { yylhs.value.as < std::optional<Type> > () = {}; }
-#line 1947 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1947 "yaccfile.tab.cc"
     break;
 
   case 32: // opt_mut: MUT
-#line 208 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 208 "src/parser/yaccfile.yy"
          { yylhs.value.as < bool > () = true; }
-#line 1953 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1953 "yaccfile.tab.cc"
     break;
 
   case 33: // opt_mut: %empty
-#line 209 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 209 "src/parser/yaccfile.yy"
          { yylhs.value.as < bool > () = false; }
-#line 1959 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1959 "yaccfile.tab.cc"
     break;
 
   case 34: // let: LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
-#line 214 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 214 "src/parser/yaccfile.yy"
       {yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::move(yystack_[1].value.as < U<Expr> > ()), yystack_[5].value.as < bool > ());}
-#line 1965 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1965 "yaccfile.tab.cc"
     break;
 
   case 35: // let: LET opt_mut IDENTIFIER type_decl error EQ SEMICOLON
-#line 216 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 216 "src/parser/yaccfile.yy"
       {
         yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::unique_ptr<Expr>(nullptr), yystack_[5].value.as < bool > ()); 
       }
-#line 1973 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1973 "yaccfile.tab.cc"
     break;
 
   case 36: // let: LET opt_mut IDENTIFIER type_decl SEMICOLON
-#line 219 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 219 "src/parser/yaccfile.yy"
                                                  {
         yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_decl(yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::optional<Type> > ()), yystack_[3].value.as < bool > ());
     }
-#line 1981 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1981 "yaccfile.tab.cc"
     break;
 
   case 37: // if_expr: IF expr block_expr
-#line 225 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 225 "src/parser/yaccfile.yy"
                          { yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 1987 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1987 "yaccfile.tab.cc"
     break;
 
   case 38: // if_expr: IF expr block_expr ELSE if_expr
-#line 226 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 226 "src/parser/yaccfile.yy"
                                       {yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), std::move(yystack_[0].value.as < U<IfElse> > ())); }
-#line 1993 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1993 "yaccfile.tab.cc"
     break;
 
   case 39: // if_expr: IF expr block_expr ELSE block_expr
-#line 227 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 227 "src/parser/yaccfile.yy"
                                          {yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 1999 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1999 "yaccfile.tab.cc"
     break;
 
   case 40: // type_list: type_list COMMA type
-#line 238 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 238 "src/parser/yaccfile.yy"
                            {yylhs.value.as < std::vector<Type> > () = std::move(yystack_[2].value.as < std::vector<Type> > ()); yylhs.value.as < std::vector<Type> > ().push_back(std::move(yystack_[0].value.as < Type > ()));}
-#line 2005 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2005 "yaccfile.tab.cc"
     break;
 
   case 41: // type_list: type
-#line 239 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 239 "src/parser/yaccfile.yy"
            {yylhs.value.as < std::vector<Type> > () = std::vector<Type>(); yylhs.value.as < std::vector<Type> > ().push_back(std::move(yystack_[0].value.as < Type > ()));}
-#line 2011 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2011 "yaccfile.tab.cc"
     break;
 
   case 42: // type: I8
-#line 243 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 243 "src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::I8); }
-#line 2017 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2017 "yaccfile.tab.cc"
     break;
 
   case 43: // type: I16
-#line 244 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 244 "src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::I16); }
-#line 2023 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2023 "yaccfile.tab.cc"
     break;
 
   case 44: // type: I32
-#line 245 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 245 "src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::I32); }
-#line 2029 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2029 "yaccfile.tab.cc"
     break;
 
   case 45: // type: I64
-#line 246 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 246 "src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::I64); }
-#line 2035 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2035 "yaccfile.tab.cc"
     break;
 
   case 46: // type: ISIZE
-#line 247 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 247 "src/parser/yaccfile.yy"
             { yylhs.value.as < Type > () = Type(primitive_type::ISIZE); }
-#line 2041 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2041 "yaccfile.tab.cc"
     break;
 
   case 47: // type: U8
-#line 248 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 248 "src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::U8); }
-#line 2047 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2047 "yaccfile.tab.cc"
     break;
 
   case 48: // type: U16
-#line 249 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 249 "src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::U16); }
-#line 2053 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2053 "yaccfile.tab.cc"
     break;
 
   case 49: // type: U32
-#line 250 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 250 "src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::U32); }
-#line 2059 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2059 "yaccfile.tab.cc"
     break;
 
   case 50: // type: U64
-#line 251 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 251 "src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::U64); }
-#line 2065 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2065 "yaccfile.tab.cc"
     break;
 
   case 51: // type: USIZE
-#line 252 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 252 "src/parser/yaccfile.yy"
             { yylhs.value.as < Type > () = Type(primitive_type::USIZE); }
-#line 2071 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2071 "yaccfile.tab.cc"
     break;
 
   case 52: // type: BOOL
-#line 253 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 253 "src/parser/yaccfile.yy"
            { yylhs.value.as < Type > () = Type(primitive_type::BOOL); }
-#line 2077 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2077 "yaccfile.tab.cc"
     break;
 
   case 53: // type: LPAREN type_list RPAREN
-#line 254 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 254 "src/parser/yaccfile.yy"
                               { yylhs.value.as < Type > () = Type(std::move(yystack_[1].value.as < std::vector<Type> > ()));}
-#line 2083 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2083 "yaccfile.tab.cc"
     break;
 
   case 54: // type: LPAREN RPAREN
-#line 255 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 255 "src/parser/yaccfile.yy"
                      { yylhs.value.as < Type > () = Type(); }
-#line 2089 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2089 "yaccfile.tab.cc"
     break;
 
   case 55: // block_expr: LBRACE stmt_list RBRACE
-#line 261 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 261 "src/parser/yaccfile.yy"
                               { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::move(yystack_[1].value.as < std::vector<U<Stmt>> > ()), std::make_unique<Unit>()); }
-#line 2095 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2095 "yaccfile.tab.cc"
     break;
 
   case 56: // block_expr: LBRACE stmt_list expr RBRACE
-#line 262 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 262 "src/parser/yaccfile.yy"
                                     { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::move(yystack_[2].value.as < std::vector<U<Stmt>> > ()), std::move(yystack_[1].value.as < U<Expr> > ())); }
-#line 2101 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2101 "yaccfile.tab.cc"
     break;
 
   case 57: // block_expr: LBRACE expr RBRACE
-#line 263 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 263 "src/parser/yaccfile.yy"
                           { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::move(yystack_[1].value.as < U<Expr> > ())); }
-#line 2107 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2107 "yaccfile.tab.cc"
     break;
 
   case 58: // block_expr: LBRACE RBRACE
-#line 264 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 264 "src/parser/yaccfile.yy"
                      { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::make_unique<Unit>()); }
-#line 2113 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2113 "yaccfile.tab.cc"
     break;
 
   case 59: // unary_op_expr: MINUS expr
-#line 268 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 268 "src/parser/yaccfile.yy"
                               { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Negate, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2119 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2119 "yaccfile.tab.cc"
     break;
 
   case 60: // unary_op_expr: STAR expr
-#line 269 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 269 "src/parser/yaccfile.yy"
                             { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Deref, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2125 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2125 "yaccfile.tab.cc"
     break;
 
   case 61: // unary_op_expr: BANG expr
-#line 270 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 270 "src/parser/yaccfile.yy"
                           { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Not, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2131 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2131 "yaccfile.tab.cc"
     break;
 
   case 62: // unary_op_expr: AMPERSAND expr
-#line 271 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 271 "src/parser/yaccfile.yy"
                                { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Borrow, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2137 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2137 "yaccfile.tab.cc"
     break;
 
   case 63: // unary_op_expr: AMPERSAND_MUT expr
-#line 272 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 272 "src/parser/yaccfile.yy"
                                        { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::MutBorrow, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2143 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2143 "yaccfile.tab.cc"
     break;
 
   case 64: // bin_op_expr: expr PLUS expr
-#line 276 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 276 "src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Plus, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2149 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2149 "yaccfile.tab.cc"
     break;
 
   case 65: // bin_op_expr: expr MINUS expr
-#line 277 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 277 "src/parser/yaccfile.yy"
                       { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Min, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2155 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2155 "yaccfile.tab.cc"
     break;
 
   case 66: // bin_op_expr: expr STAR expr
-#line 278 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 278 "src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Mul, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2161 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2161 "yaccfile.tab.cc"
     break;
 
   case 67: // bin_op_expr: expr SLASH expr
-#line 279 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 279 "src/parser/yaccfile.yy"
                       { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Div, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2167 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2167 "yaccfile.tab.cc"
     break;
 
   case 68: // bin_op_expr: expr L_AND expr
-#line 280 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 280 "src/parser/yaccfile.yy"
                       { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_AND, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2173 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2173 "yaccfile.tab.cc"
     break;
 
   case 69: // bin_op_expr: expr L_OR expr
-#line 281 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 281 "src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_OR, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2179 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2179 "yaccfile.tab.cc"
     break;
 
   case 70: // bin_op_expr: expr EQEQ expr
-#line 282 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 282 "src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2185 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2185 "yaccfile.tab.cc"
     break;
 
   case 71: // bin_op_expr: expr NE expr
-#line 283 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 283 "src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::NEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2191 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2191 "yaccfile.tab.cc"
     break;
 
   case 72: // bin_op_expr: expr LT expr
-#line 284 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 284 "src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Lt, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2197 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2197 "yaccfile.tab.cc"
     break;
 
   case 73: // bin_op_expr: expr GT expr
-#line 285 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 285 "src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Gt, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2203 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2203 "yaccfile.tab.cc"
     break;
 
   case 74: // bin_op_expr: expr GE expr
-#line 286 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 286 "src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::GtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2209 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2209 "yaccfile.tab.cc"
     break;
 
   case 75: // bin_op_expr: expr LE expr
-#line 287 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 287 "src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::LtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2215 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2215 "yaccfile.tab.cc"
     break;
 
   case 76: // bin_op_expr: expr EQ expr
-#line 289 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 289 "src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2221 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2221 "yaccfile.tab.cc"
     break;
 
   case 77: // bin_op_expr: expr PLUS_EQ expr
-#line 290 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 290 "src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::PlusEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2227 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2227 "yaccfile.tab.cc"
     break;
 
   case 78: // bin_op_expr: expr MIN_EQ expr
-#line 291 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 291 "src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MinEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2233 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2233 "yaccfile.tab.cc"
     break;
 
   case 79: // bin_op_expr: expr DIV_EQ expr
-#line 292 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 292 "src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::DivEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2239 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2239 "yaccfile.tab.cc"
     break;
 
   case 80: // bin_op_expr: expr MUL_EQ expr
-#line 293 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 293 "src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MulEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2245 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2245 "yaccfile.tab.cc"
     break;
 
   case 81: // literal: DEC_LITERAL
-#line 297 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 297 "src/parser/yaccfile.yy"
                   { yylhs.value.as < U<Literal> > () = Literal::make_int_lit(yystack_[0].value.as < Token > ().symbol);}
-#line 2251 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2251 "yaccfile.tab.cc"
     break;
 
   case 82: // literal: STR_LITERAL
-#line 298 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 298 "src/parser/yaccfile.yy"
                   { yylhs.value.as < U<Literal> > () = Literal::make_str_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2257 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2257 "yaccfile.tab.cc"
     break;
 
   case 83: // literal: FLOAT_LITERAL
-#line 299 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 299 "src/parser/yaccfile.yy"
                     { assert(1 && "How did we get here"); }
-#line 2263 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2263 "yaccfile.tab.cc"
     break;
 
   case 84: // literal: TRUE
-#line 300 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 300 "src/parser/yaccfile.yy"
            { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2269 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2269 "yaccfile.tab.cc"
     break;
 
   case 85: // literal: FALSE
-#line 301 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 301 "src/parser/yaccfile.yy"
             { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2275 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2275 "yaccfile.tab.cc"
     break;
 
   case 86: // call_expr_args: call_expr_args COMMA expr
-#line 306 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 306 "src/parser/yaccfile.yy"
                                 { yystack_[2].value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Expr>> > (), yystack_[2].value.as < std::vector<U<Expr>> > ()); }
-#line 2281 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2281 "yaccfile.tab.cc"
     break;
 
   case 87: // call_expr_args: expr
-#line 307 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 307 "src/parser/yaccfile.yy"
            { 
         auto vec = std::vector<U<Expr>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Expr> > ()));
         yylhs.value.as < std::vector<U<Expr>> > () = std::move(vec);
         }
-#line 2291 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2291 "yaccfile.tab.cc"
     break;
 
   case 88: // call_expr: IDENTIFIER LPAREN call_expr_args RPAREN
-#line 315 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 315 "src/parser/yaccfile.yy"
                                               { yylhs.value.as < U<CallExpr> > () = std::make_unique<CallExpr>(yystack_[3].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::vector<U<Expr>> > ())); }
-#line 2297 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2297 "yaccfile.tab.cc"
     break;
 
   case 89: // call_expr: IDENTIFIER LPAREN RPAREN
-#line 316 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 316 "src/parser/yaccfile.yy"
                                { yylhs.value.as < U<CallExpr> > () = std::make_unique<CallExpr>(yystack_[2].value.as < Token > ().string_value(), std::vector<U<Expr>>{}); }
-#line 2303 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2303 "yaccfile.tab.cc"
     break;
 
   case 90: // while_expr: WHILE expr block_expr
-#line 319 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 319 "src/parser/yaccfile.yy"
                             {yylhs.value.as < U<WhileLoop> > () = std::make_unique<WhileLoop>(std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 2309 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2309 "yaccfile.tab.cc"
     break;
 
   case 91: // tuple_index_expr: expr DOT literal
-#line 323 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 323 "src/parser/yaccfile.yy"
                        { yylhs.value.as < U<TupleIndexExpr> > () = std::make_unique<TupleIndexExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<Literal> > ()));}
-#line 2315 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2315 "yaccfile.tab.cc"
     break;
 
   case 92: // expr: expr_w_block
-#line 328 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 328 "src/parser/yaccfile.yy"
                    { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2321 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2321 "yaccfile.tab.cc"
     break;
 
   case 93: // expr: expr_wo_block
-#line 329 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 329 "src/parser/yaccfile.yy"
                     { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2327 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2327 "yaccfile.tab.cc"
     break;
 
   case 94: // expr_list: expr_list COMMA expr
-#line 333 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 333 "src/parser/yaccfile.yy"
                            { yystack_[2].value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ())); yylhs.value.as < std::vector<U<Expr>> > () = std::move(yystack_[2].value.as < std::vector<U<Expr>> > ());}
-#line 2333 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2333 "yaccfile.tab.cc"
     break;
 
   case 95: // expr_list: expr
-#line 334 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 334 "src/parser/yaccfile.yy"
            {yylhs.value.as < std::vector<U<Expr>> > () = std::vector<U<Expr>>(); yylhs.value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2339 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2339 "yaccfile.tab.cc"
     break;
 
   case 96: // expr_stmt: expr_w_block
-#line 338 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 338 "src/parser/yaccfile.yy"
                     { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2345 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2345 "yaccfile.tab.cc"
     break;
 
   case 97: // expr_stmt: expr_wo_block SEMICOLON
-#line 339 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 339 "src/parser/yaccfile.yy"
                               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[1].value.as < U<Expr> > ()); }
-#line 2351 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2351 "yaccfile.tab.cc"
     break;
 
   case 98: // expr_w_block: while_expr
-#line 343 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 343 "src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<WhileLoop> > ()); }
-#line 2357 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2357 "yaccfile.tab.cc"
     break;
 
   case 99: // expr_w_block: if_expr
-#line 344 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 344 "src/parser/yaccfile.yy"
               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<IfElse> > ()); }
-#line 2363 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2363 "yaccfile.tab.cc"
     break;
 
   case 100: // expr_w_block: block_expr
-#line 345 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 345 "src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<BlockExpr> > ()); }
-#line 2369 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2369 "yaccfile.tab.cc"
     break;
 
   case 101: // expr_wo_block: LPAREN expr RPAREN
-#line 348 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 348 "src/parser/yaccfile.yy"
                          { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[1].value.as < U<Expr> > ()); }
-#line 2375 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2375 "yaccfile.tab.cc"
     break;
 
   case 102: // expr_wo_block: bin_op_expr
-#line 349 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 349 "src/parser/yaccfile.yy"
                               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ()); }
-#line 2381 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2381 "yaccfile.tab.cc"
     break;
 
   case 103: // expr_wo_block: tuple_index_expr
-#line 350 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 350 "src/parser/yaccfile.yy"
                                           { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<TupleIndexExpr> > ()); }
-#line 2387 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2387 "yaccfile.tab.cc"
     break;
 
   case 104: // expr_wo_block: IDENTIFIER
-#line 351 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 351 "src/parser/yaccfile.yy"
                             { yylhs.value.as < U<Expr> > () = std::make_unique<Identifier>(yystack_[0].value.as < Token > ().string_value()); }
-#line 2393 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2393 "yaccfile.tab.cc"
     break;
 
   case 105: // expr_wo_block: unary_op_expr
-#line 352 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 352 "src/parser/yaccfile.yy"
                                 {DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<UnaryOpExpr> > ()); }
-#line 2399 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2399 "yaccfile.tab.cc"
     break;
 
   case 106: // expr_wo_block: LPAREN RPAREN
-#line 353 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 353 "src/parser/yaccfile.yy"
                                { yylhs.value.as < U<Expr> > () = std::make_unique<Unit>(); }
-#line 2405 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2405 "yaccfile.tab.cc"
     break;
 
   case 107: // expr_wo_block: call_expr
-#line 354 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 354 "src/parser/yaccfile.yy"
                                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<CallExpr> > ()); }
-#line 2411 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2411 "yaccfile.tab.cc"
     break;
 
   case 108: // expr_wo_block: RETURN expr
-#line 355 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 355 "src/parser/yaccfile.yy"
                                      { yylhs.value.as < U<Expr> > () = std::make_unique<Return>(std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2417 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2417 "yaccfile.tab.cc"
     break;
 
   case 109: // expr_wo_block: BREAK expr
-#line 356 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 356 "src/parser/yaccfile.yy"
                                     { yylhs.value.as < U<Expr> > () = std::make_unique<Break>(std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2423 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2423 "yaccfile.tab.cc"
     break;
 
   case 110: // expr_wo_block: CONTINUE
-#line 357 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 357 "src/parser/yaccfile.yy"
                                   { yylhs.value.as < U<Expr> > () = std::make_unique<Continue>(); }
-#line 2429 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2429 "yaccfile.tab.cc"
     break;
 
   case 111: // expr_wo_block: LPAREN expr_list opt_comma RPAREN
-#line 358 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 358 "src/parser/yaccfile.yy"
                                          { yylhs.value.as < U<Expr> > () = std::make_unique<TupleExpr>(std::move(yystack_[2].value.as < std::vector<U<Expr>> > ())); }
-#line 2435 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2435 "yaccfile.tab.cc"
     break;
 
   case 112: // expr_wo_block: literal
-#line 359 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 359 "src/parser/yaccfile.yy"
               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Literal> > ()); }
-#line 2441 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2441 "yaccfile.tab.cc"
     break;
 
   case 113: // opt_comma: COMMA
-#line 364 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 364 "src/parser/yaccfile.yy"
             {}
-#line 2447 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2447 "yaccfile.tab.cc"
     break;
 
   case 114: // opt_comma: %empty
-#line 365 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 365 "src/parser/yaccfile.yy"
       {}
-#line 2453 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2453 "yaccfile.tab.cc"
     break;
 
 
-#line 2457 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2457 "yaccfile.tab.cc"
 
             default:
               break;
@@ -3214,11 +3214,11 @@ namespace mr {
       return symbol_kind::S_YYUNDEF;
   }
 
-#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 5 "src/parser/yaccfile.yy"
 } // mr
-#line 3220 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 3220 "yaccfile.tab.cc"
 
-#line 367 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 367 "src/parser/yaccfile.yy"
 
 
 namespace mr

@@ -98,8 +98,7 @@ namespace mr {
 
             static std::vector<bool> reachable_bitset(const ir::BasicBlocks& blocks) {
                 auto preorder = PreOrder(blocks);
-                fmt::println("here");
-                for (const auto& [bb, _] : preorder) {}
+                for ([[maybe_unused]] const auto& _: preorder) {}
                 return preorder.get_visited();
             }
         } // namespace traversal

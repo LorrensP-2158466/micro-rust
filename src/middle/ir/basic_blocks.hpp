@@ -125,7 +125,7 @@ namespace mr {
                         block,
                         Assign{
                             lhs,
-                            RValue(AsIs(Operand::const_(Scalar{0}, types::Ty::unit())))
+                            RValue(AsIs(Operand::const_(Scalar{0, 0}, types::Ty::unit())))
                         }
                     );
                 }

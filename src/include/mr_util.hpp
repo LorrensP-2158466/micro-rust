@@ -75,13 +75,13 @@ namespace mr {
 
     template <typename T> using OptUnique = std::optional<U<T>>;
 
-    inline const char* const bool_to_str(const bool b) {
+    inline const char* bool_to_str(const bool b) {
         return b ? "true" : "false";
     }
 
     // this is very unsafe, this just checks if str == "true" else it returns false
     // only use this when you are absolutely certain str can only have "true" or "false"
-    inline bool const str_to_bool(const char* str) {
+    inline bool str_to_bool(const char* str) {
         return std::strcmp(str, "true") == 0;
     }
 

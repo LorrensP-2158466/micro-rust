@@ -98,13 +98,13 @@ namespace mr {
                 auto&              fn = _code.get_function_by_name(call.fun);
                 std::vector<Value> values{};
                 values.reserve(fn.locals.size());
-                values.emplace_back(fn.locals[0]);
+                values.emplace_back(local_to_uninit_value(fn.locals[0]));
 
                 std::transform(
                     call.args.cbegin(),
                     call.args.cend(),
                     std::back_inserter(values),
-                    [&](const ir::Operand& op) { return Value{interp_operand(op)}; }
+                    [&](const ir::Operand& op) { return interp_operand(op); }
                 );
 
                 std::transform(
@@ -147,7 +147,7 @@ namespace mr {
                 );
             }
 
-            void interp_format(const ir::FPrintLn& format) const {
+            void interp_format(const ir::FPrintLn& format) {
                 std::string output;
                 output.reserve(16);
                 output += map_optional_or(
@@ -171,7 +171,7 @@ namespace mr {
                 std::visit(
                     overloaded{
                         [&](const ir::GoTo& gt) { go_to_block(gt.target); },
-                        [&](const ir::Return& ret) { return_from_call(); },
+                        [&](const ir::Return&) { return_from_call(); },
                         [&](const ir::CondGoTo& cgt) {
                             const auto cond = interp_operand(cgt.op).scalar().to_bool();
                             // false = 0
@@ -185,7 +185,7 @@ namespace mr {
                                 call, interp_place(call.dest_place), call.target
                             );
                         },
-                        [&](const auto& _skip) {}
+                        [&](const auto&) {}
                     },
                     term
                 );
@@ -201,13 +201,22 @@ namespace mr {
                         [&](const ir::UnaryOp& un_op) {
                             return interp_un_op(un_op.op, interp_operand(un_op.operand));
                         },
-                        [&](const ir::Aggregate aggr) { return Value::from_bool(false); }
+                        [&](const ir::Aggregate& aggr) {
+                            std::vector<Value> vals;
+                            vals.reserve(aggr.values.size());
+                            for (const auto& op : aggr.values) {
+                                vals.emplace_back(std::move(interp_operand(op)));
+                            }
+                            // we type checked, and don't allow operations that cause UB
+                            // this place_value.type is safe
+                            return Value(Aggregate(std::move(vals)), place_value.type);
+                        }
                     },
                     value
                 );
             }
 
-            Value interp_bin_op(const ir::BinaryOp& bin_op) const {
+            Value interp_bin_op(const ir::BinaryOp& bin_op) {
                 // we only support this binary op for the primitives, the rest are calls
                 // to their impls
                 auto left = interp_operand(bin_op.left);
@@ -224,16 +233,16 @@ namespace mr {
 
                 return std::visit(
                     overloaded{
-                        [&](const types::IntTy& i) {
+                        [&](const types::IntTy&) {
                             return binary_int_op(bin_op.op, left, right);
                         },
-                        [&](const types::UIntTy& i) {
+                        [&](const types::UIntTy&) {
                             return binary_int_op(bin_op.op, left, right);
                         },
-                        [&](const types::BoolTy& bt) {
+                        [&](const types::BoolTy&) {
                             return binary_bool_op(bin_op.op, left, right);
                         },
-                        [](const auto& _cantbe) -> Value {
+                        [](const auto&) -> Value {
                             throw std::runtime_error("Unsupported type for binop");
                         }
                     },
@@ -401,7 +410,7 @@ namespace mr {
                                 throw std::runtime_error("Invalid UnOp on integer");
                             }
                         },
-                        [&](const auto& _skip) -> Value {
+                        [&](const auto&) -> Value {
                             throw std::runtime_error("Invalid type for unary op");
                         }
                     },
@@ -409,28 +418,55 @@ namespace mr {
                 );
             } // namespace middle_interpreter
 
-            Value interp_operand(const ir::Operand& op) const {
+            Value interp_operand(const ir::Operand& op) {
                 return std::visit(
                     overloaded{
                         [&](const ir::Const& v) { return Value(v.scalar, v.ty); },
-                        [&](const auto& v) { return interp_place(v.val); }
+                        [&](const ir::Move& m) { return std::move(interp_place(m.val)); },
+                        [&](const ir::Copy& c) { return interp_place(c.val); }
                     },
                     op
                 );
             }
 
             Value& interp_place(const ir::Place& place) {
-                // do projections to get value, for now just get valuex
-                return _stack.frame().values[place.local.id];
+                // do projections to get value, for now just get values
+                auto val = &_stack.frame().values[place.local.id];
+                for (auto& proj : place.projections) {
+                    val = &val->project(proj);
+                }
+                return *val;
             }
             const Value& interp_place(const ir::Place& place) const {
                 // do projections to get value, for now just get value
-                return _stack.frame().values[place.local.id];
+                // do projections to get value, for now just get values
+                const Value* val = &_stack.frame().values[place.local.id];
+                for (auto& proj : place.projections) {
+                    val = &val->project(proj);
+                }
+                return *val;
             }
 
-            Value local_to_value(const ir::Local& local) {
+            Value local_to_uninit_value(const ir::Local& local) {
                 // for now we just have scalars with size of type
-                return Value(Scalar{0, local.ty.size()}, local.ty);
+                return uninit_val_of_type(local.ty);
+            }
+
+            Value uninit_val_of_type(const types::Ty& type) {
+                return std::visit(
+                    overloaded{
+                        [&](const types::TupleTy& tup) {
+                            std::vector<Value> vals;
+                            vals.reserve(tup.tys.size());
+                            for (const auto& t : tup.tys) {
+                                vals.emplace_back(uninit_val_of_type(t));
+                            }
+                            return Value(Aggregate{std::move(vals)}, type);
+                        },
+                        [&](const auto&) { return Value(Scalar{0, type.size()}, type); }
+                    },
+                    type
+                );
             }
 
             // jumping and stuff

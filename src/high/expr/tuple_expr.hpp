@@ -20,6 +20,23 @@ namespace mr {
                 }
             }
         };
+
+        struct TupleIndexExpr : public Expr {
+            U<Expr>    expr;
+            U<Literal> index;
+
+            TupleIndexExpr(U<Expr> _expr, U<Literal> _lit)
+                : Expr(), expr(std::move(_expr)), index(std::move(_lit)) {}
+
+            void print(const int depth) const override {
+                const auto indent = std::string(depth, '\t');
+                std::cout << indent << "Tuple Index Expr:\n";
+                std::cout << indent << "  Expr:\n";
+                expr->print(depth + 1);
+                std::cout << indent << "  Index:\n";
+                index->print(depth + 1);
+            }
+        };
     } // namespace expr
 
 } // namespace mr

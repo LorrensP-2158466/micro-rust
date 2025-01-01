@@ -12,7 +12,7 @@ namespace mr {
             Negate,    // -
         };
 
-        static const char* const unary_op_to_str(UnaryOp op) {
+        static const char* unary_op_to_str(UnaryOp op) {
             switch (op) {
             case UnaryOp::Borrow:
                 return "'&'";

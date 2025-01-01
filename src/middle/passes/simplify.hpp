@@ -58,7 +58,7 @@ namespace mr {
 
                     size_t original_index = 0;
                     size_t used_index = 0;
-                    std::erase_if(blocks.raw_blocks(), [&](auto& bb) {
+                    std::erase_if(blocks.raw_blocks(), [&](auto&) {
                         if (!reachable[original_index]) {
                             original_index += 1;
                             return true;
@@ -80,7 +80,6 @@ namespace mr {
                 void simplify() {
                     std::vector<ir::BlockId> merged_blocks{};
                     bool                     changed;
-                    size_t                   tracker = 0;
                     do {
                         changed = false;
                         for (const auto bb : blocks.indices()) {
@@ -166,7 +165,7 @@ namespace mr {
                                         bb.terminator() = Terminator(ir::Return{});
                                     }
                                 },
-                                [](const auto& _) {}
+                                [](const auto&) {}
                             },
                             bb.terminator()
                         );

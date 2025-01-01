@@ -7,8 +7,10 @@
 #include <fmt/format.h>
 #include <functional>
 #include <iostream>
+#include <ranges>
 #include <variant>
 #include <vector>
+
 namespace mr {
     namespace middle {
         namespace ir {
@@ -18,6 +20,13 @@ namespace mr {
             )
             ENUM_DEFINE(UnOp, Not, Neg)
 
+            struct Field {
+                size_t field;
+            };
+
+            using projection_variant_t = std::variant<Field>;
+            struct Projection : public projection_variant_t {};
+
             // a place is just a location in memory, this will be usefull when
             // doing stuff like: Struct/Tuple Field, slicess, index, deref, ...
             // because when constructing byte code/llvm IR/... this will tell us
@@ -25,13 +34,25 @@ namespace mr {
             // this is again from the rust compiler, but a little different
             // it uses a project list
             struct Place {
-                LocalId local;
-                // TODO: projections: List<Projection>
+                LocalId                 local;
+                std::vector<Projection> projections;
 
                 Place(LocalId l) : local(l) {}
 
+                void field(size_t field_idx) {
+                    projections.emplace_back(Field{field_idx});
+                }
+
                 friend std::ostream& operator<<(std::ostream& o, const Place& p) {
-                    o << p.local;
+                    if (p.projections.empty()) { return o << p.local; }
+
+                    o << std::string(p.projections.size(), '(') << p.local;
+                    for (const auto& proj : p.projections) {
+                        std::visit(
+                            [&o](const Field& val) { o << '.' << val.field; }, proj
+                        );
+                        o << ": ?)";
+                    }
                     return o;
                 }
             };

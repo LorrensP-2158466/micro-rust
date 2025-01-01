@@ -54,7 +54,7 @@ namespace mr {
 
             TypeKind kind;
 
-            Type(): kind(primitive_type::Unit){}
+            Type() : kind(primitive_type::Unit) {}
             Type(TypeKind k) : kind(std::move(k)) {}
 
             bool is_primitive() const {
@@ -67,7 +67,7 @@ namespace mr {
                         [](const primitive_type& pt) -> std::string {
                             return primitive_type_to_string(pt);
                         },
-                        [](const Str& t) { return std::string("&str"); },
+                        [](const Str&) { return std::string("&str"); },
                         [](const Tuple& t) {
                             std::string s = "(";
                             for (const auto& ty : t) {
@@ -80,7 +80,7 @@ namespace mr {
                         [](const Array& t) {
                             return fmt::format("[{}; N]", t.first->to_string());
                         },
-                        [](const auto& s) -> std::string {
+                        [](const auto&) -> std::string {
                             TODO("USER DEFINED TYPES NOT SUPPORTED");
                             return "";
                         },

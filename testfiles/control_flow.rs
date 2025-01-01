@@ -7,10 +7,6 @@ fn fib(n: u32) -> u32 {
     }
 }
 
-
-
-
-
 fn main() {
     let mut x = 0;
     while x <= 25{

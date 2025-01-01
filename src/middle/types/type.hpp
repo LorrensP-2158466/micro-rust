@@ -16,7 +16,7 @@
 
 #define STANDARD_TYPE_VARIANT(name)                                                      \
     struct name {                                                                        \
-        friend bool operator==(const name& _l, const name& _r) {                         \
+        friend bool operator==(const name&, const name&) {                               \
             return true;                                                                 \
         }                                                                                \
     };
@@ -116,7 +116,7 @@ namespace mr {
                 friend std::ostream& operator<<(std::ostream& o, const IntVarValue& t) {
                     o << std::visit(
                         overloaded{
-                            [](const UnknownTy& t) { return "{integer}"; },
+                            [](const UnknownTy&) { return "{integer}"; },
                             [](const IntTy& t) { return IntTy_to_string(t); },
                             [](const UIntTy& t) { return UIntTy_to_string(t); }
                         },
@@ -129,7 +129,7 @@ namespace mr {
                 friend std::ostream& operator<<(std::ostream& o, const FloatVarValue& t) {
                     o << std::visit(
                         overloaded{
-                            [](const UnknownTy& t) { return "{float}"; },
+                            [](const UnknownTy&) { return "{float}"; },
                             [](const FloatTy& t) { return FloatTy_to_string(t); },
                         },
                         t
@@ -139,7 +139,7 @@ namespace mr {
             };
 
             struct InferTy : public std::variant<TypeVar, IntVar, FloatVar> {
-                inline const char* const infer_ty_to_string() const {
+                inline const char* infer_ty_to_string() const {
                     // yeah this is weird
                     switch (this->index()) {
                     case 0:
@@ -202,10 +202,10 @@ namespace mr {
                 size_t size() const noexcept {
                     return std::visit(
                         overloaded{
-                            [](const FunctionType* const& t) { return 8ul; },
-                            [](const NeverTy& t) { return 0ul; },
-                            [](const UnitTy& t) { return 0ul; },
-                            [](const BoolTy& t) { return 8ul; },
+                            [](const FunctionType* const&) { return 8ul; },
+                            [](const NeverTy&) { return 0ul; },
+                            [](const UnitTy&) { return 0ul; },
+                            [](const BoolTy&) { return 8ul; },
                             [](const IntTy& t) { return size_of_int_ty(t); },
                             [](const UIntTy& t) { return size_of_u_int_ty(t); },
                             [](const FloatTy& t) { return size_of_float_ty(t); },
@@ -220,7 +220,7 @@ namespace mr {
                                     }
                                 );
                             },
-                            [](const auto& t) {
+                            [](const auto&) {
                                 std::runtime_error("SIZE OF UNKOWN WTF?!");
                                 return 0ul;
                             },
@@ -235,10 +235,10 @@ namespace mr {
                             [](const FunctionType* const& t) {
                                 return function_type_to_string(t);
                             },
-                            [](const NeverTy& t) { return "!"s; },
-                            [](const UnitTy& t) { return "()"s; },
-                            [](const BoolTy& t) { return "bool"s; },
-                            [](const UnknownTy& t) { return "Unknown"s; },
+                            [](const NeverTy&) { return "!"s; },
+                            [](const UnitTy&) { return "()"s; },
+                            [](const BoolTy&) { return "bool"s; },
+                            [](const UnknownTy&) { return "Unknown"s; },
                             [](const InferTy& t) -> std::string {
                                 return t.infer_ty_to_string();
                             },
@@ -260,7 +260,7 @@ namespace mr {
                                 s << ')';
                                 return s.str();
                             },
-                            [](const auto& t) { return "buhhhhh"; }
+                            [](const auto&) { return "buhhhhh"; }
                         },
                         ft
                     );

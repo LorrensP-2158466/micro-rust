@@ -122,13 +122,18 @@ namespace mr {
                         basic_block,
                         build_in_scope<void>([&](IrBuilder& builder) -> BlockWith<void> {
                             for (const auto& stmt : tast_block._statements) {
-                                unpack(basic_block, build_statement(*stmt, basic_block));
+                                unpack(
+                                    basic_block,
+                                    builder.build_statement(*stmt, basic_block)
+                                );
                             }
                             // check for tail expression
                             if (tast_block._tail)
                                 unpack(
                                     basic_block,
-                                    expr_into_place(place, *tast_block._tail, basic_block)
+                                    builder.expr_into_place(
+                                        place, *tast_block._tail, basic_block
+                                    )
                                 );
                             return basic_block.empty();
                         })
@@ -163,19 +168,25 @@ namespace mr {
                         overloaded{
                             [&](const AssignExpr& assign) {
                                 const auto rhs =
-                                    unpack(block, expr_as_rvalue(*assign.expr, block));
-                                const auto lhs = local_by_name(assign.id);
-                                _blocks.push_assign(block, Place(lhs), std::move(rhs));
+                                    unpack(block, expr_as_rvalue(*assign.rhs, block));
+                                const auto lhs =
+                                    unpack(block, expr_as_place(*assign.lhs, block));
+                                _blocks.push_assign(
+                                    block, std::move(lhs), std::move(rhs)
+                                );
                                 return block.empty();
                             },
                             [&](const AssignOpExpr& assign) {
                                 const auto rhs =
-                                    unpack(block, expr_as_operand(*assign.expr, block));
-                                const auto lhs = local_by_name(assign.id);
+                                    unpack(block, expr_as_operand(*assign.rhs, block));
+                                const auto lhs =
+                                    unpack(block, expr_as_place(*assign.lhs, block));
                                 const auto result = RValue(
                                     BinaryOp{assign.op, Operand::copy(Place(lhs)), rhs}
                                 );
-                                _blocks.push_assign(block, Place(lhs), std::move(result));
+                                _blocks.push_assign(
+                                    block, std::move(lhs), std::move(result)
+                                );
                                 return block.empty();
                             },
                             [&](const Break& br) {
@@ -204,12 +215,12 @@ namespace mr {
                                 // are unreachable
                                 return _blocks.create_new_block().empty();
                             },
-                            [&](const Continue& cont) {
+                            [&](const Continue&) {
                                 // this needs a goto to the loop block
                                 _need_continues.back().push_back(block);
                                 return _blocks.create_new_block().empty();
                             },
-                            [&](const auto& buh) {
+                            [&](const auto&) {
                                 const auto tmp = Place(
                                     create_local("", expr.type, Mutability::Immutable)
                                 );
@@ -255,7 +266,7 @@ namespace mr {
 
                 // introduces a temporary if expr is a place
                 BlockWith<Operand> expr_as_operand(const Expr& expr, BlockId block) {
-                    auto handle_temp_move = [&](const auto& expr_type) {
+                    auto handle_temp_move = [&]() {
                         const auto temp_place = Place(create_local(
                             "temp", _inferer.resolve(expr.type), Mutability::Immutable
                         ));
@@ -270,15 +281,14 @@ namespace mr {
                                 ));
                             },
                             [&](const Identifier& id) {
-                                const auto local = _locals_table.look_up(id.symbol);
-                                if (!local)
-                                    throw std::runtime_error(
-                                        "LOCAL CANT BE FOUND IN BUILDER"
-                                    );
-                                const auto ty = _inferer.resolve(expr.type);
-                                return block.with(Operand::copy(Place(*local)));
+                                auto place = unpack(block, expr_as_place(expr, block));
+                                return block.with(Operand::copy(std::move(place)));
                             },
-                            [&](const auto& buh) { return handle_temp_move(expr); },
+                            [&](const FieldExpr& fe) {
+                                auto place = unpack(block, expr_as_place(expr, block));
+                                return block.with(Operand::copy(std::move(place)));
+                            },
+                            [&](const auto&) { return handle_temp_move(); },
                         },
                         expr.kind
                     );
@@ -308,9 +318,9 @@ namespace mr {
                                 std::vector<Operand> operands;
                                 operands.reserve(tup.exprs.size());
                                 for (const auto& expr : tup.exprs) {
-                                    operands.push_back(std::move(
+                                    operands.push_back(
                                         unpack(block, expr_as_operand(expr, block))
-                                    ));
+                                    );
                                 }
                                 return block.with(RValue(
                                     Aggregate{AggrKind::Tuple, std::move(operands)}
@@ -322,7 +332,7 @@ namespace mr {
                                 );
                                 return block.with(RValue(AsIs{std::move(operand)}));
                             },
-                            [&](const auto& s) {
+                            [&](const auto&) {
                                 // these are not rvalues, rustc creates an operand and
                                 // returns that as is guess that's the simplest way
                                 const auto operand =
@@ -350,7 +360,9 @@ namespace mr {
                                 // goto then/else from conditinonal
                                 _blocks.terminate(
                                     block,
-                                    Terminator(CondGoTo{cond_op, else_blk, then_blk})
+                                    Terminator(CondGoTo{
+                                        cond_op, {else_blk, then_blk}
+                                })
                                 );
 
                                 // we have to create the short-circuit structure:
@@ -480,9 +492,9 @@ namespace mr {
                                 // goto then/else from conditinonal
                                 _blocks.terminate(
                                     block,
-                                    Terminator(
-                                        CondGoTo{cond_op, begin_else_blk, begin_then_blk}
-                                    )
+                                    Terminator(CondGoTo{
+                                        cond_op, {begin_else_blk, begin_then_blk}
+                                })
                                 );
 
                                 // we have build both branches, we now join them into a
@@ -516,48 +528,67 @@ namespace mr {
                                     place,
                                     [&](IrBuilder& builder) {
                                         const auto body_block =
-                                            _blocks.create_new_block();
-                                        _blocks.go_to(loop_block, body_block);
+                                            builder._blocks.create_new_block();
+                                        builder._blocks.go_to(loop_block, body_block);
 
                                         // return value of loop BODY should be unit
-                                        const auto body_tmp = unit_temp();
+                                        const auto body_tmp = builder.unit_temp();
                                         const auto body_end =
-                                            expr_into_place(
-                                                body_tmp, *loop.body, body_block
-                                            )
+                                            builder
+                                                .expr_into_place(
+                                                    body_tmp, *loop.body, body_block
+                                                )
                                                 .into_block();
-                                        spdlog::info(
-                                            "BODY BLOCK {} <-> END BLOCK {}",
-                                            body_block.id,
-                                            body_end.id
-                                        );
-                                        _blocks.go_to(body_end, loop_block);
+                                        builder._blocks.go_to(body_end, loop_block);
                                     }
                                 );
                             },
-                            [&](const Break& br) {
+                            [&](const Break&) {
                                 // break can't assing to a place
                                 block = build_expr_stmt(expr, block).into_block();
                                 return block.empty();
                             },
-                            [&](const tast::Return& ret) {
+                            [&](const tast::Return&) {
                                 block = build_expr_stmt(expr, block).into_block();
                                 return block.empty();
                             },
-                            [&](const tast::Continue& cont) {
+                            [&](const tast::Continue&) {
                                 block = build_expr_stmt(expr, block).into_block();
                                 return block.empty();
                             },
-                            [&](const Unit& unit) {
+                            [&](const Unit&) {
                                 //_blocks.push_unit_assign(block, unit_temp());
                                 return block.empty();
                             },
-                            [&](const auto& _) {
+                            [&](const auto&) {
                                 const auto rvalue =
                                     unpack(block, expr_as_rvalue(expr, block));
                                 _blocks.push_assign(block, place, std::move(rvalue));
                                 return block.empty();
                             },
+                        },
+                        expr.kind
+                    );
+                }
+
+                BlockWith<Place> expr_as_place(const Expr& expr, BlockId block) {
+                    // currently onlly FieldExpr
+                    return std::visit(
+                        overloaded{
+                            [&](const FieldExpr& fe) {
+                                auto place =
+                                    unpack(block, expr_as_place(*fe.expr, block));
+                                place.field(fe.idx);
+                                return block.with(place);
+                            },
+                            [&](const Identifier& ident) {
+                                return block.with(Place(local_by_name(ident.symbol)));
+                            },
+
+                            [&](const auto& e) {
+                                fmt::println("OTHER EXPR: {} AS PLACE", e);
+                                return unreachable<BlockWith<Place>>();
+                            }
                         },
                         expr.kind
                     );

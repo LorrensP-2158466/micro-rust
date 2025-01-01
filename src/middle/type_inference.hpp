@@ -57,7 +57,7 @@ namespace mr {
                                 );
                                 return o.str();
                             },
-                            [&](const auto& _) {
+                            [&](const auto&) {
                                 std::ostringstream o;
                                 o << t;
                                 return o.str();
@@ -101,20 +101,20 @@ namespace mr {
                                                 );
                                             return std::visit(
                                                 overloaded{
-                                                    [&](const UnknownTy& _) {
+                                                    [&](const UnknownTy&) {
                                                         throw std::runtime_error(
                                                             "Cant resolve type variable"
                                                         );
                                                         return ty;
                                                     },
-                                                    [&](const InferTy& _) {
+                                                    [&](const InferTy&) {
                                                         exit(1);
                                                         return resolve(*t);
                                                     },
-                                                    [&](const NeverTy& _) {
+                                                    [&](const NeverTy&) {
                                                         return unit();
                                                     },
-                                                    [&](const auto& ty) { return *t; }
+                                                    [&](const auto&) { return *t; }
                                                 },
                                                 *t
                                             );
@@ -160,7 +160,7 @@ namespace mr {
                                 }
                                 return ty;
                             },
-                            [&](auto _) { return ty; }
+                            [&](auto) { return ty; }
                         },
                         ty
                     );
@@ -179,8 +179,8 @@ namespace mr {
                                     );
                                 return std::visit(
                                     overloaded{
-                                        [&](const InferTy& _) { return resolve(*t); },
-                                        [&](const auto& _) { return ty; }
+                                        [&](const InferTy&) { return resolve(*t); },
+                                        [&](const auto&) { return ty; }
                                     },
                                     *t
                                 );
@@ -283,7 +283,7 @@ namespace mr {
                                 );
                                 return Ty{TupleTy{std::move(tys)}};
                             },
-                            [&](const auto& s) -> Ty {
+                            [&](const auto&) -> Ty {
                                 TODO("UNSUPPORTED TYPE");
                                 return unreachable<Ty>();
                             },
@@ -311,11 +311,11 @@ namespace mr {
                     };
                     return std::visit(
                         overloaded{
-                            [&](const NeverTy& _t, const NeverTy& _u) { return some(t); },
+                            [&](const NeverTy&, const NeverTy&) { return some(t); },
                             [&](const InferTy& ti, const InferTy& ui) {
                                 return std::visit(
                                     overloaded{
-                                        [&](const TypeVar& ttv, const TypeVar& uv) {
+                                        [&](const TypeVar&, const TypeVar&) {
                                             TODO("EQUATE TWO TYPE VARIABLES");
                                             return no_type();
                                         },
@@ -338,9 +338,7 @@ namespace mr {
                                         [&](const FloatVar& tfv, const FloatVar& utf) {
                                             return eq_float_vars(tfv, utf);
                                         },
-                                        [](const auto& _t, const auto& _u) {
-                                            return no_type();
-                                        }
+                                        [](const auto&, const auto&) { return no_type(); }
                                     },
                                     ti,
                                     ui
@@ -390,26 +388,26 @@ namespace mr {
                                 }
                                 return no_type();
                             },
-                            [&](const InferTy& it, const FloatTy& fu) {
+                            [&](const InferTy& it, const FloatTy&) {
                                 if (!it.is_float_var()) return no_type();
                                 return eq_infer_and_ty(it, u);
                             },
-                            [&](const InferTy& it, const BoolTy& _u) {
+                            [&](const InferTy& it, const BoolTy&) {
                                 return handle_infer(it, u);
                             },
-                            [&](const BoolTy& _t, const InferTy& ut) {
+                            [&](const BoolTy&, const InferTy& ut) {
                                 return handle_infer(ut, t);
                             },
-                            [&](const InferTy& it, const UnitTy& uu) {
+                            [&](const InferTy& it, const UnitTy&) {
                                 return handle_infer(it, u);
                             },
-                            [&](const UnitTy& it, const InferTy& iu) {
+                            [&](const UnitTy&, const InferTy& iu) {
                                 return handle_infer(iu, t);
                             },
-                            [&](const InferTy& it, const TupleTy ut) {
+                            [&](const InferTy& it, const TupleTy) {
                                 return handle_infer(it, u);
                             },
-                            [&](const TupleTy& it, const InferTy iu) {
+                            [&](const TupleTy&, const InferTy iu) {
                                 return handle_infer(iu, t);
                             },
                             // it is possible that tuple need to be inferred recursively
@@ -427,33 +425,33 @@ namespace mr {
                                 }
                                 return some(Ty{TupleTy{std::move(tys)}});
                             },
-                            [&](const NeverTy& _t, const InferTy& iu) {
+                            [&](const NeverTy&, const InferTy& iu) {
                                 if (auto type_var = std::get_if<TypeVar>(&iu)) {
                                     _type_vars.assign(*type_var, t);
                                 }
                                 return some(u);
                             },
-                            [&](const InferTy& it, const NeverTy& _u) {
+                            [&](const InferTy& it, const NeverTy&) {
                                 if (auto type_var = std::get_if<TypeVar>(&it)) {
                                     _type_vars.assign(*type_var, u);
                                 }
                                 return some(t);
                             },
-                            [&](const NeverTy& _t, const auto& _u) { return some(u); },
-                            [&](const auto& _t, const NeverTy& _u) { return some(t); },
-                            [&](const auto& _t, const auto& _u) { return no_type(); }
+                            [&](const NeverTy&, const auto&) { return some(u); },
+                            [&](const auto&, const NeverTy&) { return some(t); },
+                            [&](const auto&, const auto&) { return no_type(); }
                         },
                         t,
                         u
                     );
                 }
 
-                std::optional<Ty> eq_infer_and_ty(const InferTy& it, const Ty& u) {
+                std::optional<Ty> eq_infer_and_ty(const InferTy&, const Ty&) {
                     TODO("Cant infer from InferTy and auto _u");
                     return unreachable<std::optional<Ty>>();
                 }
 
-                std::optional<Ty> eq_float_vars(const FloatVar& tf, const FloatVar& uf) {
+                std::optional<Ty> eq_float_vars(const FloatVar&, const FloatVar&) {
                     TODO("EQ FLOAT VARS NOT SUPPORTED");
                     return unreachable<std::optional<Ty>>();
                 }
@@ -464,7 +462,7 @@ namespace mr {
                 }
 
                 std::optional<Ty>
-                eq_floatvar_type_var(const FloatVar& iv, const TypeVar tv) {
+                eq_floatvar_type_var(const FloatVar&, const TypeVar) {
                     TODO("EQ FLOAT VAR WITH TYPE VAR NOT SUPPORTED YET");
                     return none<Ty>();
                 }
@@ -513,12 +511,12 @@ namespace mr {
                 bool is_integer_type(const Ty& ty) {
                     return std::visit(
                         overloaded{
-                            [](const NeverTy& t) { return true; }, // can be
+                            [](const NeverTy&) { return true; }, // can be
                             [&](const InferTy& t) {
                                 return std::visit(
                                     overloaded{
-                                        [](const IntVar& t) { return true; },
-                                        [](const FloatVar& t) { return false; },
+                                        [](const IntVar&) { return true; },
+                                        [](const FloatVar&) { return false; },
                                         [&](const TypeVar& t) {
                                             return is_integer_type(ty_of_type_var(t));
                                         }
@@ -526,9 +524,9 @@ namespace mr {
                                     t
                                 );
                             },
-                            [](const IntTy& t) { return true; },
-                            [](const UIntTy& t) { return true; },
-                            [](const auto& t) { return false; }
+                            [](const IntTy&) { return true; },
+                            [](const UIntTy&) { return true; },
+                            [](const auto&) { return false; }
                         },
                         ty
                     );

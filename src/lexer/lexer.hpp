@@ -24,7 +24,7 @@ namespace mr {
         );
 
       public:
-        Lexer(std::istream& in, const bool debug) : yyFlexLexer(&in) {}
+        Lexer(std::istream& in, const bool) : yyFlexLexer(&in) {}
 
         int yylex(Parser::value_type* const lval, Parser::location_type* const lloc);
     };

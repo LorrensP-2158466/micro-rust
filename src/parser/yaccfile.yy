@@ -64,6 +64,7 @@ using namespace mr::expr;
 %token <Token> PLUS_EQ MIN_EQ MUL_EQ DIV_EQ
 %token <Token> LBRACE RBRACE LPAREN RPAREN SEMICOLON COLON
 %token <Token> AMPERSAND /* & */ OR /* | */ AMPERSAND_MUT
+%token <Token> DOT
 
 %nterm <std::vector<U<Stmt>>> stmt_list 
 %nterm <U<Stmt>> stmt 
@@ -86,8 +87,9 @@ using namespace mr::expr;
 %nterm <U<Ast>> program 
 %nterm <U<IfElse>> if_expr
 %nterm <uint8_t> ref_add
-%nterm <U<BinOpExpr>> bin_op_expr
+%nterm <U<Expr>> bin_op_expr
 %nterm <U<CallExpr>> call_expr
+%nterm <U<TupleIndexExpr>> tuple_index_expr
 %nterm <std::vector<U<Expr>>> call_expr_args
 %nterm <U<WhileLoop>> while_expr
 %nterm <U<Literal>> literal
@@ -107,8 +109,8 @@ using namespace mr::expr;
 %left STAR SLASH MOD                                 // left to right
 // %right AS                                            // left to right type casting
 %right UMINUS DEREF NOT REF REF_MUT                 // Unary operators - * ! & &mut
-// %left METHOD_CALL FIELD_ACCESS FUNC_CALL            // Field expressions, Function calls, array indexing
-
+%left METHOD_CALL FIELD_ACCESS FUNC_CALL            // Field expressions, Function calls, array indexing
+%left PATH // paths are identifiers for now
 
 // for the expr_wo_block, we need some ordering as well
 %left CALL_INDEX
@@ -262,15 +264,6 @@ block_expr
     | LBRACE RBRACE  { $$ = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::make_unique<Unit>()); }
     ;
 
-assignment
-    : IDENTIFIER EQ expr { $$ = std::make_unique<AssignExpr>($1.string_value(), AssignOp::Eq, std::move($3));}
-    | IDENTIFIER PLUS_EQ expr { $$ = std::make_unique<AssignExpr>($1.string_value(), AssignOp::PlusEq, std::move($3));}
-    | IDENTIFIER MIN_EQ expr { $$ = std::make_unique<AssignExpr>($1.string_value(), AssignOp::MinEq, std::move($3));}
-    | IDENTIFIER DIV_EQ expr { $$ = std::make_unique<AssignExpr>($1.string_value(), AssignOp::DivEq, std::move($3));}
-    | IDENTIFIER MUL_EQ expr { $$ = std::make_unique<AssignExpr>($1.string_value(), AssignOp::MulEq, std::move($3));}
-    ;
-
-
 unary_op_expr
     : MINUS expr %prec UMINUS { $$ = std::make_unique<UnaryOpExpr>(UnaryOp::Negate, std::move($2));}
     | STAR expr %prec DEREF { $$ = std::make_unique<UnaryOpExpr>(UnaryOp::Deref, std::move($2));}
@@ -292,6 +285,12 @@ bin_op_expr
     | expr GT expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Gt, std::move($3)); }
     | expr GE expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::GtEq, std::move($3)); }
     | expr LE expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::LtEq, std::move($3)); }
+    // this fixes shift/reduce conflicts
+    | expr EQ expr      { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::Eq, std::move($3));}
+    | expr PLUS_EQ expr { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::PlusEq, std::move($3));}
+    | expr MIN_EQ expr  { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::MinEq, std::move($3));}
+    | expr DIV_EQ expr  { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::DivEq, std::move($3));}
+    | expr MUL_EQ expr  { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::MulEq, std::move($3));}
     ;
 
 literal
@@ -320,6 +319,10 @@ while_expr
     : WHILE expr block_expr {$$ = std::make_unique<WhileLoop>(std::move($2), std::move($3)); }
     ;
 
+tuple_index_expr
+    : expr DOT literal { $$ = std::make_unique<TupleIndexExpr>(std::move($1), std::move($3));}
+    ;
+
 
 expr
     : expr_w_block { DEFAULT_ACTION($$, $1);}
@@ -342,12 +345,12 @@ expr_w_block
     | block_expr { DEFAULT_ACTION($$, $1); }
     ;
 expr_wo_block
-    : assignment %prec BIN_OP { DEFAULT_ACTION($$, $1); }
+    : LPAREN expr RPAREN { DEFAULT_ACTION($$, $2); }
     | bin_op_expr %prec BIN_OP{ DEFAULT_ACTION($$, $1); }
-    | IDENTIFIER  { $$ = std::make_unique<Identifier>($1.string_value()); }
+    | tuple_index_expr %prec FIELD_ACCESS { DEFAULT_ACTION($$, $1); }
+    | IDENTIFIER %prec PATH { $$ = std::make_unique<Identifier>($1.string_value()); }
     | unary_op_expr %prec UNARY {DEFAULT_ACTION($$, $1); }
-    | LPAREN expr RPAREN { DEFAULT_ACTION($$, $2); }
-    | LPAREN RPAREN { $$ = std::make_unique<Unit>(); }
+    | LPAREN RPAREN %prec PATH { $$ = std::make_unique<Unit>(); }
     | call_expr %prec CALL_INDEX { DEFAULT_ACTION($$, $1); }
     | RETURN expr %prec CONTROL_FLOW { $$ = std::make_unique<Return>(std::move($2)); }
     | BREAK expr %prec CONTROL_FLOW { $$ = std::make_unique<Break>(std::move($2)); }

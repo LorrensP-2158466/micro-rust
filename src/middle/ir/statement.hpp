@@ -73,7 +73,7 @@ namespace mr {
                             [&](const SPrintLn& print) {
                                 o << "PRINT(\"" << print._string << "\")" << std::endl;
                             },
-                            [&](const auto& _skip) {
+                            [&](const auto&) {
                                 o << "UNKNOWN STATEMENT" << std::endl;
                             }
                         },

@@ -32,7 +32,7 @@
 
 
 /**
- ** \file /Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp
+ ** \file yaccfile.tab.hh
  ** Define the mr::parser class.
  */
 
@@ -42,10 +42,10 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_PARSER_TAB_HPP_INCLUDED
-# define YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_PARSER_TAB_HPP_INCLUDED
+#ifndef YY_YY_YACCFILE_TAB_HH_INCLUDED
+# define YY_YY_YACCFILE_TAB_HH_INCLUDED
 // "%code requires" blocks.
-#line 16 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 16 "src/parser/yaccfile.yy"
 
 namespace mr {
     class Lexer;
@@ -63,7 +63,7 @@ using namespace mr;
 using namespace mr::ast;
 using namespace mr::expr;
 
-#line 67 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 67 "yaccfile.tab.hh"
 
 
 # include <cstdlib> // std::abort
@@ -197,9 +197,9 @@ using namespace mr::expr;
 # define YYDEBUG 1
 #endif
 
-#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 5 "src/parser/yaccfile.yy"
 namespace mr {
-#line 203 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 203 "yaccfile.tab.hh"
 
 
 
@@ -3239,11 +3239,11 @@ switch (yykind)
   };
 
 
-#line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 5 "src/parser/yaccfile.yy"
 } // mr
-#line 3245 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 3245 "yaccfile.tab.hh"
 
 
 
 
-#endif // !YY_YY_USERS_LORRENS_INFORMATICA_MASTER1_COMPILERS_MINI_RUST_SRC_PARSER_PARSER_TAB_HPP_INCLUDED
+#endif // !YY_YY_YACCFILE_TAB_HH_INCLUDED

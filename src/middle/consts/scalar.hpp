@@ -105,7 +105,6 @@ namespace mr {
 
                 // Calculate bit sizes
                 const size_t source_bits = size * 8;
-                const size_t target_bits = sizeof(T) * 8;
 
                 int64_t signed_value = sign_extend_64(data, source_bits);
 

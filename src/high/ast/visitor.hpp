@@ -31,7 +31,7 @@ namespace mr {
                 }
             }
 
-            virtual ItemT visit_fun_decl_item(const ast::FunDecl& p) {
+            virtual ItemT visit_fun_decl_item(const ast::FunDecl&) {
                 TODO("Implement visit_fun_decl_item");
             };
 
@@ -72,6 +72,8 @@ namespace mr {
                     return visit_identifier_expr(*id);
                 else if (auto tup = dynamic_cast<const expr::TupleExpr*>(&expr))
                     return visit_tuple_expr(*tup);
+                else if (auto tup = dynamic_cast<const expr::TupleIndexExpr*>(&expr))
+                    return visit_tuple_idx_expr(*tup);
                 else if (auto unit = dynamic_cast<const expr::Unit*>(&expr))
                     return visit_unit_expr(*unit);
                 else if (auto ret = dynamic_cast<const expr::Return*>(&expr))
@@ -100,6 +102,7 @@ namespace mr {
             virtual ExprT visit_break_expr(const expr::Break& brk) = 0;
             virtual ExprT visit_continue_expr(const expr::Continue& cont) = 0;
             virtual ExprT visit_tuple_expr(const expr::TupleExpr& cont) = 0;
+            virtual ExprT visit_tuple_idx_expr(const expr::TupleIndexExpr& tup_index) = 0;
         };
     } // namespace ast
 

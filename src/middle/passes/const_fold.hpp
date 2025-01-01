@@ -51,18 +51,18 @@ namespace mr {
                     );
                 }
 
-                void visit_format(const ir::FPrintLn& format) const {}
+                void visit_format(const ir::FPrintLn&) const {}
 
                 void visit_terminator(const ir::Terminator term) {
                     std::visit(
                         overloaded{
-                            [&](const ir::CondGoTo& cgt) {
+                            [&](const ir::CondGoTo&) {
 
                             },
-                            [&](const ir::Call& call) {
+                            [&](const ir::Call&) {
 
                             },
-                            [&](const auto& _skip) {}
+                            [&](const auto&) {}
                         },
                         term
                     );
@@ -71,6 +71,8 @@ namespace mr {
                 void interp_rvalue_into_place(
                     const ir::Place& place, const ir::RValue& value
                 ) {
+                    (void)place;
+                    (void)value;
                     // visit place
                     // std::visit(
                     //     overloaded{
