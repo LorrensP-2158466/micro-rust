@@ -1,5 +1,7 @@
 #pragma once
 
+#include "errors.hpp"
+#include "errors/ctx.hpp"
 #include "high/ast/module.hpp"
 #include "high/expr/module.hpp"
 #include "mr_util.hpp"
@@ -48,6 +50,7 @@ namespace mr {
             static inline const char* RETURN_NAME = "0_RETURN";
             SymbolTable<Ty>&          _scoped_types;
             TyInferer&                _inferer;
+            error::ErrorCtx&          ecx;
 
             FunctionNamer _fn_namer;
 
@@ -66,8 +69,11 @@ namespace mr {
             size_t in_loop = 0;
 
           public:
-            TAstBuilder(SymbolTable<Ty>& scoped_types, TyInferer& inferer)
-                : _scoped_types(scoped_types), _inferer(inferer), _fn_namer() {};
+            TAstBuilder(
+                SymbolTable<Ty>& scoped_types, TyInferer& inferer, error::ErrorCtx& _ecx
+            )
+                : _scoped_types(scoped_types), _inferer(inferer), ecx(_ecx),
+                  _fn_namer() {};
 
             ~TAstBuilder() = default;
 
@@ -112,6 +118,7 @@ namespace mr {
                 auto block_expr = visit_block_expr(fun_decl.body());
                 // check implicit return of body to return type
                 spdlog::info("Equating types in build");
+                // mismatched return types
                 if (!_inferer.eq(return_type, block_expr.type)) {
                     type_error(block_expr.type, return_type);
                 }
@@ -473,7 +480,11 @@ namespace mr {
             Expr visit_assign_expr(const expr::AssignExpr& assign) override {
                 spdlog::info("Building Assign Expr in to TAST");
                 // the left type should match the right type;
-                auto       assignee = visit_expr(*assign._assignee);
+                auto assignee = visit_expr(*assign._assignee);
+                if (!is_assignable(assignee)) {
+                    // TODO: report unassignable expr
+                    throw std::runtime_error("Can't assign to expr");
+                }
                 auto       value = visit_expr(*assign._expr.get());
                 const auto ty = _inferer.eq(assignee.type, value.type);
                 if (!ty) { type_error(value.type, assignee.type); }
@@ -512,6 +523,7 @@ namespace mr {
                 auto value = visit_expr(*ret.val);
                 auto return_type = *_scoped_types.look_up(RETURN_NAME);
                 auto eq_result = _inferer.eq(value.type, return_type);
+                // TODO mismatched returns
                 if (!eq_result) { type_error(value.type, return_type); }
                 // type of return expr is ! so we set the state
                 control_flow_exit = true;
@@ -598,14 +610,10 @@ namespace mr {
                 if (tup_index.index->kind != expr::LiteralKind::Integer) {
                     // TODO: emit faulty tuple index type
                     throw std::runtime_error(fmt::format(
-                        "Cant index into tuple with literal: {}", tup_index.index->symbol
+                        "IDCE: Cant index into tuple with literal: {}, this should be "
+                        "caught by parser",
+                        tup_index.index->symbol
                     ));
-                }
-                // we can only have tuple.0 not tuple.0usize
-                if (tup_index.index->suffix) {
-                    // TODO: emit error: no suffix permitted in tuple index expression
-                    throw std::runtime_error("Tuple Index is not allowed to have a suffix"
-                    );
                 }
                 if (!has_variant<types::TupleTy>(expr.type)) {
                     // TODO: emit error: cant tuple index into non tuple type
@@ -618,10 +626,11 @@ namespace mr {
                 const auto& tuple_type = std::get<TupleTy>(expr.type);
                 auto        result_type = tuple_type.tys[index];
                 if (index >= tuple_type.tys.size()) {
-                    // TODO: emit error: unkown field of tuple
-                    throw std::runtime_error(
-                        fmt::format("No field `{}` on `{}`", index, expr.type)
-                    );
+                    ecx.report_diag(errors::unknown_field(
+                        fmt::format("{}", index),
+                        expr.type,
+                        location(position(nullptr, 5, 7), position(nullptr, 5, 8))
+                    ));
                 }
                 return Expr(
                     FieldExpr(std::make_unique<Expr>(std::move(expr)), index),
@@ -638,6 +647,16 @@ namespace mr {
                     );
                 }
                 return Expr(Identifier(id._id), *type);
+            }
+
+            // --------- checking functions -------------
+
+            // checks if an expr is assignable.
+            // x = 10 or x.0 = 20 // oke
+            // 10 + x = 20 // not assignable
+            bool is_assignable(const Expr& expr) {
+                return has_variant<Identifier>(expr.kind) ||
+                       has_variant<FieldExpr>(expr.kind);
             }
         }; // TAstBuilder class
 

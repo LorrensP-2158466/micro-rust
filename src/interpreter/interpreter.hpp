@@ -205,7 +205,7 @@ namespace mr {
                             std::vector<Value> vals;
                             vals.reserve(aggr.values.size());
                             for (const auto& op : aggr.values) {
-                                vals.emplace_back(std::move(interp_operand(op)));
+                                vals.emplace_back(interp_operand(op));
                             }
                             // we type checked, and don't allow operations that cause UB
                             // this place_value.type is safe

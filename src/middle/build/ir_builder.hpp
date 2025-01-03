@@ -280,11 +280,11 @@ namespace mr {
                                     from_tast_literal(lit), _inferer.resolve(expr.type)
                                 ));
                             },
-                            [&](const Identifier& id) {
+                            [&](const Identifier&) {
                                 auto place = unpack(block, expr_as_place(expr, block));
                                 return block.with(Operand::copy(std::move(place)));
                             },
-                            [&](const FieldExpr& fe) {
+                            [&](const FieldExpr&) {
                                 auto place = unpack(block, expr_as_place(expr, block));
                                 return block.with(Operand::copy(std::move(place)));
                             },

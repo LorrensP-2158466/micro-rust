@@ -44,7 +44,7 @@ namespace mr {
 
                 AssignExpr(U<Expr> _lhs, U<Expr> _rhs)
                     : lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
-                friend std::ostream& operator<<(std::ostream& o, const AssignExpr& as) {
+                friend std::ostream& operator<<(std::ostream& o, const AssignExpr&) {
                     o << "ASSIGN:";
                     return o;
                 }

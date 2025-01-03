@@ -5,7 +5,6 @@ lex file for micro-rust
 */
 #include "lexer.hpp"
 #include "token.hpp"
-#include "span.hpp"
 #include "../parser/parser.tab.hpp"
 #include <string.h>
 
@@ -16,12 +15,10 @@ using namespace mr;
 
 // Define YY_USER_ACTION for updating location
 #define YY_USER_ACTION {\
+  yylloc->step();\
   yylloc->columns(yyleng); \
-  yylval->build(Token{{yytext}, Span{this->prev_token_loc.end, yylloc->end}, (size_t) yyleng});\
-  this->prev_token_loc = *yylloc;\
+  yylval->build(Token{{yytext}, *yylloc});\
   }
-
-
 %}
 %option c++ noyywrap
 %option yyclass="mr::Lexer"
@@ -74,7 +71,7 @@ STR_LITERAL   \"[^\"]*\"
                               literal = literal.substr(1, literal.size() - 2);
 
                               // Update yylval with the processed string
-                              yylval->build(Token{{literal}, Span{this->prev_token_loc.end, yylloc->end}, (size_t)yyleng});
+                              yylval->build(Token{{literal}, *yylloc});
                               return Token_T::STR_LITERAL; 
                             }
 {IDENTIFIER}                { return Token_T::IDENTIFIER; }

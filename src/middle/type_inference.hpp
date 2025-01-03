@@ -236,6 +236,7 @@ namespace mr {
                     using a_pt = ast::primitive_type;
                     return std::visit(
                         overloaded{
+                            [&](const ast::Type::Infer) { return create_type_var(); },
                             [](const a_pt& pt) {
                                 switch (pt) {
                                 case a_pt::Unit:
@@ -461,8 +462,7 @@ namespace mr {
                     return Ty{InferTy{iv}};
                 }
 
-                std::optional<Ty>
-                eq_floatvar_type_var(const FloatVar&, const TypeVar) {
+                std::optional<Ty> eq_floatvar_type_var(const FloatVar&, const TypeVar) {
                     TODO("EQ FLOAT VAR WITH TYPE VAR NOT SUPPORTED YET");
                     return none<Ty>();
                 }

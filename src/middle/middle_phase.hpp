@@ -59,6 +59,7 @@
 #include "traversal/postorder.hpp"
 #include "type_inference.hpp"
 #include "types/type.hpp"
+#include <errors/ctx.hpp>
 #include <iostream>
 #include <memory>
 #include <unordered_map>
@@ -68,6 +69,7 @@ namespace mr {
     namespace middle {
         using namespace types;
         class MiddlePhase {
+            error::ErrorCtx&                 ecx;
             SymbolTable<const ast::FunDecl*> _functions;
             SymbolTable<Ty>                  _scoped_types;
             inference::TyInferer             _inferer;
@@ -75,6 +77,7 @@ namespace mr {
             ir::Ir                           generated_ir;
 
           public:
+            MiddlePhase(error::ErrorCtx& _ecx) : ecx(_ecx) {}
             ir::Ir run(const U<ast::Ast> ast) {
                 // first we collect every global item (fn, struct, enum, const)
                 collect_global_items(*ast.get());
@@ -114,7 +117,7 @@ namespace mr {
                     lookup "0_return" and tada
 
                 */
-                TAstBuilder      tast_builder{_scoped_types, _inferer};
+                TAstBuilder      tast_builder{_scoped_types, _inferer, ecx};
                 build::IrBuilder ir_builder{_inferer};
                 for (const auto& [fn_name, function] : _functions.get_current_scope()) {
                     auto [outer_tast, inners] = tast_builder.build_everything(*function);

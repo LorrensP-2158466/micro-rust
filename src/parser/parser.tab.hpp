@@ -53,7 +53,6 @@ namespace mr {
         class MRDriver;
     }
 }
-#include "lexer/span.hpp"
 #include "lexer/token.hpp"
 #include "high/ast/module.hpp"
 #include "high/expr/module.hpp"
@@ -63,7 +62,7 @@ using namespace mr;
 using namespace mr::ast;
 using namespace mr::expr;
 
-#line 67 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 66 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -199,7 +198,7 @@ using namespace mr::expr;
 
 #line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 namespace mr {
-#line 203 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 202 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 
@@ -1535,7 +1534,7 @@ switch (yykind)
       }
 
       /// The user-facing name of this symbol.
-      std::string name () const YY_NOEXCEPT
+      const char *name () const YY_NOEXCEPT
       {
         return Parser::symbol_name (this->kind ());
       }
@@ -1676,7 +1675,7 @@ switch (yykind)
 
     /// The user-facing name of the symbol whose (internal) number is
     /// YYSYMBOL.  No bounds checking.
-    static std::string symbol_name (symbol_kind_type yysymbol);
+    static const char *symbol_name (symbol_kind_type yysymbol);
 
     // Implementation of make_symbol for each token kind.
 #if 201103L <= YY_CPLUSPLUS
@@ -2954,11 +2953,6 @@ switch (yykind)
     /// are valid, yet not members of the token_kind_type enum.
     static symbol_kind_type yytranslate_ (int t) YY_NOEXCEPT;
 
-    /// Convert the symbol name \a n to a form suitable for a diagnostic.
-    static std::string yytnamerr_ (const char *yystr);
-
-    /// For a symbol, its name in clear.
-    static const char* const yytname_[];
 
 
     // Tables.
@@ -3224,9 +3218,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 700,     ///< Last index in yytable_.
+      yylast_ = 702,     ///< Last index in yytable_.
       yynnts_ = 32,  ///< Number of nonterminal symbols.
-      yyfinal_ = 8 ///< Termination state number.
+      yyfinal_ = 7 ///< Termination state number.
     };
 
 
@@ -3241,7 +3235,7 @@ switch (yykind)
 
 #line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 } // mr
-#line 3245 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 3239 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 

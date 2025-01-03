@@ -35,7 +35,7 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 39 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 38 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 
 #include <string>
 #include <variant>
@@ -1758,702 +1758,688 @@ namespace mr {
           switch (yyn)
             {
   case 2: // program: item_list
-#line 130 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 127 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                 { driver.set_ast(std::make_unique<Ast>(std::move(yystack_[0].value.as < std::vector<U<Item>> > ()))); }
 #line 1764 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
   case 3: // item_list: item_list item
-#line 134 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 131 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                      {yystack_[1].value.as < std::vector<U<Item>> > ().push_back(std::move(yystack_[0].value.as < U<Item> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Item>> > (), yystack_[1].value.as < std::vector<U<Item>> > ());}
 #line 1770 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 4: // item_list: item_list error item
-#line 136 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                           {yystack_[2].value.as < std::vector<U<Item>> > ().push_back(std::move(yystack_[0].value.as < U<Item> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Item>> > (), yystack_[2].value.as < std::vector<U<Item>> > ());}
-#line 1776 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
-    break;
-
-  case 5: // item_list: item
-#line 137 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 4: // item_list: item
+#line 132 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
            {
         auto vec = std::vector<U<Item>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Item> > ()));
         yylhs.value.as < std::vector<U<Item>> > () = std::move(vec) ;}
+#line 1779 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+    break;
+
+  case 5: // item: function_decl
+#line 139 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                  { DEFAULT_ACTION(yylhs.value.as < U<Item> > (), yystack_[0].value.as < U<FunDecl> > ()); }
 #line 1785 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 6: // item_list: error
-#line 141 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-            { std::cerr << "Expected Item\n"; }
-#line 1791 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
-    break;
-
-  case 7: // item: function_decl
+  case 6: // function_decl: FN IDENTIFIER func_decl_args func_ret_type block_expr
 #line 145 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                  { DEFAULT_ACTION(yylhs.value.as < U<Item> > (), yystack_[0].value.as < U<FunDecl> > ()); }
-#line 1797 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
-    break;
-
-  case 8: // function_decl: FN IDENTIFIER func_decl_args func_ret_type block_expr
-#line 151 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
     { 
         yylhs.value.as < U<FunDecl> > () = FunDecl::make_unique(yystack_[3].value.as < Token > ().string_value(), std::move(yystack_[2].value.as < std::vector<FunArg> > ()), std::move(yystack_[1].value.as < Type > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ()));
     }
+#line 1793 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+    break;
+
+  case 7: // func_ret_type: ARROW type
+#line 151 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                 { DEFAULT_ACTION(yylhs.value.as < Type > (), yystack_[0].value.as < Type > ()); }
+#line 1799 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+    break;
+
+  case 8: // func_ret_type: %empty
+#line 153 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+      { yylhs.value.as < Type > () = Type(); }
 #line 1805 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 9: // func_ret_type: ARROW type
-#line 157 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                 { DEFAULT_ACTION(yylhs.value.as < Type > (), yystack_[0].value.as < Type > ()); }
+  case 9: // func_decl_args: LPAREN func_arg_list RPAREN
+#line 158 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                                  {yylhs.value.as < std::vector<FunArg> > () = std::move(yystack_[1].value.as < std::vector<FunArg> > ());}
 #line 1811 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 10: // func_ret_type: %empty
-#line 158 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-      { yylhs.value.as < Type > () = Type(); }
+  case 10: // func_decl_args: LPAREN RPAREN
+#line 159 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                    { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
 #line 1817 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 11: // func_decl_args: LPAREN func_arg_list RPAREN
-#line 163 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                                  {yylhs.value.as < std::vector<FunArg> > () = std::move(yystack_[1].value.as < std::vector<FunArg> > ());}
+  case 11: // func_decl_args: error
+#line 160 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+            { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
 #line 1823 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 12: // func_decl_args: LPAREN RPAREN
+  case 12: // func_arg_list: func_arg_list COMMA func_arg
 #line 164 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                    { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
+                                   { yystack_[2].value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<FunArg> > (), yystack_[2].value.as < std::vector<FunArg> > ());}
 #line 1829 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 13: // func_decl_args: error
+  case 13: // func_arg_list: func_arg
 #line 165 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-            { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
+               { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{}; yylhs.value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); }
 #line 1835 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 14: // func_arg_list: func_arg_list COMMA func_arg
+  case 14: // func_arg: opt_mut IDENTIFIER COLON type
 #line 169 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                                   { yystack_[2].value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<FunArg> > (), yystack_[2].value.as < std::vector<FunArg> > ());}
+                                    { yylhs.value.as < FunArg > () = FunArg{yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[0].value.as < Type > ()), yystack_[3].value.as < bool > ()}; }
 #line 1841 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 15: // func_arg_list: func_arg
+  case 15: // func_arg: opt_mut IDENTIFIER error
 #line 170 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-               { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{}; yylhs.value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); }
+                               { std::cerr << "Expected type declaration\n";}
 #line 1847 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 16: // func_arg: opt_mut IDENTIFIER COLON type
-#line 174 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                                    { yylhs.value.as < FunArg > () = FunArg{yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[0].value.as < Type > ()), yystack_[3].value.as < bool > ()}; }
+  case 16: // stmt: SEMICOLON
+#line 173 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                {yylhs.value.as < U<Stmt> > () = std::make_unique<EmptyStmt>();}
 #line 1853 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 17: // func_arg: opt_mut IDENTIFIER error
-#line 175 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                               { std::cerr << "Expected type declaration\n";}
+  case 17: // stmt: let
+#line 174 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+          { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<LetStmt> > ()); }
 #line 1859 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 18: // stmt: SEMICOLON
-#line 178 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                {yylhs.value.as < U<Stmt> > () = std::make_unique<EmptyStmt>();}
+  case 18: // stmt: RETURN SEMICOLON
+#line 175 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                       {  yylhs.value.as < U<Stmt> > () = std::make_unique<Return>(std::make_unique<Unit>()); }
 #line 1865 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 19: // stmt: let
-#line 179 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-          { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<LetStmt> > ()); }
+  case 19: // stmt: BREAK SEMICOLON
+#line 176 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                      {  yylhs.value.as < U<Stmt> > () = std::make_unique<Break>(std::make_unique<Unit>()); }
 #line 1871 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 20: // stmt: RETURN SEMICOLON
-#line 180 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                       {  yylhs.value.as < U<Stmt> > () = std::make_unique<Return>(std::make_unique<Unit>()); }
+  case 20: // stmt: CONTINUE SEMICOLON
+#line 177 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                         {  yylhs.value.as < U<Stmt> > () = std::make_unique<Continue>(); }
 #line 1877 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 21: // stmt: BREAK SEMICOLON
-#line 181 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                      {  yylhs.value.as < U<Stmt> > () = std::make_unique<Break>(std::make_unique<Unit>()); }
+  case 21: // stmt: expr_stmt
+#line 178 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Expr> > ());}
 #line 1883 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 22: // stmt: CONTINUE SEMICOLON
-#line 182 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                         {  yylhs.value.as < U<Stmt> > () = std::make_unique<Continue>(); }
+  case 22: // stmt: print_ln SEMICOLON
+#line 179 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                         { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[1].value.as < U<PrintLn> > ());}
 #line 1889 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 23: // stmt: expr_stmt
-#line 183 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Expr> > ());}
+  case 23: // stmt: item
+#line 180 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+           { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Item> > ()); }
 #line 1895 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 24: // stmt: print_ln SEMICOLON
+  case 24: // stmt_list: stmt_list stmt
 #line 184 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                         { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[1].value.as < U<PrintLn> > ());}
+                     { yystack_[1].value.as < std::vector<U<Stmt>> > ().push_back(std::move(yystack_[0].value.as < U<Stmt> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Stmt>> > (), yystack_[1].value.as < std::vector<U<Stmt>> > ()); }
 #line 1901 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 25: // stmt: item
-#line 185 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-           { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Item> > ()); }
+  case 25: // stmt_list: stmt_list error
+#line 186 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                      { DEFAULT_ACTION(yylhs.value.as < std::vector<U<Stmt>> > (), yystack_[1].value.as < std::vector<U<Stmt>> > ());}
 #line 1907 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 26: // stmt_list: stmt_list stmt
-#line 189 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                     { yystack_[1].value.as < std::vector<U<Stmt>> > ().push_back(std::move(yystack_[0].value.as < U<Stmt> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Stmt>> > (), yystack_[1].value.as < std::vector<U<Stmt>> > ()); }
-#line 1913 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
-    break;
-
-  case 27: // stmt_list: stmt
-#line 190 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 26: // stmt_list: stmt
+#line 187 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
            {
         auto vec = std::vector<U<Stmt>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Stmt> > ()));
         yylhs.value.as < std::vector<U<Stmt>> > () = std::move(vec); 
       }
+#line 1917 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+    break;
+
+  case 27: // print_ln: PRINT_LN LPAREN STR_LITERAL RPAREN
+#line 196 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                                         { yylhs.value.as < U<PrintLn> > () = std::make_unique<PrintLn>(yystack_[1].value.as < Token > ().string_value()); }
 #line 1923 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 28: // print_ln: PRINT_LN LPAREN STR_LITERAL RPAREN
-#line 198 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                                         { yylhs.value.as < U<PrintLn> > () = std::make_unique<PrintLn>(yystack_[1].value.as < Token > ().string_value()); }
+  case 28: // type_decl: COLON type
+#line 200 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                 { DEFAULT_ACTION(yylhs.value.as < std::optional<Type> > (), yystack_[0].value.as < Type > ()); }
 #line 1929 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 29: // type_decl: COLON type
-#line 202 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                 { DEFAULT_ACTION(yylhs.value.as < std::optional<Type> > (), yystack_[0].value.as < Type > ()); }
+  case 29: // type_decl: COLON error
+#line 201 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                  { yylhs.value.as < std::optional<Type> > () = Type::infer();  }
 #line 1935 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 30: // type_decl: COLON error
-#line 203 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                  { yylhs.value.as < std::optional<Type> > () = Type(); printf("failure"); }
+  case 30: // type_decl: %empty
+#line 202 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+      { yylhs.value.as < std::optional<Type> > () = {}; }
 #line 1941 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 31: // type_decl: %empty
-#line 204 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-      { yylhs.value.as < std::optional<Type> > () = {}; }
+  case 31: // opt_mut: MUT
+#line 206 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+         { yylhs.value.as < bool > () = true; }
 #line 1947 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 32: // opt_mut: MUT
-#line 208 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-         { yylhs.value.as < bool > () = true; }
+  case 32: // opt_mut: %empty
+#line 207 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+         { yylhs.value.as < bool > () = false; }
 #line 1953 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 33: // opt_mut: %empty
-#line 209 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-         { yylhs.value.as < bool > () = false; }
+  case 33: // let: LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
+#line 212 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+      {yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::move(yystack_[1].value.as < U<Expr> > ()), yystack_[5].value.as < bool > ());}
 #line 1959 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 34: // let: LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
-#line 214 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-      {yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::move(yystack_[1].value.as < U<Expr> > ()), yystack_[5].value.as < bool > ());}
-#line 1965 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
-    break;
-
-  case 35: // let: LET opt_mut IDENTIFIER type_decl error EQ SEMICOLON
-#line 216 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-      {
-        yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::unique_ptr<Expr>(nullptr), yystack_[5].value.as < bool > ()); 
-      }
-#line 1973 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
-    break;
-
-  case 36: // let: LET opt_mut IDENTIFIER type_decl SEMICOLON
-#line 219 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 34: // let: LET opt_mut IDENTIFIER type_decl SEMICOLON
+#line 213 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                                  {
         yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_decl(yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::optional<Type> > ()), yystack_[3].value.as < bool > ());
     }
-#line 1981 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1967 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 37: // if_expr: IF expr block_expr
-#line 225 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 35: // if_expr: IF expr block_expr
+#line 219 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                          { yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 1987 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1973 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 38: // if_expr: IF expr block_expr ELSE if_expr
-#line 226 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 36: // if_expr: IF expr block_expr ELSE if_expr
+#line 220 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                       {yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), std::move(yystack_[0].value.as < U<IfElse> > ())); }
-#line 1993 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1979 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 39: // if_expr: IF expr block_expr ELSE block_expr
-#line 227 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 37: // if_expr: IF expr block_expr ELSE block_expr
+#line 221 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                          {yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 1999 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1985 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 40: // type_list: type_list COMMA type
-#line 238 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 38: // type_list: type_list COMMA type
+#line 232 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                            {yylhs.value.as < std::vector<Type> > () = std::move(yystack_[2].value.as < std::vector<Type> > ()); yylhs.value.as < std::vector<Type> > ().push_back(std::move(yystack_[0].value.as < Type > ()));}
-#line 2005 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1991 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 41: // type_list: type
-#line 239 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 39: // type_list: type
+#line 233 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
            {yylhs.value.as < std::vector<Type> > () = std::vector<Type>(); yylhs.value.as < std::vector<Type> > ().push_back(std::move(yystack_[0].value.as < Type > ()));}
-#line 2011 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 1997 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 42: // type: I8
-#line 243 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 40: // type: I8
+#line 237 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::I8); }
-#line 2017 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2003 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 43: // type: I16
-#line 244 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 41: // type: I16
+#line 238 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::I16); }
-#line 2023 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2009 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 44: // type: I32
-#line 245 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 42: // type: I32
+#line 239 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::I32); }
-#line 2029 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2015 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 45: // type: I64
-#line 246 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 43: // type: I64
+#line 240 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::I64); }
-#line 2035 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2021 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 46: // type: ISIZE
-#line 247 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 44: // type: ISIZE
+#line 241 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
             { yylhs.value.as < Type > () = Type(primitive_type::ISIZE); }
-#line 2041 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2027 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 47: // type: U8
-#line 248 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 45: // type: U8
+#line 242 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::U8); }
-#line 2047 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2033 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 48: // type: U16
-#line 249 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 46: // type: U16
+#line 243 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::U16); }
-#line 2053 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2039 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 49: // type: U32
-#line 250 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 47: // type: U32
+#line 244 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
          { yylhs.value.as < Type > () = Type(primitive_type::U32); }
-#line 2059 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2045 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 50: // type: U64
-#line 251 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 48: // type: U64
+#line 245 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
           { yylhs.value.as < Type > () = Type(primitive_type::U64); }
-#line 2065 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2051 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 51: // type: USIZE
-#line 252 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 49: // type: USIZE
+#line 246 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
             { yylhs.value.as < Type > () = Type(primitive_type::USIZE); }
-#line 2071 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2057 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 52: // type: BOOL
-#line 253 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 50: // type: BOOL
+#line 247 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
            { yylhs.value.as < Type > () = Type(primitive_type::BOOL); }
-#line 2077 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2063 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 53: // type: LPAREN type_list RPAREN
-#line 254 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 51: // type: LPAREN type_list RPAREN
+#line 248 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                               { yylhs.value.as < Type > () = Type(std::move(yystack_[1].value.as < std::vector<Type> > ()));}
-#line 2083 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2069 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 54: // type: LPAREN RPAREN
-#line 255 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                     { yylhs.value.as < Type > () = Type(); }
-#line 2089 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+  case 52: // type: LPAREN RPAREN
+#line 249 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                    { yylhs.value.as < Type > () = Type(); }
+#line 2075 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 55: // block_expr: LBRACE stmt_list RBRACE
-#line 261 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 53: // block_expr: LBRACE stmt_list RBRACE
+#line 254 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                               { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::move(yystack_[1].value.as < std::vector<U<Stmt>> > ()), std::make_unique<Unit>()); }
-#line 2095 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2081 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 56: // block_expr: LBRACE stmt_list expr RBRACE
-#line 262 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 54: // block_expr: LBRACE stmt_list expr RBRACE
+#line 255 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                     { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::move(yystack_[2].value.as < std::vector<U<Stmt>> > ()), std::move(yystack_[1].value.as < U<Expr> > ())); }
-#line 2101 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2087 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 57: // block_expr: LBRACE expr RBRACE
-#line 263 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 55: // block_expr: LBRACE expr RBRACE
+#line 256 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                           { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::move(yystack_[1].value.as < U<Expr> > ())); }
-#line 2107 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2093 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 58: // block_expr: LBRACE RBRACE
-#line 264 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 56: // block_expr: LBRACE RBRACE
+#line 257 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                      { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::make_unique<Unit>()); }
-#line 2113 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2099 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 59: // unary_op_expr: MINUS expr
-#line 268 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 57: // unary_op_expr: MINUS expr
+#line 261 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                               { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Negate, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2119 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2105 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 60: // unary_op_expr: STAR expr
-#line 269 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 58: // unary_op_expr: STAR expr
+#line 262 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                             { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Deref, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2125 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2111 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 61: // unary_op_expr: BANG expr
-#line 270 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 59: // unary_op_expr: BANG expr
+#line 263 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                           { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Not, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2131 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2117 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 62: // unary_op_expr: AMPERSAND expr
-#line 271 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 60: // unary_op_expr: AMPERSAND expr
+#line 264 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Borrow, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2137 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2123 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 63: // unary_op_expr: AMPERSAND_MUT expr
-#line 272 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 61: // unary_op_expr: AMPERSAND_MUT expr
+#line 265 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                        { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::MutBorrow, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2143 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2129 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 64: // bin_op_expr: expr PLUS expr
-#line 276 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 62: // bin_op_expr: expr PLUS expr
+#line 269 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Plus, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2149 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2135 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 65: // bin_op_expr: expr MINUS expr
-#line 277 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 63: // bin_op_expr: expr MINUS expr
+#line 270 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                       { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Min, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2155 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2141 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 66: // bin_op_expr: expr STAR expr
-#line 278 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 64: // bin_op_expr: expr STAR expr
+#line 271 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Mul, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2161 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2147 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 67: // bin_op_expr: expr SLASH expr
-#line 279 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 65: // bin_op_expr: expr SLASH expr
+#line 272 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                       { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Div, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2167 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2153 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 68: // bin_op_expr: expr L_AND expr
-#line 280 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 66: // bin_op_expr: expr L_AND expr
+#line 273 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                       { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_AND, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2173 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2159 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 69: // bin_op_expr: expr L_OR expr
-#line 281 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 67: // bin_op_expr: expr L_OR expr
+#line 274 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_OR, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2179 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2165 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 70: // bin_op_expr: expr EQEQ expr
-#line 282 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 68: // bin_op_expr: expr EQEQ expr
+#line 275 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2185 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2171 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 71: // bin_op_expr: expr NE expr
-#line 283 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 69: // bin_op_expr: expr NE expr
+#line 276 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::NEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2191 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2177 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 72: // bin_op_expr: expr LT expr
-#line 284 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 70: // bin_op_expr: expr LT expr
+#line 277 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Lt, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2197 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2183 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 73: // bin_op_expr: expr GT expr
-#line 285 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 71: // bin_op_expr: expr GT expr
+#line 278 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Gt, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2203 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2189 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 74: // bin_op_expr: expr GE expr
-#line 286 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 72: // bin_op_expr: expr GE expr
+#line 279 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::GtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2209 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2195 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 75: // bin_op_expr: expr LE expr
-#line 287 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 73: // bin_op_expr: expr LE expr
+#line 280 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                    { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::LtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2215 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2201 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 76: // bin_op_expr: expr EQ expr
-#line 289 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 74: // bin_op_expr: expr EQ expr
+#line 282 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2221 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2207 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 77: // bin_op_expr: expr PLUS_EQ expr
-#line 290 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 75: // bin_op_expr: expr PLUS_EQ expr
+#line 283 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::PlusEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2227 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2213 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 78: // bin_op_expr: expr MIN_EQ expr
-#line 291 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 76: // bin_op_expr: expr MIN_EQ expr
+#line 284 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MinEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2233 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2219 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 79: // bin_op_expr: expr DIV_EQ expr
-#line 292 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 77: // bin_op_expr: expr DIV_EQ expr
+#line 285 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::DivEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2239 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2225 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 80: // bin_op_expr: expr MUL_EQ expr
-#line 293 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 78: // bin_op_expr: expr MUL_EQ expr
+#line 286 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                         { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MulEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2245 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2231 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 81: // literal: DEC_LITERAL
-#line 297 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 79: // literal: DEC_LITERAL
+#line 290 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                   { yylhs.value.as < U<Literal> > () = Literal::make_int_lit(yystack_[0].value.as < Token > ().symbol);}
-#line 2251 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2237 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 82: // literal: STR_LITERAL
-#line 298 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 80: // literal: STR_LITERAL
+#line 291 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                   { yylhs.value.as < U<Literal> > () = Literal::make_str_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2257 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2243 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 83: // literal: FLOAT_LITERAL
-#line 299 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 81: // literal: FLOAT_LITERAL
+#line 292 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                     { assert(1 && "How did we get here"); }
-#line 2263 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2249 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 84: // literal: TRUE
-#line 300 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 82: // literal: TRUE
+#line 293 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
            { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2269 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2255 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 85: // literal: FALSE
-#line 301 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 83: // literal: FALSE
+#line 294 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
             { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2275 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2261 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 86: // call_expr_args: call_expr_args COMMA expr
-#line 306 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 84: // call_expr_args: call_expr_args COMMA expr
+#line 299 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                 { yystack_[2].value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Expr>> > (), yystack_[2].value.as < std::vector<U<Expr>> > ()); }
-#line 2281 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2267 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 87: // call_expr_args: expr
-#line 307 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 85: // call_expr_args: expr
+#line 300 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
            { 
         auto vec = std::vector<U<Expr>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Expr> > ()));
         yylhs.value.as < std::vector<U<Expr>> > () = std::move(vec);
         }
-#line 2291 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2277 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 88: // call_expr: IDENTIFIER LPAREN call_expr_args RPAREN
-#line 315 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 86: // call_expr: IDENTIFIER LPAREN call_expr_args RPAREN
+#line 308 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                               { yylhs.value.as < U<CallExpr> > () = std::make_unique<CallExpr>(yystack_[3].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::vector<U<Expr>> > ())); }
-#line 2297 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2283 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 89: // call_expr: IDENTIFIER LPAREN RPAREN
-#line 316 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 87: // call_expr: IDENTIFIER LPAREN RPAREN
+#line 309 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                { yylhs.value.as < U<CallExpr> > () = std::make_unique<CallExpr>(yystack_[2].value.as < Token > ().string_value(), std::vector<U<Expr>>{}); }
-#line 2303 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2289 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 90: // while_expr: WHILE expr block_expr
-#line 319 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 88: // while_expr: WHILE expr block_expr
+#line 312 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                             {yylhs.value.as < U<WhileLoop> > () = std::make_unique<WhileLoop>(std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 2309 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2295 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 91: // tuple_index_expr: expr DOT literal
-#line 323 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
-                       { yylhs.value.as < U<TupleIndexExpr> > () = std::make_unique<TupleIndexExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<Literal> > ()));}
-#line 2315 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+  case 89: // tuple_index_expr: expr DOT DEC_LITERAL
+#line 316 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+                           { yylhs.value.as < U<TupleIndexExpr> > () = std::make_unique<TupleIndexExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), Literal::make_int_lit(yystack_[0].value.as < Token > ().symbol));}
+#line 2301 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 92: // expr: expr_w_block
-#line 328 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 90: // expr: expr_w_block
+#line 321 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                    { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2321 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2307 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 93: // expr: expr_wo_block
-#line 329 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 91: // expr: expr_wo_block
+#line 322 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                     { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2327 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2313 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 94: // expr_list: expr_list COMMA expr
-#line 333 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 92: // expr_list: expr_list COMMA expr
+#line 326 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                            { yystack_[2].value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ())); yylhs.value.as < std::vector<U<Expr>> > () = std::move(yystack_[2].value.as < std::vector<U<Expr>> > ());}
-#line 2333 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2319 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 95: // expr_list: expr
-#line 334 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 93: // expr_list: expr
+#line 327 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
            {yylhs.value.as < std::vector<U<Expr>> > () = std::vector<U<Expr>>(); yylhs.value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2339 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2325 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 96: // expr_stmt: expr_w_block
-#line 338 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 94: // expr_stmt: expr_w_block
+#line 331 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                     { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2345 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2331 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 97: // expr_stmt: expr_wo_block SEMICOLON
-#line 339 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 95: // expr_stmt: expr_wo_block SEMICOLON
+#line 332 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[1].value.as < U<Expr> > ()); }
-#line 2351 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2337 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 98: // expr_w_block: while_expr
-#line 343 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 96: // expr_w_block: while_expr
+#line 336 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<WhileLoop> > ()); }
-#line 2357 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2343 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 99: // expr_w_block: if_expr
-#line 344 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 97: // expr_w_block: if_expr
+#line 337 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<IfElse> > ()); }
-#line 2363 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2349 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 100: // expr_w_block: block_expr
-#line 345 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 98: // expr_w_block: block_expr
+#line 338 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<BlockExpr> > ()); }
-#line 2369 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2355 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 101: // expr_wo_block: LPAREN expr RPAREN
-#line 348 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 99: // expr_wo_block: LPAREN expr RPAREN
+#line 341 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                          { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[1].value.as < U<Expr> > ()); }
-#line 2375 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2361 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 102: // expr_wo_block: bin_op_expr
-#line 349 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 100: // expr_wo_block: bin_op_expr
+#line 342 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ()); }
-#line 2381 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2367 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 103: // expr_wo_block: tuple_index_expr
-#line 350 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 101: // expr_wo_block: tuple_index_expr
+#line 343 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                           { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<TupleIndexExpr> > ()); }
-#line 2387 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2373 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 104: // expr_wo_block: IDENTIFIER
-#line 351 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 102: // expr_wo_block: IDENTIFIER
+#line 344 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                             { yylhs.value.as < U<Expr> > () = std::make_unique<Identifier>(yystack_[0].value.as < Token > ().string_value()); }
-#line 2393 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2379 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 105: // expr_wo_block: unary_op_expr
-#line 352 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 103: // expr_wo_block: unary_op_expr
+#line 345 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                 {DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<UnaryOpExpr> > ()); }
-#line 2399 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2385 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 106: // expr_wo_block: LPAREN RPAREN
-#line 353 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 104: // expr_wo_block: LPAREN RPAREN
+#line 346 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                { yylhs.value.as < U<Expr> > () = std::make_unique<Unit>(); }
-#line 2405 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2391 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 107: // expr_wo_block: call_expr
-#line 354 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 105: // expr_wo_block: call_expr
+#line 347 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<CallExpr> > ()); }
-#line 2411 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2397 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 108: // expr_wo_block: RETURN expr
-#line 355 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 106: // expr_wo_block: RETURN expr
+#line 348 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                      { yylhs.value.as < U<Expr> > () = std::make_unique<Return>(std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2417 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2403 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 109: // expr_wo_block: BREAK expr
-#line 356 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 107: // expr_wo_block: BREAK expr
+#line 349 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                     { yylhs.value.as < U<Expr> > () = std::make_unique<Break>(std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2423 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2409 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 110: // expr_wo_block: CONTINUE
-#line 357 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 108: // expr_wo_block: CONTINUE
+#line 350 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                   { yylhs.value.as < U<Expr> > () = std::make_unique<Continue>(); }
-#line 2429 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2415 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 111: // expr_wo_block: LPAREN expr_list opt_comma RPAREN
-#line 358 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 109: // expr_wo_block: LPAREN expr_list opt_comma RPAREN
+#line 351 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
                                          { yylhs.value.as < U<Expr> > () = std::make_unique<TupleExpr>(std::move(yystack_[2].value.as < std::vector<U<Expr>> > ())); }
-#line 2435 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2421 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 112: // expr_wo_block: literal
-#line 359 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 110: // expr_wo_block: literal
+#line 352 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Literal> > ()); }
-#line 2441 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2427 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 113: // opt_comma: COMMA
-#line 364 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 111: // opt_comma: COMMA
+#line 357 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
             {}
-#line 2447 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2433 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
-  case 114: // opt_comma: %empty
-#line 365 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+  case 112: // opt_comma: %empty
+#line 358 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
       {}
-#line 2453 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2439 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
     break;
 
 
-#line 2457 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 2443 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
 
             default:
               break;
@@ -2631,50 +2617,31 @@ namespace mr {
     error (yyexc.location, yyexc.what ());
   }
 
-  /* Return YYSTR after stripping away unnecessary quotes and
-     backslashes, so that it's suitable for yyerror.  The heuristic is
-     that double-quoting is unnecessary unless the string contains an
-     apostrophe, a comma, or backslash (other than backslash-backslash).
-     YYSTR is taken from yytname.  */
-  std::string
-  Parser::yytnamerr_ (const char *yystr)
-  {
-    if (*yystr == '"')
-      {
-        std::string yyr;
-        char const *yyp = yystr;
-
-        for (;;)
-          switch (*++yyp)
-            {
-            case '\'':
-            case ',':
-              goto do_not_strip_quotes;
-
-            case '\\':
-              if (*++yyp != '\\')
-                goto do_not_strip_quotes;
-              else
-                goto append;
-
-            append:
-            default:
-              yyr += *yyp;
-              break;
-
-            case '"':
-              return yyr;
-            }
-      do_not_strip_quotes: ;
-      }
-
-    return yystr;
-  }
-
-  std::string
+  const char *
   Parser::symbol_name (symbol_kind_type yysymbol)
   {
-    return yytnamerr_ (yytname_[yysymbol]);
+    static const char *const yy_sname[] =
+    {
+    "end of file", "error", "invalid token", "DEC_LITERAL", "FLOAT_LITERAL",
+  "STR_LITERAL", "TRUE", "FALSE", "IDENTIFIER", "UNDERSCORE", "I8", "I16",
+  "I32", "I64", "ISIZE", "U8", "U16", "U32", "U64", "USIZE", "LET", "MUT",
+  "BOOL", "FN", "WHILE", "PRINT_LN", "EQ", "EQEQ", "NE", "BANG", "LT",
+  "LE", "GT", "GE", "PLUS", "MINUS", "STAR", "SLASH", "COMMA", "ARROW",
+  "IF", "ELSE", "RETURN", "BREAK", "CONTINUE", "L_AND", "L_OR", "PLUS_EQ",
+  "MIN_EQ", "MUL_EQ", "DIV_EQ", "LBRACE", "RBRACE", "LPAREN", "RPAREN",
+  "SEMICOLON", "COLON", "AMPERSAND", "OR", "AMPERSAND_MUT", "DOT",
+  "MOD_EQ", "BIT_AND_EQ", "BIT_OR_EQ", "BIT_XOR_EQ", "SHL_EQ", "SHR_EQ",
+  "MOD", "UMINUS", "DEREF", "NOT", "REF", "REF_MUT", "METHOD_CALL",
+  "FIELD_ACCESS", "FUNC_CALL", "PATH", "CALL_INDEX", "UNARY", "BIN_OP",
+  "CONTROL_FLOW", "$accept", "program", "item_list", "item",
+  "function_decl", "func_ret_type", "func_decl_args", "func_arg_list",
+  "func_arg", "stmt", "stmt_list", "print_ln", "type_decl", "opt_mut",
+  "let", "if_expr", "type_list", "type", "block_expr", "unary_op_expr",
+  "bin_op_expr", "literal", "call_expr_args", "call_expr", "while_expr",
+  "tuple_index_expr", "expr", "expr_list", "expr_stmt", "expr_w_block",
+  "expr_wo_block", "opt_comma", YY_NULLPTR
+    };
+    return yy_sname[yysymbol];
   }
 
 
@@ -2805,172 +2772,170 @@ namespace mr {
   }
 
 
-  const signed char Parser::yypact_ninf_ = -36;
+  const signed char Parser::yypact_ninf_ = -41;
 
-  const signed char Parser::yytable_ninf_ = -93;
+  const signed char Parser::yytable_ninf_ = -91;
 
   const short
   Parser::yypact_[] =
   {
-      25,   -36,    -1,    15,    13,   -36,   -36,     4,   -36,    -6,
-     -36,   -36,   -15,   -12,   -36,   -36,   -36,   -22,   -36,    16,
-     426,    22,    55,   -36,     0,   -36,   -36,   -36,   -36,   -36,
-     -36,   -36,   -36,   -36,   -36,   -36,    50,   -36,   110,   -36,
-     -36,   -36,   426,   -36,    -5,   -36,   -36,   -36,   -36,   -36,
-     -36,    45,    55,   362,    46,   362,   362,   362,   362,   194,
-     236,    47,   -36,   278,   -36,   362,   362,   -36,   -36,   152,
-      54,   -36,   -36,   -36,   -36,   -36,   -36,   -36,   -36,   -36,
-     423,   -36,   454,    57,   -36,   426,   -36,   320,    92,   362,
-     362,   -36,   485,   -36,   -36,   105,    51,    51,    51,   485,
-     -36,    51,   -36,    51,   -36,   -36,   516,    86,    51,    51,
-     -36,   -36,   547,   -36,   362,   362,   362,   362,   362,   362,
-     362,   362,   362,   362,   362,   362,   362,   362,   362,   362,
-     362,   -36,   116,   -36,   -36,   -36,    21,   609,    69,   -36,
-      72,    87,   -36,   362,    73,   -36,   609,   -25,   -25,   -25,
-     -25,   -25,   -25,    17,    17,    51,    51,    10,   640,   609,
-     609,   609,   609,   -36,   362,   -36,   413,     3,   -36,    56,
-     609,   -36,   609,   -36,   -36,   111,   362,   -36,   -36,   -36,
-      76,   578,   -36,   -36
+     -17,    18,     5,   -17,   -41,   -41,     3,   -41,   -41,   -41,
+     -10,    14,   -41,   -41,   -26,   -41,    40,   412,     4,    36,
+     -41,     2,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,
+     -41,   -41,   -41,    51,   -41,   152,   -41,   -41,   -41,   412,
+     -41,   -23,   -41,   -41,   -41,   -41,   -41,   -41,   -35,    36,
+     362,    19,   362,   362,   362,   362,   194,   236,    42,   -41,
+     278,   -41,   362,   362,   -41,   -41,    95,    52,   -41,   -41,
+     -41,   -41,   -41,   -41,   -41,   -41,   -41,   409,   -41,   440,
+      54,   -41,   412,   -41,   320,    66,   362,   362,   -41,   471,
+     -41,   -41,    71,    46,    46,    46,   471,   -41,    46,   -41,
+      46,   -41,   -41,   502,    78,    46,    46,   -41,   -41,   -41,
+     533,   -41,   362,   362,   362,   362,   362,   362,   362,   362,
+     362,   362,   362,   362,   362,   362,   362,   362,   362,   -41,
+     111,   -41,   -41,   -41,    21,   595,    61,   -41,    67,    81,
+     -41,   362,    69,   -41,   595,    76,    76,    76,    76,    76,
+      76,   -28,   -28,    46,    46,   642,   626,   595,   595,   595,
+     595,   -41,   362,   -41,    24,    -3,   -41,     9,   595,   -41,
+     595,   -41,   -41,   362,   -41,   -41,   -41,   564,   -41
   };
 
   const signed char
   Parser::yydefact_[] =
   {
-       0,     6,     0,     0,     0,     5,     7,     0,     1,     0,
-       3,    13,    33,    10,     4,    32,    12,     0,    15,     0,
-       0,     0,    33,    11,     0,    42,    43,    44,    45,    46,
-      47,    48,    49,    50,    51,    52,     0,     9,     0,     8,
-      14,    17,     0,    54,     0,    41,    81,    83,    82,    84,
-      85,   104,    33,     0,     0,     0,     0,     0,     0,     0,
-       0,   110,    58,     0,    18,     0,     0,    25,    27,     0,
-       0,    19,    99,   100,   105,   102,   112,   107,    98,   103,
-       0,    23,    96,    93,    16,     0,    53,     0,     0,     0,
-       0,   110,     0,    92,    93,     0,    61,    59,    60,     0,
-      20,   108,    21,   109,    22,   106,    95,   114,    62,    63,
-      55,    26,     0,    24,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    57,     0,    97,    40,    89,     0,    87,    31,    90,
-       0,    37,   101,   113,     0,    56,    76,    70,    71,    72,
-      75,    73,    74,    64,    65,    66,    67,    68,    69,    77,
-      78,    80,    79,    91,     0,    88,     0,     0,    28,     0,
-      94,   111,    86,    30,    29,     0,     0,    36,    38,    39,
-       0,     0,    35,    34
+       0,     0,     0,     2,     4,     5,     0,     1,     3,    11,
+      32,     8,    31,    10,     0,    13,     0,     0,     0,    32,
+       9,     0,    40,    41,    42,    43,    44,    45,    46,    47,
+      48,    49,    50,     0,     7,     0,     6,    12,    15,     0,
+      52,     0,    39,    79,    81,    80,    82,    83,   102,    32,
+       0,     0,     0,     0,     0,     0,     0,     0,   108,    56,
+       0,    16,     0,     0,    23,    26,     0,     0,    17,    97,
+      98,   103,   100,   110,   105,    96,   101,     0,    21,    94,
+      91,    14,     0,    51,     0,     0,     0,     0,   108,     0,
+      90,    91,     0,    59,    57,    58,     0,    18,   106,    19,
+     107,    20,   104,    93,   112,    60,    61,    25,    53,    24,
+       0,    22,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    55,
+       0,    95,    38,    87,     0,    85,    30,    88,     0,    35,
+      99,   111,     0,    54,    74,    68,    69,    70,    73,    71,
+      72,    62,    63,    64,    65,    66,    67,    75,    76,    78,
+      77,    89,     0,    86,     0,     0,    27,     0,    92,   109,
+      84,    29,    28,     0,    34,    36,    37,     0,    33
   };
 
   const signed char
   Parser::yypgoto_[] =
   {
-     -36,   -36,   -36,    97,   -36,   -36,   -36,   -36,   114,    71,
-     -36,   -36,   -36,    90,   -36,   -31,   -36,   -34,   -21,   -36,
-     -36,    11,   -36,   -36,   -36,   -36,   -35,   -36,   -36,   -19,
-      36,   -36
+     -41,   -41,   -41,    10,   -41,   -41,   -41,   -41,   106,    60,
+     -41,   -41,   -41,    79,   -41,   -40,   -41,   -32,   -18,   -41,
+     -41,   -41,   -41,   -41,   -41,   -41,   -33,   -41,   -41,   -21,
+     -19,   -41
   };
 
   const unsigned char
   Parser::yydefgoto_[] =
   {
-       0,     3,     4,    67,     6,    21,    13,    17,    18,    68,
-      69,    70,   167,    19,    71,    72,    44,    37,    73,    74,
-      75,    76,   136,    77,    78,    79,   101,   107,    81,    93,
-      94,   144
+       0,     2,     3,    64,     5,    18,    11,    14,    15,    65,
+      66,    67,   165,    16,    68,    69,    41,    34,    70,    71,
+      72,    73,   134,    74,    75,    76,    98,   104,    78,    90,
+      91,   142
   };
 
   const short
   Parser::yytable_[] =
   {
-      39,    41,    45,    80,   175,    11,    15,     7,    84,   121,
-     122,   123,   124,    -2,     9,     8,    22,     2,    92,    82,
-      96,    97,    98,    99,    24,   103,     1,    20,   106,   176,
-     108,   109,    23,    85,   112,   132,     2,   115,   116,    16,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,    86,
-      82,   134,   137,   123,   124,   103,    42,    12,   177,   164,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-     132,   139,    35,    38,    83,   165,    15,   132,   141,   146,
-     147,   148,   149,   150,   151,   152,   153,   154,   155,   156,
-     157,   158,   159,   160,   161,   162,    58,     5,    87,    95,
-     138,    10,   104,    36,    43,    83,    14,    38,   170,   113,
-     140,   132,   133,    46,    47,    48,    49,    50,    51,    46,
-      47,    48,    49,    50,   143,   166,   168,   171,   169,   172,
-      52,   182,   174,     2,    53,    54,    40,   180,   178,    55,
-     111,   181,    88,   163,     0,    56,    57,     0,   179,     0,
-      58,     0,    59,    60,    61,    46,    47,    48,    49,    50,
-      51,    38,    62,    63,     0,    64,     0,    65,     0,    66,
-       0,     0,    52,     0,     0,     2,    53,    54,     0,     0,
-       0,    55,     0,     0,     0,     0,     0,    56,    57,     0,
-       0,     0,    58,     0,    59,    60,    61,    46,    47,    48,
-      49,    50,    51,    38,   110,    63,     0,    64,     0,    65,
-       0,    66,     0,     0,     0,     0,     0,     0,    53,     0,
-       0,     0,     0,    55,     0,     0,     0,     0,     0,    56,
-      57,     0,     0,     0,    58,     0,    89,    90,    91,    46,
-      47,    48,    49,    50,    51,    38,     0,    63,     0,   100,
-       0,    65,     0,    66,     0,     0,     0,     0,     0,     0,
-      53,     0,     0,     0,     0,    55,     0,     0,     0,     0,
-       0,    56,    57,     0,     0,     0,    58,     0,    89,    90,
-      91,    46,    47,    48,    49,    50,    51,    38,     0,    63,
-       0,   102,     0,    65,     0,    66,     0,     0,     0,     0,
-       0,     0,    53,     0,     0,     0,     0,    55,     0,     0,
-       0,     0,     0,    56,    57,     0,     0,     0,    58,     0,
-      89,    90,    91,    46,    47,    48,    49,    50,    51,    38,
-       0,    63,   105,     0,     0,    65,     0,    66,     0,     0,
-       0,     0,     0,     0,    53,     0,     0,     0,     0,    55,
-       0,     0,     0,     0,     0,    56,    57,     0,     0,     0,
-      58,     0,    89,    90,    91,    46,    47,    48,    49,    50,
-      51,    38,     0,    63,   135,     0,     0,    65,     0,    66,
-       0,     0,     0,     0,     0,     0,    53,     0,     0,     0,
-       0,    55,     0,     0,     0,     0,     0,    56,    57,     0,
-       0,     0,    58,     0,    89,    90,    91,     0,     0,     0,
-       0,     0,     0,    38,   173,    63,     0,     0,     0,    65,
-       0,    66,     0,    25,    26,    27,    28,    29,    30,    31,
-      32,    33,    34,     0,     0,    35,    25,    26,    27,    28,
-      29,    30,    31,    32,    33,    34,     0,     0,    35,   114,
-     115,   116,     0,   117,   118,   119,   120,   121,   122,   123,
-     124,     0,     0,     0,     0,     0,    36,     0,   125,   126,
-     127,   128,   129,   130,     0,   131,     0,     0,     0,    36,
-     -92,   -92,   -92,   132,   -92,   -92,   -92,   -92,   -92,   -92,
-     -92,   -92,     0,     0,     0,     0,     0,     0,     0,   -92,
-     -92,   -92,   -92,   -92,   -92,     0,   -92,     0,     0,     0,
-       0,   114,   115,   116,   -92,   117,   118,   119,   120,   121,
-     122,   123,   124,     0,     0,     0,     0,     0,     0,     0,
-     125,   126,   127,   128,   129,   130,    38,     0,     0,     0,
-       0,     0,   114,   115,   116,   132,   117,   118,   119,   120,
-     121,   122,   123,   124,     0,     0,     0,     0,     0,     0,
-       0,   125,   126,   127,   128,   129,   130,     0,     0,     0,
-     142,     0,     0,   114,   115,   116,   132,   117,   118,   119,
-     120,   121,   122,   123,   124,     0,     0,     0,     0,     0,
-       0,     0,   125,   126,   127,   128,   129,   130,     0,   145,
-       0,     0,     0,     0,   114,   115,   116,   132,   117,   118,
-     119,   120,   121,   122,   123,   124,     0,     0,     0,     0,
-       0,     0,     0,   125,   126,   127,   128,   129,   130,     0,
-       0,     0,     0,   183,     0,   114,   115,   116,   132,   117,
-     118,   119,   120,   121,   122,   123,   124,     0,     0,     0,
-       0,     0,     0,     0,   125,   126,   127,   128,   129,   130,
-       0,     0,     0,     0,     0,     0,     0,   115,   116,   132,
-     117,   118,   119,   120,   121,   122,   123,   124,     0,     0,
-       0,     0,     0,     0,     0,   125,     0,     0,     0,     0,
+      36,    42,    77,    38,     9,     7,     1,    81,   121,   122,
+       4,    12,    19,     8,    79,    82,    80,    89,    84,    93,
+      94,    95,    96,   173,   100,   171,     6,   103,    20,   105,
+     106,    83,   130,   110,    22,    23,    24,    25,    26,    27,
+      28,    29,    30,    31,    13,    79,    32,    80,    21,    55,
+     132,   135,   174,    17,   100,    35,    10,    12,    39,   162,
+      35,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,   137,    92,    32,   136,   163,   138,    33,   139,   144,
+     145,   146,   147,   148,   149,   150,   151,   152,   153,   154,
+     155,   156,   157,   158,   159,   160,   107,   101,    43,    44,
+      45,    46,    47,    48,    33,    40,   130,   111,   168,   131,
+     119,   120,   121,   122,   161,    49,   141,   164,     1,    50,
+      51,   166,   167,   169,    52,    37,   109,   175,    85,   170,
+      53,    54,   172,     0,     0,    55,   130,    56,    57,    58,
+     177,     0,     0,     0,     0,     0,    35,   108,    60,   176,
+      61,     0,    62,     0,    63,    43,    44,    45,    46,    47,
+      48,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    49,     0,     0,     1,    50,    51,     0,     0,
+       0,    52,     0,     0,     0,     0,     0,    53,    54,     0,
+       0,     0,    55,     0,    56,    57,    58,    43,    44,    45,
+      46,    47,    48,    35,    59,    60,     0,    61,     0,    62,
+       0,    63,     0,     0,     0,     0,     0,     0,    50,     0,
+       0,     0,     0,    52,     0,     0,     0,     0,     0,    53,
+      54,     0,     0,     0,    55,     0,    86,    87,    88,    43,
+      44,    45,    46,    47,    48,    35,     0,    60,     0,    97,
+       0,    62,     0,    63,     0,     0,     0,     0,     0,     0,
+      50,     0,     0,     0,     0,    52,     0,     0,     0,     0,
+       0,    53,    54,     0,     0,     0,    55,     0,    86,    87,
+      88,    43,    44,    45,    46,    47,    48,    35,     0,    60,
+       0,    99,     0,    62,     0,    63,     0,     0,     0,     0,
+       0,     0,    50,     0,     0,     0,     0,    52,     0,     0,
+       0,     0,     0,    53,    54,     0,     0,     0,    55,     0,
+      86,    87,    88,    43,    44,    45,    46,    47,    48,    35,
+       0,    60,   102,     0,     0,    62,     0,    63,     0,     0,
+       0,     0,     0,     0,    50,     0,     0,     0,     0,    52,
+       0,     0,     0,     0,     0,    53,    54,     0,     0,     0,
+      55,     0,    86,    87,    88,    43,    44,    45,    46,    47,
+      48,    35,     0,    60,   133,     0,     0,    62,     0,    63,
+       0,     0,     0,     0,     0,     0,    50,     0,     0,     0,
+       0,    52,     0,     0,     0,     0,     0,    53,    54,     0,
+       0,     0,    55,     0,    86,    87,    88,     0,     0,     0,
+       0,     0,     0,    35,     0,    60,     0,     0,     0,    62,
+       0,    63,    22,    23,    24,    25,    26,    27,    28,    29,
+      30,    31,     0,     0,    32,   112,   113,   114,     0,   115,
+     116,   117,   118,   119,   120,   121,   122,     0,     0,     0,
+       0,     0,     0,     0,   123,   124,   125,   126,   127,   128,
+       0,   129,     0,     0,     0,    33,   -90,   -90,   -90,   130,
+     -90,   -90,   -90,   -90,   -90,   -90,   -90,   -90,     0,     0,
+       0,     0,     0,     0,     0,   -90,   -90,   -90,   -90,   -90,
+     -90,     0,   -90,     0,     0,     0,     0,   112,   113,   114,
+     -90,   115,   116,   117,   118,   119,   120,   121,   122,     0,
+       0,     0,     0,     0,     0,     0,   123,   124,   125,   126,
+     127,   128,    35,     0,     0,     0,     0,     0,   112,   113,
+     114,   130,   115,   116,   117,   118,   119,   120,   121,   122,
+       0,     0,     0,     0,     0,     0,     0,   123,   124,   125,
+     126,   127,   128,     0,     0,     0,   140,     0,     0,   112,
+     113,   114,   130,   115,   116,   117,   118,   119,   120,   121,
+     122,     0,     0,     0,     0,     0,     0,     0,   123,   124,
+     125,   126,   127,   128,     0,   143,     0,     0,     0,     0,
+     112,   113,   114,   130,   115,   116,   117,   118,   119,   120,
+     121,   122,     0,     0,     0,     0,     0,     0,     0,   123,
+     124,   125,   126,   127,   128,     0,     0,     0,     0,   178,
+       0,   112,   113,   114,   130,   115,   116,   117,   118,   119,
+     120,   121,   122,     0,     0,     0,     0,     0,     0,     0,
+     123,   124,   125,   126,   127,   128,     0,     0,     0,     0,
+       0,     0,     0,   113,   114,   130,   115,   116,   117,   118,
+     119,   120,   121,   122,     0,     0,     0,     0,     0,   113,
+     114,   123,   115,   116,   117,   118,   119,   120,   121,   122,
+       0,     0,     0,     0,     0,     0,   130,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     132
+       0,     0,   130
   };
 
   const short
   Parser::yycheck_[] =
   {
-      21,     1,    36,    38,     1,     1,    21,     8,    42,    34,
-      35,    36,    37,     0,     1,     0,    38,    23,    53,    38,
-      55,    56,    57,    58,     8,    60,     1,    39,    63,    26,
-      65,    66,    54,    38,    69,    60,    23,    27,    28,    54,
-      30,    31,    32,    33,    34,    35,    36,    37,    23,    54,
-      69,    85,    87,    36,    37,    90,    56,    53,    55,    38,
-      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-      60,    92,    22,    51,    38,    54,    21,    60,    99,   114,
-     115,   116,   117,   118,   119,   120,   121,   122,   123,   124,
-     125,   126,   127,   128,   129,   130,    40,     0,    53,    53,
-       8,     4,    55,    53,    54,    69,     9,    51,   143,    55,
-       5,    60,    55,     3,     4,     5,     6,     7,     8,     3,
-       4,     5,     6,     7,    38,    56,    54,    54,    41,   164,
-      20,    55,   166,    23,    24,    25,    22,    26,   169,    29,
-      69,   176,    52,   132,    -1,    35,    36,    -1,   169,    -1,
-      40,    -1,    42,    43,    44,     3,     4,     5,     6,     7,
-       8,    51,    52,    53,    -1,    55,    -1,    57,    -1,    59,
+      18,    33,    35,     1,     1,     0,    23,    39,    36,    37,
+       0,    21,    38,     3,    35,    38,    35,    50,    53,    52,
+      53,    54,    55,    26,    57,     1,     8,    60,    54,    62,
+      63,    54,    60,    66,    10,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,    54,    66,    22,    66,     8,    40,
+      82,    84,    55,    39,    87,    51,    53,    21,    56,    38,
+      51,    10,    11,    12,    13,    14,    15,    16,    17,    18,
+      19,    89,    53,    22,     8,    54,     5,    53,    96,   112,
+     113,   114,   115,   116,   117,   118,   119,   120,   121,   122,
+     123,   124,   125,   126,   127,   128,     1,    55,     3,     4,
+       5,     6,     7,     8,    53,    54,    60,    55,   141,    55,
+      34,    35,    36,    37,     3,    20,    38,    56,    23,    24,
+      25,    54,    41,    54,    29,    19,    66,   167,    49,   162,
+      35,    36,   164,    -1,    -1,    40,    60,    42,    43,    44,
+     173,    -1,    -1,    -1,    -1,    -1,    51,    52,    53,   167,
+      55,    -1,    57,    -1,    59,     3,     4,     5,     6,     7,
+       8,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    20,    -1,    -1,    23,    24,    25,    -1,    -1,
       -1,    29,    -1,    -1,    -1,    -1,    -1,    35,    36,    -1,
       -1,    -1,    40,    -1,    42,    43,    44,     3,     4,     5,
@@ -2995,141 +2960,114 @@ namespace mr {
       -1,    -1,    -1,    -1,    -1,    -1,    24,    -1,    -1,    -1,
       -1,    29,    -1,    -1,    -1,    -1,    -1,    35,    36,    -1,
       -1,    -1,    40,    -1,    42,    43,    44,    -1,    -1,    -1,
-      -1,    -1,    -1,    51,     1,    53,    -1,    -1,    -1,    57,
-      -1,    59,    -1,    10,    11,    12,    13,    14,    15,    16,
-      17,    18,    19,    -1,    -1,    22,    10,    11,    12,    13,
-      14,    15,    16,    17,    18,    19,    -1,    -1,    22,    26,
-      27,    28,    -1,    30,    31,    32,    33,    34,    35,    36,
-      37,    -1,    -1,    -1,    -1,    -1,    53,    -1,    45,    46,
-      47,    48,    49,    50,    -1,    52,    -1,    -1,    -1,    53,
-      26,    27,    28,    60,    30,    31,    32,    33,    34,    35,
-      36,    37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    45,
-      46,    47,    48,    49,    50,    -1,    52,    -1,    -1,    -1,
-      -1,    26,    27,    28,    60,    30,    31,    32,    33,    34,
-      35,    36,    37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      45,    46,    47,    48,    49,    50,    51,    -1,    -1,    -1,
-      -1,    -1,    26,    27,    28,    60,    30,    31,    32,    33,
-      34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    45,    46,    47,    48,    49,    50,    -1,    -1,    -1,
-      54,    -1,    -1,    26,    27,    28,    60,    30,    31,    32,
-      33,    34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    45,    46,    47,    48,    49,    50,    -1,    52,
-      -1,    -1,    -1,    -1,    26,    27,    28,    60,    30,    31,
-      32,    33,    34,    35,    36,    37,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    45,    46,    47,    48,    49,    50,    -1,
-      -1,    -1,    -1,    55,    -1,    26,    27,    28,    60,    30,
+      -1,    -1,    -1,    51,    -1,    53,    -1,    -1,    -1,    57,
+      -1,    59,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,    -1,    -1,    22,    26,    27,    28,    -1,    30,
       31,    32,    33,    34,    35,    36,    37,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    45,    46,    47,    48,    49,    50,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    27,    28,    60,
+      -1,    52,    -1,    -1,    -1,    53,    26,    27,    28,    60,
       30,    31,    32,    33,    34,    35,    36,    37,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    45,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    45,    46,    47,    48,    49,
+      50,    -1,    52,    -1,    -1,    -1,    -1,    26,    27,    28,
+      60,    30,    31,    32,    33,    34,    35,    36,    37,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    45,    46,    47,    48,
+      49,    50,    51,    -1,    -1,    -1,    -1,    -1,    26,    27,
+      28,    60,    30,    31,    32,    33,    34,    35,    36,    37,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    45,    46,    47,
+      48,    49,    50,    -1,    -1,    -1,    54,    -1,    -1,    26,
+      27,    28,    60,    30,    31,    32,    33,    34,    35,    36,
+      37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    45,    46,
+      47,    48,    49,    50,    -1,    52,    -1,    -1,    -1,    -1,
+      26,    27,    28,    60,    30,    31,    32,    33,    34,    35,
+      36,    37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    45,
+      46,    47,    48,    49,    50,    -1,    -1,    -1,    -1,    55,
+      -1,    26,    27,    28,    60,    30,    31,    32,    33,    34,
+      35,    36,    37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      45,    46,    47,    48,    49,    50,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    27,    28,    60,    30,    31,    32,    33,
+      34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,    27,
+      28,    45,    30,    31,    32,    33,    34,    35,    36,    37,
+      -1,    -1,    -1,    -1,    -1,    -1,    60,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      60
+      -1,    -1,    60
   };
 
   const signed char
   Parser::yystos_[] =
   {
-       0,     1,    23,    82,    83,    84,    85,     8,     0,     1,
-      84,     1,    53,    87,    84,    21,    54,    88,    89,    94,
-      39,    86,    38,    54,     8,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    22,    53,    98,    51,    99,
-      89,     1,    56,    54,    97,    98,     3,     4,     5,     6,
-       7,     8,    20,    24,    25,    29,    35,    36,    40,    42,
-      43,    44,    52,    53,    55,    57,    59,    84,    90,    91,
-      92,    95,    96,    99,   100,   101,   102,   104,   105,   106,
-     107,   109,   110,   111,    98,    38,    54,    53,    94,    42,
-      43,    44,   107,   110,   111,    53,   107,   107,   107,   107,
-      55,   107,    55,   107,    55,    54,   107,   108,   107,   107,
-      52,    90,   107,    55,    26,    27,    28,    30,    31,    32,
-      33,    34,    35,    36,    37,    45,    46,    47,    48,    49,
-      50,    52,    60,    55,    98,    54,   103,   107,     8,    99,
-       5,    99,    54,    38,   112,    52,   107,   107,   107,   107,
+       0,    23,    82,    83,    84,    85,     8,     0,    84,     1,
+      53,    87,    21,    54,    88,    89,    94,    39,    86,    38,
+      54,     8,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,    22,    53,    98,    51,    99,    89,     1,    56,
+      54,    97,    98,     3,     4,     5,     6,     7,     8,    20,
+      24,    25,    29,    35,    36,    40,    42,    43,    44,    52,
+      53,    55,    57,    59,    84,    90,    91,    92,    95,    96,
+      99,   100,   101,   102,   104,   105,   106,   107,   109,   110,
+     111,    98,    38,    54,    53,    94,    42,    43,    44,   107,
+     110,   111,    53,   107,   107,   107,   107,    55,   107,    55,
+     107,    55,    54,   107,   108,   107,   107,     1,    52,    90,
+     107,    55,    26,    27,    28,    30,    31,    32,    33,    34,
+      35,    36,    37,    45,    46,    47,    48,    49,    50,    52,
+      60,    55,    98,    54,   103,   107,     8,    99,     5,    99,
+      54,    38,   112,    52,   107,   107,   107,   107,   107,   107,
      107,   107,   107,   107,   107,   107,   107,   107,   107,   107,
-     107,   107,   107,   102,    38,    54,    56,    93,    54,    41,
-     107,    54,   107,     1,    98,     1,    26,    55,    96,    99,
-      26,   107,    55,    55
+     107,     3,    38,    54,    56,    93,    54,    41,   107,    54,
+     107,     1,    98,    26,    55,    96,    99,   107,    55
   };
 
   const signed char
   Parser::yyr1_[] =
   {
-       0,    81,    82,    83,    83,    83,    83,    84,    85,    86,
-      86,    87,    87,    87,    88,    88,    89,    89,    90,    90,
-      90,    90,    90,    90,    90,    90,    91,    91,    92,    93,
-      93,    93,    94,    94,    95,    95,    95,    96,    96,    96,
-      97,    97,    98,    98,    98,    98,    98,    98,    98,    98,
-      98,    98,    98,    98,    98,    99,    99,    99,    99,   100,
-     100,   100,   100,   100,   101,   101,   101,   101,   101,   101,
-     101,   101,   101,   101,   101,   101,   101,   101,   101,   101,
-     101,   102,   102,   102,   102,   102,   103,   103,   104,   104,
-     105,   106,   107,   107,   108,   108,   109,   109,   110,   110,
-     110,   111,   111,   111,   111,   111,   111,   111,   111,   111,
-     111,   111,   111,   112,   112
+       0,    81,    82,    83,    83,    84,    85,    86,    86,    87,
+      87,    87,    88,    88,    89,    89,    90,    90,    90,    90,
+      90,    90,    90,    90,    91,    91,    91,    92,    93,    93,
+      93,    94,    94,    95,    95,    96,    96,    96,    97,    97,
+      98,    98,    98,    98,    98,    98,    98,    98,    98,    98,
+      98,    98,    98,    99,    99,    99,    99,   100,   100,   100,
+     100,   100,   101,   101,   101,   101,   101,   101,   101,   101,
+     101,   101,   101,   101,   101,   101,   101,   101,   101,   102,
+     102,   102,   102,   102,   103,   103,   104,   104,   105,   106,
+     107,   107,   108,   108,   109,   109,   110,   110,   110,   111,
+     111,   111,   111,   111,   111,   111,   111,   111,   111,   111,
+     111,   112,   112
   };
 
   const signed char
   Parser::yyr2_[] =
   {
-       0,     2,     1,     2,     3,     1,     1,     1,     5,     2,
-       0,     3,     2,     1,     3,     1,     4,     3,     1,     1,
-       2,     2,     2,     1,     2,     1,     2,     1,     4,     2,
-       2,     0,     1,     0,     7,     7,     5,     3,     5,     5,
-       3,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     3,     2,     3,     4,     3,     2,     2,
-       2,     2,     2,     2,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     1,     1,     1,     1,     1,     3,     1,     4,     3,
-       3,     3,     1,     1,     3,     1,     1,     2,     1,     1,
-       1,     3,     1,     1,     1,     1,     2,     1,     2,     2,
-       1,     4,     1,     1,     0
+       0,     2,     1,     2,     1,     1,     5,     2,     0,     3,
+       2,     1,     3,     1,     4,     3,     1,     1,     2,     2,
+       2,     1,     2,     1,     2,     2,     1,     4,     2,     2,
+       0,     1,     0,     7,     5,     3,     5,     5,     3,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     3,     2,     3,     4,     3,     2,     2,     2,     2,
+       2,     2,     3,     3,     3,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,     3,     3,     3,     3,     3,     1,
+       1,     1,     1,     1,     3,     1,     4,     3,     3,     3,
+       1,     1,     3,     1,     1,     2,     1,     1,     1,     3,
+       1,     1,     1,     1,     2,     1,     2,     2,     1,     4,
+       1,     1,     0
   };
 
 
-#if YYDEBUG || 1
-  // YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
-  // First, the terminals, then, starting at \a YYNTOKENS, nonterminals.
-  const char*
-  const Parser::yytname_[] =
-  {
-  "\"end of file\"", "error", "\"invalid token\"", "DEC_LITERAL",
-  "FLOAT_LITERAL", "STR_LITERAL", "TRUE", "FALSE", "IDENTIFIER",
-  "UNDERSCORE", "I8", "I16", "I32", "I64", "ISIZE", "U8", "U16", "U32",
-  "U64", "USIZE", "LET", "MUT", "BOOL", "FN", "WHILE", "PRINT_LN", "EQ",
-  "EQEQ", "NE", "BANG", "LT", "LE", "GT", "GE", "PLUS", "MINUS", "STAR",
-  "SLASH", "COMMA", "ARROW", "IF", "ELSE", "RETURN", "BREAK", "CONTINUE",
-  "L_AND", "L_OR", "PLUS_EQ", "MIN_EQ", "MUL_EQ", "DIV_EQ", "LBRACE",
-  "RBRACE", "LPAREN", "RPAREN", "SEMICOLON", "COLON", "AMPERSAND", "OR",
-  "AMPERSAND_MUT", "DOT", "MOD_EQ", "BIT_AND_EQ", "BIT_OR_EQ",
-  "BIT_XOR_EQ", "SHL_EQ", "SHR_EQ", "MOD", "UMINUS", "DEREF", "NOT", "REF",
-  "REF_MUT", "METHOD_CALL", "FIELD_ACCESS", "FUNC_CALL", "PATH",
-  "CALL_INDEX", "UNARY", "BIN_OP", "CONTROL_FLOW", "$accept", "program",
-  "item_list", "item", "function_decl", "func_ret_type", "func_decl_args",
-  "func_arg_list", "func_arg", "stmt", "stmt_list", "print_ln",
-  "type_decl", "opt_mut", "let", "if_expr", "type_list", "type",
-  "block_expr", "unary_op_expr", "bin_op_expr", "literal",
-  "call_expr_args", "call_expr", "while_expr", "tuple_index_expr", "expr",
-  "expr_list", "expr_stmt", "expr_w_block", "expr_wo_block", "opt_comma", YY_NULLPTR
-  };
-#endif
 
 
 #if YYDEBUG
   const short
   Parser::yyrline_[] =
   {
-       0,   130,   130,   134,   136,   137,   141,   145,   150,   157,
-     158,   163,   164,   165,   169,   170,   174,   175,   178,   179,
-     180,   181,   182,   183,   184,   185,   189,   190,   198,   202,
-     203,   204,   208,   209,   213,   215,   219,   225,   226,   227,
-     238,   239,   243,   244,   245,   246,   247,   248,   249,   250,
-     251,   252,   253,   254,   255,   261,   262,   263,   264,   268,
-     269,   270,   271,   272,   276,   277,   278,   279,   280,   281,
-     282,   283,   284,   285,   286,   287,   289,   290,   291,   292,
-     293,   297,   298,   299,   300,   301,   306,   307,   315,   316,
-     319,   323,   328,   329,   333,   334,   338,   339,   343,   344,
-     345,   348,   349,   350,   351,   352,   353,   354,   355,   356,
-     357,   358,   359,   364,   365
+       0,   127,   127,   131,   132,   139,   144,   151,   153,   158,
+     159,   160,   164,   165,   169,   170,   173,   174,   175,   176,
+     177,   178,   179,   180,   184,   186,   187,   196,   200,   201,
+     202,   206,   207,   211,   213,   219,   220,   221,   232,   233,
+     237,   238,   239,   240,   241,   242,   243,   244,   245,   246,
+     247,   248,   249,   254,   255,   256,   257,   261,   262,   263,
+     264,   265,   269,   270,   271,   272,   273,   274,   275,   276,
+     277,   278,   279,   280,   282,   283,   284,   285,   286,   290,
+     291,   292,   293,   294,   299,   300,   308,   309,   312,   316,
+     321,   322,   326,   327,   331,   332,   336,   337,   338,   341,
+     342,   343,   344,   345,   346,   347,   348,   349,   350,   351,
+     352,   357,   358
   };
 
   void
@@ -3216,9 +3154,9 @@ namespace mr {
 
 #line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 } // mr
-#line 3220 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
+#line 3158 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.cpp"
 
-#line 367 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
+#line 360 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 
 
 namespace mr
@@ -3227,7 +3165,7 @@ namespace mr
     void Parser::error(const Parser::location_type &loc, const std::string &message)
     {
         // i don't care about error's of bison
-        std::cerr << "Error in " << this->input_file_name << ":" << loc.end.line << ":" << loc.end.column
+        std::cerr << "Error in " << this->input_file_name << ":" << loc.begin.line << ":" << loc.begin.column
             <<":\n"
             << message << std::endl;
     }

@@ -1,4 +1,5 @@
 #pragma once
+#include "errors/ctx.hpp"
 #include "fstream"
 #include "high/ast/module.hpp"
 #include "interpreter/interpreter.hpp"
@@ -11,11 +12,11 @@ namespace mr {
     namespace driver {
         class MRDriver {
             // file stuff
-            const char*   file_name;
-            std::ifstream _input_file;
-            U<ast::Ast>   _ast;
-            // middle stuff
-            middle::MiddlePhase _middle_phase{};
+            const char*         file_name;
+            std::ifstream       _input_file;
+            U<ast::Ast>         _ast;
+            error::ErrorCtx     _err_ctx{};
+            middle::MiddlePhase _middle_phase{_err_ctx};
 
             std::ifstream create_input(int argc, char** argv) {
                 if (argc < 1) { exit(1); }
@@ -29,6 +30,8 @@ namespace mr {
             int start();
 
             void set_ast(U<ast::Ast> ast) { _ast = std::move(ast); }
+
+            error::ErrorCtx& ecx() { return _err_ctx; }
         };
     } // namespace driver
 } // namespace mr

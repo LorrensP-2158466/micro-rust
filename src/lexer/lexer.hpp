@@ -17,6 +17,7 @@ namespace mr {
         Parser::location_type prev_token_loc = {
             position{}, position{}
         }; // 1.1, dont know if this will work
+        size_t current_byte{};
 
         void copyValue(
             const std::size_t leftTrim = 0, const std::size_t rightTrim = 0,

@@ -508,7 +508,6 @@ lex file for micro-rust
 */
 #include "lexer.hpp"
 #include "token.hpp"
-#include "span.hpp"
 #include "../parser/parser.tab.hpp"
 #include <string.h>
 
@@ -519,15 +518,13 @@ using namespace mr;
 
 // Define YY_USER_ACTION for updating location
 #define YY_USER_ACTION {\
+  yylloc->step();\
   yylloc->columns(yyleng); \
-  yylval->build(Token{{yytext}, Span{this->prev_token_loc.end, yylloc->end}, (size_t) yyleng});\
-  this->prev_token_loc = *yylloc;\
+  yylval->build(Token{{yytext}, *yylloc});\
   }
+#line 525 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
-
-#line 528 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
-
-#line 530 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
+#line 527 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
 #define INITIAL 0
 #define comment 1
@@ -660,16 +657,16 @@ YY_DECL
 		}
 
 	{
-#line 39 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 36 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 
 
 
-#line 43 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 40 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
   using Token_T = Parser::token;
 
 
 
-#line 672 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
+#line 669 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -728,343 +725,343 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 47 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 44 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I8;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 48 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 45 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I16;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 49 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 46 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I32;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 50 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 47 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::I64;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 51 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 48 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::ISIZE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 52 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 49 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U8;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 53 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 50 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U16;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 54 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 51 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U32;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 55 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 52 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::U64;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 53 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::USIZE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 57 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 54 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::BOOL; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 55 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::TRUE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 59 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 56 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::FALSE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 60 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 57 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::LET; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 61 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 58 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::MUT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 62 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 59 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::IF; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 63 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 60 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::ELSE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 64 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 61 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::WHILE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 65 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 62 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::FN; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 66 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 63 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::UNDERSCORE; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 67 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 64 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::PRINT_LN; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 68 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 65 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::RETURN;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 69 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 66 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::BREAK;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 70 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 67 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::CONTINUE;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 72 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 69 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::DEC_LITERAL; }
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 73 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 70 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { 
                               std::string literal(yytext);
                               literal = literal.substr(1, literal.size() - 2);
 
                               // Update yylval with the processed string
-                              yylval->build(Token{{literal}, Span{this->prev_token_loc.end, yylloc->end}, (size_t)yyleng});
+                              yylval->build(Token{{literal}, *yylloc});
                               return Token_T::STR_LITERAL; 
                             }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 81 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 78 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::IDENTIFIER; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 83 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 80 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::DOT;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 84 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 81 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::EQ; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 85 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 82 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::EQEQ; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 86 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 83 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::NE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 87 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 84 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::BANG; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 88 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 85 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::LT; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 89 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 86 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::LE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 90 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 87 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::GT; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 91 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 88 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::GE; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 92 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 89 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::L_AND; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 93 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 90 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::L_OR; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 94 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 91 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::AMPERSAND; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 95 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 92 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::AMPERSAND_MUT; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 97 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 94 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::PLUS; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 98 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 95 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::MINUS; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 99 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 96 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::STAR; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 100 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 97 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::SLASH; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 101 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 98 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::PLUS_EQ; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 102 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 99 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::MIN_EQ; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 103 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 100 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::MUL_EQ; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 104 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 101 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::DIV_EQ; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 106 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 103 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::LBRACE; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 107 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 104 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::RBRACE; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 108 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 105 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::LPAREN; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 109 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 106 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::RPAREN; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 110 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 107 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::SEMICOLON; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 111 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 108 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::COLON; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 112 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 109 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::COMMA; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 113 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 110 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { return Token_T::ARROW; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 115 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 112 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { /* ignore comments */ }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 116 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 113 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 BEGIN(comment);
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 117 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 114 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { /* skip */ }
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 118 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 115 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { yylloc->lines(1); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 119 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 116 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { /* skip */ }
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
-#line 120 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 117 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { yylloc->lines(1); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 121 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 118 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 BEGIN(INITIAL);
 	YY_BREAK
 case 64:
 /* rule 64 can match eol */
 YY_RULE_SETUP
-#line 123 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 120 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { yylloc->lines(1); yylloc->step();  /* update line and col number but ignore it the actual 'token' */ }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 124 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 121 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 { /* ignore whitespace */ }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 128 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 125 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 {
   if (yytext[0] < ' '){ /* non-printable char */
     /*yyerror*/ fprintf(stderr,"illegal character: ^%c",yytext[0] + '@'); 
@@ -1084,10 +1081,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 144 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 141 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1090 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
+#line 1087 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexer.yy.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(comment):
 	yyterminate();
@@ -2051,7 +2048,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 144 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
+#line 141 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/lexer/lexfile.lex"
 
 
 

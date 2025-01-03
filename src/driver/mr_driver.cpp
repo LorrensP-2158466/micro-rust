@@ -47,6 +47,22 @@ int mr::driver::MRDriver::start() {
 
     auto interp = middle_interpreter::Interpreter(std::move(ir));
 
+    if (_err_ctx.has_errors()) {
+        _input_file.seekg(0);
+        std::vector<std::string> source_in_lines;
+        std::string              line;
+        while (std::getline(_input_file, line)) {
+            source_in_lines.push_back(line);
+        }
+        std::cout << "-------------------------\n";
+        for (const auto& line : source_in_lines){
+            std::cout << line << "\n";
+        }
+        _err_ctx.show_errors(source_in_lines);
+        std::cout << "-------------------------\n";
+        print_duration(dur_compile, "Compiling");
+        return 1;
+    }
     auto start_interp = clock::now();
 
     interp.interp();

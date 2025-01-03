@@ -7,7 +7,7 @@
 %define api.value.type variant
 
 %locations
-%define parse.error verbose
+%define parse.error detailed
 %define parse.trace
 
 %header
@@ -20,7 +20,6 @@ namespace mr {
         class MRDriver;
     }
 }
-#include "lexer/span.hpp"
 #include "lexer/token.hpp"
 #include "high/ast/module.hpp"
 #include "high/expr/module.hpp"
@@ -71,7 +70,6 @@ using namespace mr::expr;
 %nterm <U<Expr>> expr expr_stmt expr_w_block expr_wo_block 
 %nterm <U<UnaryOpExpr>> unary_op_expr
 %nterm <U<Item>> item 
-%nterm <U<AssignExpr>> assignment
 %nterm <std::vector<U<Item>>> item_list 
 %nterm <U<BlockExpr>> block_expr
 %nterm <U<FunDecl>> function_decl
@@ -86,7 +84,6 @@ using namespace mr::expr;
 %nterm <bool> opt_mut
 %nterm <U<Ast>> program 
 %nterm <U<IfElse>> if_expr
-%nterm <uint8_t> ref_add
 %nterm <U<Expr>> bin_op_expr
 %nterm <U<CallExpr>> call_expr
 %nterm <U<TupleIndexExpr>> tuple_index_expr
@@ -132,13 +129,10 @@ program
 
 item_list
     : item_list item {$1.push_back(std::move($2)); DEFAULT_ACTION($$, $1);}
-    // error in item, just keep going
-    | item_list error item {$1.push_back(std::move($3)); DEFAULT_ACTION($$, $1);}
     | item {
         auto vec = std::vector<U<Item>>();
         vec.push_back(std::move($1));
         $$ = std::move(vec) ;}
-    | error { std::cerr << "Expected Item\n"; }
     ;
 
 item
@@ -155,6 +149,7 @@ function_decl
 
 func_ret_type
     : ARROW type { DEFAULT_ACTION($$, $2); }
+    /* | ARROW error { driver.ecx().emit_error(std::make_unique<parser::) } */
     | { $$ = Type(); } // no arrow with type is the same as -> ()
     ;
 
@@ -187,11 +182,14 @@ stmt: SEMICOLON {$$ = std::make_unique<EmptyStmt>();}
 
 stmt_list
     : stmt_list stmt { $1.push_back(std::move($2)); DEFAULT_ACTION($$, $1); }
+    // error in statement, don't care go ahead
+    | stmt_list error { DEFAULT_ACTION($$, $1);}
     | stmt {
         auto vec = std::vector<U<Stmt>>();
         vec.push_back(std::move($1));
         $$ = std::move(vec); 
       } 
+    
     ;
 
 print_ln
@@ -200,7 +198,7 @@ print_ln
 
 type_decl
     : COLON type { DEFAULT_ACTION($$, $2); } // set type to output
-    | COLON error { $$ = Type(); printf("failure"); } // set type to output
+    | COLON error { $$ = Type::infer();  } 
     | { $$ = {}; } // no type decl no type
     ;
 
@@ -211,11 +209,7 @@ opt_mut
 
 let
     : LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
-      {$$ = LetStmt::make_unique_init($3.string_value(), std::move($4), std::move($6), $2);}  
-    | LET opt_mut IDENTIFIER type_decl error EQ SEMICOLON
-      {
-        $$ = LetStmt::make_unique_init($3.string_value(), std::move($4), std::unique_ptr<Expr>(nullptr), $2); 
-      }  
+      {$$ = LetStmt::make_unique_init($3.string_value(), std::move($4), std::move($6), $2);}   
     | LET opt_mut IDENTIFIER type_decl SEMICOLON {
         $$ = LetStmt::make_unique_decl($3.string_value(), std::move($4), $2);
     }
@@ -252,8 +246,7 @@ type
     | USIZE { $$ = Type(primitive_type::USIZE); }
     | BOOL { $$ = Type(primitive_type::BOOL); }
     | LPAREN type_list RPAREN { $$ = Type(std::move($2));}
-    |  LPAREN RPAREN { $$ = Type(); }
- //   |  IDENTIFIER { $$ = Type($2.string_value(), $1); }
+    | LPAREN RPAREN { $$ = Type(); }
     ;
 
 
@@ -320,7 +313,7 @@ while_expr
     ;
 
 tuple_index_expr
-    : expr DOT literal { $$ = std::make_unique<TupleIndexExpr>(std::move($1), std::move($3));}
+    : expr DOT DEC_LITERAL { $$ = std::make_unique<TupleIndexExpr>(std::move($1), Literal::make_int_lit($3.symbol));}
     ;
 
 
@@ -372,7 +365,7 @@ namespace mr
     void Parser::error(const Parser::location_type &loc, const std::string &message)
     {
         // i don't care about error's of bison
-        std::cerr << "Error in " << this->input_file_name << ":" << loc.end.line << ":" << loc.end.column
+        std::cerr << "Error in " << this->input_file_name << ":" << loc.begin.line << ":" << loc.begin.column
             <<":\n"
             << message << std::endl;
     }

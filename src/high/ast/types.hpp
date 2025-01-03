@@ -50,12 +50,17 @@ namespace mr {
             // [Type; N]: where N is an constant expression that must evaluate to a usize
             using Array = std::pair<U<Type>, U<expr::Expr>>;
             using Str = std::string; // no utf-8 bull
-            using TypeKind = std::variant<primitive_type, Str, Tuple, Array>;
+            // for now a placeholder for errors when declaring type so we can still go
+            // through with compiling and catch more errors
+            struct Infer {};
+            using TypeKind = std::variant<Infer, primitive_type, Str, Tuple, Array>;
 
             TypeKind kind;
 
             Type() : kind(primitive_type::Unit) {}
             Type(TypeKind k) : kind(std::move(k)) {}
+
+            static inline Type infer() noexcept { return Type(Infer{}); }
 
             bool is_primitive() const {
                 return std::holds_alternative<primitive_type>(kind);
@@ -80,6 +85,7 @@ namespace mr {
                         [](const Array& t) {
                             return fmt::format("[{}; N]", t.first->to_string());
                         },
+                        [](const Infer t) { return std::string("`_`"); },
                         [](const auto&) -> std::string {
                             TODO("USER DEFINED TYPES NOT SUPPORTED");
                             return "";

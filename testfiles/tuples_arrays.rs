@@ -1,7 +1,17 @@
+fn main() {
+    let t1 = (1, true);
 
+    let nested = ((1, 2), (false, 10));
 
-fn main(){
-    let t = ((10, 10), 10, 10);
-    let z: i64 = t.1;
-    println!("{t}.1 => {z}");
+    let sum = add_tuple((10, 20));
+    println!("{sum}");
+
+    let t2 = ((1, 2), (3, 4));
+
+    let mut mix = (10, true, (3, 4));
+    mix.0 += 5;
+}
+
+fn add_tuple(pair: (i32, i32)) -> i32 {
+    pair.0 + pair.1
 }
