@@ -9,15 +9,19 @@
 namespace mr {
     namespace expr {
         struct IfElse : public Expr {
+            location        if_loc;
             U<Expr>         conditional_expr;
             U<BlockExpr>    then_block;
+            location        else_loc;
             OptUnique<Expr> else_block;
 
             IfElse(
-                U<Expr> cond_expr, U<BlockExpr> then, OptUnique<Expr> els = std::nullopt
+                location if_loc, U<Expr> cond_expr, U<BlockExpr> then, location el_loc,
+                OptUnique<Expr> els = std::nullopt
             )
-                : Expr(), conditional_expr(std::move(cond_expr)),
-                  then_block(std::move(then)), else_block(std::move(els)) {};
+                : Expr(if_loc + (els ? (*els)->loc : then->loc)),
+                  conditional_expr(std::move(cond_expr)), then_block(std::move(then)),
+                  else_block(std::move(els)), if_loc(if_loc), else_loc(el_loc) {};
             ~IfElse() = default;
 
             void print(const int depth) const override {

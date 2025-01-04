@@ -1,22 +1,18 @@
-# pragma once
+#pragma once
 
 #include <memory>
 
 #include "../ast/stmt.hpp"
+#include "location.hh"
 
-namespace mr
-{
-    namespace expr
-    {
-        // Exprs are simple types so we're defining them as structs
-        // everything is public this way, but that doesn't really matter
-        struct Expr: public ast::Stmt{
-
-            Expr() : ast::Stmt() {};
+namespace mr {
+    namespace expr {
+        struct Expr : public ast::Stmt {
+            Expr(location l) : ast::Stmt(l) {};
             virtual ~Expr() = default;
-        
-            virtual void print(const int depth)const override = 0;
-        } ;
+
+            virtual void print(const int depth) const override = 0;
+        };
 
         // create pointer type
     } // namespace expr

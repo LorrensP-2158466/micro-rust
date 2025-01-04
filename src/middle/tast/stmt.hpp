@@ -65,13 +65,14 @@ namespace mr {
              * x = 5;
              */
             struct LetStmt {
-                std::string    id;
-                types::Ty      type_decl;
-                U<Expr>        initializer;
-                ir::Mutability mut;
+                expr::Identifier id;
+                types::Ty        type_decl;
+                U<Expr>          initializer;
+                ir::Mutability   mut;
 
-                LetStmt(std::string i, types::Ty td, U<Expr> init, ir::Mutability m)
-                    : id(i), type_decl(td), initializer(std::move(init)), mut(m) {}
+                LetStmt(expr::Identifier i, types::Ty td, U<Expr> init, ir::Mutability m)
+                    : id(std::move(i)), type_decl(td), initializer(std::move(init)),
+                      mut(m) {}
             };
 
             // Exprs are simple types so we're defining them as structs
@@ -92,8 +93,8 @@ namespace mr {
                 static Stmt expr(Expr e) { return Stmt(std::move(e)); }
 
                 static Stmt
-                let(std::string i, types::Ty td, U<Expr> init, ir::Mutability m) {
-                    return Stmt(LetStmt(i, td, std::move(init), m));
+                let(expr::Identifier i, types::Ty td, U<Expr> init, ir::Mutability m) {
+                    return Stmt(LetStmt(std::move(i), td, std::move(init), m));
                 }
                 static Stmt print(std::string s) { return Stmt(PrintLn(std::move(s))); }
             };

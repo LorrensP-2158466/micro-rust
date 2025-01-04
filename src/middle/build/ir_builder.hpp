@@ -3,6 +3,8 @@
 #include "../ir/module.hpp"
 #include "../tast/module.hpp"
 #include "../type_inference.hpp"
+#include "./errors.hpp"
+#include "errors/ctx.hpp"
 #include "mr_util.hpp"
 #include "types/type.hpp"
 #include <fmt/format.h>
@@ -20,6 +22,7 @@ namespace mr {
 
             class IrBuilder {
               public:
+                error::ErrorCtx&      ecx;
                 inference::TyInferer& _inferer; // context of types
                 // name to local_id, symboltable is used, because we can shadow in rust
                 SymbolTable<LocalId> _locals_table;
@@ -38,16 +41,17 @@ namespace mr {
 
                 BasicBlocks _blocks;
 
-                IrBuilder(inference::TyInferer& i) : _inferer(i) {}
+                IrBuilder(error::ErrorCtx& ecx, inference::TyInferer& i)
+                    : ecx(ecx), _inferer(i) {}
 
                 Function build_function(const tast::TAst fn) {
                     spdlog::info("BEGINNING IR BUILD OF FUNCTION {}", fn.name);
                     return_local = create_local(
-                        "0_RETURN", _inferer.resolve(fn.ret_type), Mutability::Mutable
+                        "0_RETURN", _inferer.resolve(fn.ret_type), MutabilityType::Mutable
                     );
                     for (const auto& param : fn.params) {
                         const auto ty = _inferer.resolve(param.type);
-                        create_local(param.id, ty, param.mut);
+                        create_local(param.id, ty, param.mut.node);
                     }
                     auto block_id = _blocks.create_new_block();
                     for (const auto& stmt : fn.body._statements) {
@@ -70,7 +74,7 @@ namespace mr {
                 Scalar from_tast_literal(const tast::Literal lit) {
                     return Scalar{lit.raw_value(), lit.size()};
                 }
-                LocalId create_local(const std::string name, Ty ty, Mutability mut) {
+                LocalId create_local(const std::string name, Ty ty, MutabilityType mut) {
                     spdlog::info("CREATING LOCAL `{}`", name);
                     const auto id = LocalId{_locals.size()};
                     _locals_table.insert(name, id);
@@ -157,8 +161,11 @@ namespace mr {
                 BlockWith<void> build_let_stmt(const LetStmt& let, BlockId block) {
                     fmt::println("let type: {}", let.type_decl);
                     const auto resolved_ty = _inferer.resolve(let.type_decl);
-                    if (!resolved_ty.is_known()) { std::runtime_error("TYPE ERROR"); }
-                    const auto local = create_local(let.id, resolved_ty, let.mut);
+                    if (!resolved_ty.is_known()) {
+                        ecx.report_diag(errors::unknown_type(let.id.loc));
+                    }
+                    const auto local =
+                        create_local(let.id._id, resolved_ty, let.mut.node);
                     // no initalizer nothing to do
                     if (!let.initializer) return block.empty();
                     return expr_into_place(Place(local), *let.initializer, block);
@@ -222,7 +229,7 @@ namespace mr {
                             },
                             [&](const auto&) {
                                 const auto tmp = Place(
-                                    create_local("", expr.type, Mutability::Immutable)
+                                    create_local("", expr.type, MutabilityType::Immutable)
                                 );
                                 return expr_into_place(tmp, expr, block);
                             },
@@ -267,8 +274,12 @@ namespace mr {
                 // introduces a temporary if expr is a place
                 BlockWith<Operand> expr_as_operand(const Expr& expr, BlockId block) {
                     auto handle_temp_move = [&]() {
+                        auto resolved_type = _inferer.resolve(expr.type);
+                        if (!resolved_type.is_known()) {
+                            ecx.report_diag(errors::unknown_type(expr.loc));
+                        }
                         const auto temp_place = Place(create_local(
-                            "temp", _inferer.resolve(expr.type), Mutability::Immutable
+                            "temp", std::move(resolved_type), MutabilityType::Immutable
                         ));
                         unpack(block, expr_into_place(Place(temp_place), expr, block));
                         return block.with(Operand::move(Place(temp_place)));
@@ -276,6 +287,10 @@ namespace mr {
                     return std::visit(
                         overloaded{
                             [&](const Literal& lit) {
+                                auto resolved_type = _inferer.resolve(expr.type);
+                                if (!resolved_type.is_known()) {
+                                    ecx.report_diag(errors::unknown_type(expr.loc));
+                                }
                                 return block.with(Operand::const_(
                                     from_tast_literal(lit), _inferer.resolve(expr.type)
                                 ));
@@ -327,8 +342,12 @@ namespace mr {
                                 ));
                             },
                             [&](const Literal& lit) {
+                                auto resolved_type = _inferer.resolve(expr.type);
+                                if (!resolved_type.is_known()) {
+                                    ecx.report_diag(errors::unknown_type(expr.loc));
+                                }
                                 const auto operand = Operand::const_(
-                                    from_tast_literal(lit), _inferer.resolve(expr.type)
+                                    from_tast_literal(lit), std::move(resolved_type)
                                 );
                                 return block.with(RValue(AsIs{std::move(operand)}));
                             },
@@ -607,7 +626,7 @@ namespace mr {
                     if (_unit_temp) return *_unit_temp;
                     else {
                         const auto unit_temp = Place(create_local(
-                            "UNIT_TEMP", _inferer.unit(), Mutability::Mutable
+                            "UNIT_TEMP", _inferer.unit(), MutabilityType::Mutable
                         ));
                         _unit_temp = unit_temp;
                         return unit_temp;

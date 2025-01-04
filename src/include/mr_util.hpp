@@ -1,5 +1,6 @@
 #pragma once
 
+#include "location.hh"
 #include "ops.hpp"
 #include "optional_util.hpp"
 #include <fmt/format.h>
@@ -12,6 +13,11 @@
 #include <variant>
 
 namespace mr {
+
+    template <typename T> struct Locusable {
+        T        node;
+        location loc;
+    };
     template <typename T> using Ref = std::reference_wrapper<T>;
 
     inline void todo(
@@ -21,6 +27,12 @@ namespace mr {
         std::cerr << "TODO: " << message << " in " << location.file_name() << ':'
                   << location.line() << ':' << location.column() << std::endl;
         abort();
+    }
+
+    inline void
+    ICE(std::string                message = "",
+        const std::source_location location = std::source_location::current()) {
+        throw std::runtime_error(fmt::format("{}", message));
     }
 
     inline void
@@ -74,6 +86,10 @@ namespace mr {
     template <typename T> using U = std::unique_ptr<T>;
 
     template <typename T> using OptUnique = std::optional<U<T>>;
+
+    template <class T, class... Args> U<T> m_u(Args&&... args) {
+        return std::make_unique<T>(std::forward<Args>(args)...);
+    }
 
     inline const char* bool_to_str(const bool b) {
         return b ? "true" : "false";

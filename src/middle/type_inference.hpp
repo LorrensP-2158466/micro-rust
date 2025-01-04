@@ -82,6 +82,7 @@ namespace mr {
                 inline Ty bool_t() const noexcept { return Ty{BoolTy{}}; }
                 inline Ty unit() const noexcept { return Ty{UnitTy{}}; }
                 inline Ty never() const noexcept { return Ty{NeverTy{}}; }
+                inline Ty unknown() const noexcept { return Ty{UnknownTy{}}; }
 
                 Ty never_to_unit(const Ty ty) {
                     return has_variant<NeverTy>(ty) ? unit() : ty;
@@ -95,18 +96,9 @@ namespace mr {
                                     overloaded{
                                         [&](const TypeVar& tv) {
                                             const auto t = _type_vars.get(tv);
-                                            if (!t)
-                                                throw std::runtime_error(
-                                                    "TypeVariable does not exist"
-                                                );
+                                            if (!t) return unknown();
                                             return std::visit(
                                                 overloaded{
-                                                    [&](const UnknownTy&) {
-                                                        throw std::runtime_error(
-                                                            "Cant resolve type variable"
-                                                        );
-                                                        return ty;
-                                                    },
                                                     [&](const InferTy&) {
                                                         exit(1);
                                                         return resolve(*t);
@@ -316,9 +308,9 @@ namespace mr {
                             [&](const InferTy& ti, const InferTy& ui) {
                                 return std::visit(
                                     overloaded{
-                                        [&](const TypeVar&, const TypeVar&) {
-                                            TODO("EQUATE TWO TYPE VARIABLES");
-                                            return no_type();
+                                        [&](const TypeVar& tt, const TypeVar& ut) {
+                                            _type_vars.unionize(tt, ut);
+                                            return some(t);
                                         },
                                         [&](const TypeVar& ttv, const IntVar& uiv) {
                                             return eq_intvar_type_var(uiv, ttv);

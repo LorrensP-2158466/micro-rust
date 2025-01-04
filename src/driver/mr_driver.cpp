@@ -30,39 +30,33 @@ int mr::driver::MRDriver::start() {
     Lexer lexer(_input_file, false);
 
     Parser parser(*this, lexer, false, file_name);
+    auto   start_compile = clock::now();
 
-    auto start_compile = clock::now();
-    if (parser.parse()) {
-        std::cerr << "Parsing failure\n";
+    middle::ir::Ir ir;
+    try {
+        if (parser.parse()) {
+            std::cerr << "Parsing failure\n";
+            return 1;
+        }
+        _ast->print();
+        ir = _middle_phase.run(std::move(_ast));
+    } catch (const std::exception& e) {
+        show_errors();
+        fmt::println("ICE: {}", e.what());
         return 1;
     }
-
-    _ast->print();
-
-    auto ir = _middle_phase.run(std::move(_ast));
 
     auto end_compile = clock::now();
     auto dur_compile =
         std::chrono::duration_cast<std::chrono::nanoseconds>(end_compile - start_compile);
 
-    auto interp = middle_interpreter::Interpreter(std::move(ir));
-
     if (_err_ctx.has_errors()) {
-        _input_file.seekg(0);
-        std::vector<std::string> source_in_lines;
-        std::string              line;
-        while (std::getline(_input_file, line)) {
-            source_in_lines.push_back(line);
-        }
-        std::cout << "-------------------------\n";
-        for (const auto& line : source_in_lines){
-            std::cout << line << "\n";
-        }
-        _err_ctx.show_errors(source_in_lines);
-        std::cout << "-------------------------\n";
-        print_duration(dur_compile, "Compiling");
+        show_errors();
         return 1;
     }
+    DBG("not here");
+    auto interp = middle_interpreter::Interpreter(std::move(ir));
+
     auto start_interp = clock::now();
 
     interp.interp();

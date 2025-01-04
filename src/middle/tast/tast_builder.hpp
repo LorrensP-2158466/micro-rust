@@ -4,6 +4,8 @@
 #include "errors/ctx.hpp"
 #include "high/ast/module.hpp"
 #include "high/expr/module.hpp"
+#include "levenshtein.hpp"
+#include "location.hh"
 #include "mr_util.hpp"
 #include "symbol_table.hpp"
 #include "tast/module.hpp"
@@ -46,6 +48,15 @@ namespace mr {
             }
         };
 
+        struct TAstBuildResult {
+            std::string name;
+            TAst        tast;
+            bool        structure_invalid;
+
+            TAstBuildResult(std::string name, TAst tast, bool si)
+                : name(name), tast(std::move(tast)), structure_invalid(si) {}
+        };
+
         class TAstBuilder : public ast::AstVisitor<Stmt, Expr, void> {
             static inline const char* RETURN_NAME = "0_RETURN";
             SymbolTable<Ty>&          _scoped_types;
@@ -55,10 +66,11 @@ namespace mr {
             FunctionNamer _fn_namer;
 
             std::optional<Ref<const ast::FunDecl>> _curr_build;
+            bool                                   _curr_build_structure_failure;
             // possible to have nested functions
             std::vector<std::pair<std::string, Ref<const ast::FunDecl>>>
-                                                      _inner_functions_to_build;
-            std::vector<std::pair<std::string, TAst>> _built_functions;
+                                         _inner_functions_to_build;
+            std::vector<TAstBuildResult> _built_functions;
 
             // it is possible that a block contains a return/continue/break
             // these result in the ! type of that block, but we can't know when this
@@ -77,18 +89,22 @@ namespace mr {
 
             ~TAstBuilder() = default;
 
-            std::pair<TAst, std::vector<std::pair<std::string, TAst>>>
+            std::pair<TAstBuildResult, std::vector<TAstBuildResult>>
             build_everything(const ast::FunDecl& fun_decl) {
-                _curr_build = fun_decl;
-
-                auto outer = build_function(fun_decl);
+                auto outer = TAstBuildResult{
+                    fun_decl.name(),
+                    build_function(fun_decl),
+                    _curr_build_structure_failure
+                };
                 while (!_inner_functions_to_build.empty()) {
                     const auto& [mangled_name, fn_decl] =
                         _inner_functions_to_build.back();
                     _curr_build = fn_decl;
                     _inner_functions_to_build.pop_back();
                     _built_functions.emplace_back(
-                        std::move(mangled_name), build_function(fn_decl)
+                        std::move(mangled_name),
+                        build_function(fn_decl),
+                        _curr_build_structure_failure
                     );
                 }
                 return std::make_pair(std::move(outer), std::move(_built_functions));
@@ -96,6 +112,8 @@ namespace mr {
 
             // build function and every nested item of that function
             TAst build_function(const ast::FunDecl& fun_decl) {
+                _curr_build = fun_decl;
+                _curr_build_structure_failure = false;
                 spdlog::info("Beginning TAST build of function {}", fun_decl.name());
                 std::vector<Param> args{};
                 _fn_namer.push_scope();
@@ -111,7 +129,11 @@ namespace mr {
                     args.emplace_back(
                         arg.id,
                         type,
-                        arg.mut ? Mutability::Mutable : Mutability::Immutable
+                        Mutability{
+                            arg.mut.node ? MutabilityType::Mutable
+                                         : MutabilityType::Immutable,
+                            arg.mut.loc
+                        }
                     );
                 }
                 spdlog::info("visiting block expr");
@@ -120,7 +142,13 @@ namespace mr {
                 spdlog::info("Equating types in build");
                 // mismatched return types
                 if (!_inferer.eq(return_type, block_expr.type)) {
-                    type_error(block_expr.type, return_type);
+                    ecx.report_diag(errors::mismatched_return_types(
+                        block_expr.type,
+                        // i know this
+                        std::get<BlockExpr>(block_expr.kind)._tail->loc,
+                        return_type,
+                        fun_decl.return_type().loc
+                    ));
                 }
                 spdlog::info("Done equating");
 
@@ -137,11 +165,12 @@ namespace mr {
             }
 
           private:
-            [[noreturn]] void type_error(Ty found, Ty expected) {
-                std::cerr << "Mismatched Types found: " << _inferer.ty_to_string(found)
-                          << " but expected: " << _inferer.ty_to_string(expected)
-                          << std::endl;
-                std::abort();
+            void type_error(const Ty& found, const Ty& expected, location loc) {
+                ecx.report_diag(errors::mismatched_types(
+                    _inferer.shallow_resolve(found),
+                    _inferer.shallow_resolve(expected),
+                    loc
+                ));
             }
             void visit_fun_decl_item(const ast::FunDecl& p) override {
                 // so this is a nested function, we have to mangle and change the name
@@ -160,7 +189,7 @@ namespace mr {
             }
 
             Stmt visit_let_stmt(const ast::LetStmt& let) override {
-                spdlog::info("Building Ast Let to TAst Let of `{}`", let.id());
+                spdlog::info("Building Ast Let to TAst Let of `{}`", let.id()._id);
                 const auto user_decl_type = let.type_decl()
                                                 ? _inferer.from_ast_type(*let.type_decl())
                                                 : _inferer.create_type_var();
@@ -168,28 +197,25 @@ namespace mr {
                 auto initializer =
                     let.initializer() ? std::make_optional(visit_expr(*let.initializer()))
                                       : std::nullopt;
+                const auto mutability = Mutability{
+                    let.mut().node ? MutabilityType::Mutable : MutabilityType::Immutable,
+                    let.loc
+                };
                 if (!initializer) {
-                    _scoped_types.insert(let.id(), user_decl_type);
-                    return Stmt::let(
-                        let.id(),
-                        user_decl_type,
-                        nullptr,
-                        let.is_mutable() ? Mutability::Mutable : Mutability::Immutable
-                    );
+                    _scoped_types.insert(let.id()._id, user_decl_type);
+                    return Stmt::let(let.id(), user_decl_type, nullptr, mutability);
                 }
 
                 // the initializer must match the user defined type
-                const auto equated = _inferer.eq(user_decl_type, (*initializer).type);
-                if (!equated) { type_error(initializer->type, user_decl_type); }
+                auto equated = _inferer.eq(user_decl_type, (*initializer).type);
+                if (!equated) {
+                    type_error(initializer->type, user_decl_type, let.initializer()->loc);
+                    equated = std::move(user_decl_type);
+                }
 
-                _scoped_types.insert(let.id(), *equated);
+                _scoped_types.insert(let.id()._id, *equated);
                 auto init = std::make_unique<Expr>(std::move(initializer.value()));
-                return Stmt::let(
-                    let.id(),
-                    *equated,
-                    std::move(init),
-                    let.is_mutable() ? Mutability::Mutable : Mutability::Immutable
-                );
+                return Stmt::let(let.id(), *equated, std::move(init), mutability);
             }
 
             Stmt visit_print_stmt(const ast::PrintLn& p) override {
@@ -197,9 +223,17 @@ namespace mr {
                 auto error = false;
                 auto check_name = [&](const std::string& name) {
                     if (!_scoped_types.look_up(name).has_value()) {
-                        std::cerr << "In print Statement identifier `" << name
-                                  << "` not found\n";
-                        error = true;
+                        auto similar_name = find_similar_name(name);
+                        auto help =
+                            similar_name
+                                ? fmt::format(
+                                      "a local variable with a similar name exists: `{}`",
+                                      similar_name->get()
+                                  )
+                                : "";
+                        ecx.report_diag(
+                            errors::ident_not_found(name, p.loc, std::move(help))
+                        );
                     }
                 };
                 if (print_stmt._start_fmt) check_name(*print_stmt._start_fmt);
@@ -258,7 +292,9 @@ namespace mr {
                     std::unique_ptr<Expr>(nullptr)
                 );
                 return Expr(
-                    BlockExpr(std::move(statements), std::move(tail_p)), std::move(ty)
+                    BlockExpr(std::move(statements), std::move(tail_p)),
+                    std::move(ty),
+                    block.loc
                 );
             }
 
@@ -284,7 +320,9 @@ namespace mr {
                 auto condition = visit_expr(*expr._cond);
                 // condition is always of boolean type
                 if (!_inferer.eq(condition.type, _inferer.bool_t())) {
-                    type_error(condition.type, _inferer.bool_t());
+                    type_error(condition.type, _inferer.bool_t(), expr._cond->loc);
+                    // hack?
+                    condition.type = _inferer.bool_t();
                 };
 
                 auto cond_p = std::make_unique<Expr>(std::move(condition));
@@ -292,29 +330,38 @@ namespace mr {
                 auto block_expr = visit_block_expr(*expr._body);
                 // body is always of unit type
                 if (!_inferer.eq(block_expr.type, _inferer.unit())) {
-                    type_error(block_expr.type, _inferer.unit());
+                    type_error(
+                        block_expr.type, _inferer.unit(), expr._body->tail_expr()->loc
+                    );
+                    block_expr.type = _inferer.unit(); // hack
                 }
                 auto body = std::get<BlockExpr>(std::move(block_expr.kind));
                 in_loop -= 1;
                 auto break_branch = std::make_unique<Expr>(
                     BlockExpr(std::make_unique<Expr>(
-                        Break(std::make_unique<Expr>(Unit(), _inferer.unit())),
-                        _inferer.unit()
+                        Break(std::make_unique<Expr>(Unit(), _inferer.unit(), location())
+                        ),
+                        _inferer.unit(),
+                        location()
                     )),
-                    _inferer.unit()
+                    _inferer.unit(),
+                    location()
                 );
 
                 auto loop_body = std::make_unique<Expr>(
                     ExprKind(IfElse(
                         std::move(cond_p), std::move(body), some(std::move(break_branch))
                     )),
-                    _inferer.unit()
+                    _inferer.unit(),
+                    expr._cond->loc
                 );
-                return Expr(ExprKind(Loop(std::move(loop_body))), _inferer.unit());
+                return Expr(
+                    ExprKind(Loop(std::move(loop_body))), _inferer.unit(), expr.loc
+                );
             }
 
-            Expr visit_unit_expr(const expr::Unit&) override {
-                return Expr(Unit{}, _inferer.unit());
+            Expr visit_unit_expr(const expr::Unit& u) override {
+                return Expr(Unit{}, _inferer.unit(), u.loc);
             }
 
             // if expression without else clauses resolve to `()` type
@@ -323,8 +370,11 @@ namespace mr {
                 spdlog::info("Building IfElse Expr in to TAST");
                 // check that condition is a boolean
                 auto condition = visit_expr(*expr.conditional_expr);
-                if (!_inferer.eq(condition.type, Ty{BoolTy{}})) {
-                    type_error(condition.type, Ty{BoolTy{}});
+                if (!_inferer.eq(condition.type, _inferer.bool_t())) {
+                    type_error(
+                        condition.type, _inferer.bool_t(), expr.conditional_expr->loc
+                    );
+                    condition.type = _inferer.bool_t(); // hack
                 };
                 auto cond_p = std::make_unique<Expr>(std::move(condition));
 
@@ -332,90 +382,109 @@ namespace mr {
                 auto then_block = std::get<BlockExpr>(std::move(then_expr.kind));
 
                 if (!expr.else_block) {
-                    if (_inferer.eq(_inferer.unit(), then_expr.type)) {
-                        return Expr(
-                            ExprKind(IfElse(
-                                std::move(cond_p), std::move(then_block), std::nullopt
-                            )),
-                            _inferer.unit()
+                    if (!_inferer.eq(_inferer.unit(), then_expr.type)) {
+                        type_error(
+                            then_expr.type,
+                            _inferer.unit(),
+                            expr.then_block->tail_expr()->loc
                         );
+                        then_block._tail->type = _inferer.unit();
                     }
-                    type_error(_inferer.unit(), then_expr.type);
+                    return Expr(
+                        ExprKind(
+                            IfElse(std::move(cond_p), std::move(then_block), std::nullopt)
+                        ),
+                        _inferer.unit(),
+                        expr.loc
+                    );
                 }
-                auto       els = visit_expr(*(*expr.else_block));
-                const auto ty = _inferer.eq(then_expr.type, els.type);
+                auto els = visit_expr(*(*expr.else_block));
+                auto ty = _inferer.eq(then_expr.type, els.type);
 
-                if (!ty) type_error(els.type, then_expr.type);
+                // TODO: mismatch if_else
+                if (!ty) {
+                    // support multiline shit please
+                    if (auto els_blk = std::get_if<BlockExpr>(&els.kind))
+                        ecx.report_diag(errors::mismatched_if_else_types(
+                            els.type,
+                            els_blk->_tail->loc,
+                            then_expr.type,
+                            then_block._tail->loc,
+                            expr.if_loc,
+                            expr.else_loc
+                        ));
+                    // for now, just report error on the `else` token
+                    else { type_error(els.type, then_expr.type, expr.else_loc); }
+                    // hack
+                    ty = then_expr.type;
+                }
                 auto else_p = std::make_unique<Expr>(std::move(els));
                 auto kind = ExprKind(
                     IfElse(std::move(cond_p), std::move(then_block), std::move(else_p))
                 );
-                return Expr(std::move(kind), *ty);
+                return Expr(std::move(kind), std::move(*ty), expr.loc);
             }
             Expr visit_binary_op_expr(const expr::BinOpExpr& bin_op) override {
                 spdlog::info("Building Binary Op Expr in to TAST");
 
-                auto left = std::make_unique<Expr>(visit_expr(*bin_op.left));
-                auto right = std::make_unique<Expr>(visit_expr(*bin_op.right));
-                auto left_type = left->type;
-                auto right_type = right->type;
-                Ty   result_type;
+                auto  left = std::make_unique<Expr>(visit_expr(*bin_op.left));
+                auto  right = std::make_unique<Expr>(visit_expr(*bin_op.right));
+                auto& left_type = left->type;
+                auto& right_type = right->type;
+                Ty    result_type;
                 switch (bin_op.op) {
                 case expr::BinOp::Mul:
                 case expr::BinOp::Div:
                 case expr::BinOp::Plus:
                 case expr::BinOp::Min: {
-                    const auto ty = _inferer.eq(left->type, right->type);
-                    if (ty) {
-                        if (_inferer.is_integer_type(*ty)) {
-                            result_type = *ty;
-                            break;
-                        }
+                    if (!_inferer.eq(left_type, right_type)) {
+                        type_error(right_type, left_type, bin_op.right->loc);
+                        right_type = left_type;
                     }
-                    std::cerr << "Can't perform binary operator "
-                              << binop_to_str(bin_op.op) << "On left: " << left
-                              << " and right: " << right << std::endl;
-                    throw std::runtime_error("Type error on binary operator");
+                    result_type = left_type;
+                    break;
                 }
                 case expr::BinOp::L_AND:
                 case expr::BinOp::L_OR: {
                     auto bool_type = _inferer.bool_t();
                     // if both left and right are boolean, than they are equal
-                    if (!_inferer.eq(left_type, bool_type))
-                        type_error(left_type, bool_type);
-                    if (!_inferer.eq(right_type, bool_type))
-                        type_error(right_type, bool_type);
+                    if (!_inferer.eq(left_type, bool_type)) {
+                        type_error(left_type, bool_type, bin_op.left->loc);
+                        left_type = _inferer.bool_t();
+                    }
+                    if (!_inferer.eq(right_type, bool_type)) {
+                        type_error(right_type, bool_type, bin_op.right->loc);
+                        right_type = _inferer.bool_t();
+                    }
                     return Expr(
                         LogicalOpExpr(
                             std::move(left),
                             log_op_from_bin_op(bin_op.op),
                             std::move(right)
                         ),
-                        std::move(bool_type)
+                        std::move(bool_type),
+                        bin_op.loc
                     );
-                    break;
-                }
+                } break;
                 case expr::BinOp::Eq:
                 case expr::BinOp::NEq:
                 case expr::BinOp::Gt:
                 case expr::BinOp::Lt:
                 case expr::BinOp::GtEq:
                 case expr::BinOp::LtEq: {
-                    auto eq_result = _inferer.eq(left->type, right->type);
-                    if (!eq_result) {
-                        std::cerr << "Can't perform binary operator "
-                                  << binop_to_str(bin_op.op) << "On left: " << left
-                                  << " and right: " << right << std::endl;
-                        throw std::runtime_error("Type error on binary operator");
+                    if (!_inferer.eq(left_type, right_type)) {
+                        type_error(right_type, left_type, bin_op.right->loc);
+                        right_type = left_type;
                     }
                     result_type = _inferer.bool_t();
-                    break;
-                }
+
+                } break;
                 }
                 auto op = bin_op_from_ast(bin_op.op);
                 return Expr(
                     BinOpExpr(std::move(left), op, std::move(right)),
-                    std::move(result_type)
+                    std::move(result_type),
+                    bin_op.loc
                 );
             }
 
@@ -469,7 +538,9 @@ namespace mr {
                         // capture ty because of move;
                         const auto ty = operand.type;
                         auto       operand_p = std::make_unique<Expr>(std::move(operand));
-                        return Expr(UnaryOpExpr(expr._op, std::move(operand_p)), ty);
+                        return Expr(
+                            UnaryOpExpr(expr._op, std::move(operand_p)), ty, expr.loc
+                        );
                     }
                     throw std::runtime_error("Can't negate on type: TODO!!!");
                 default:
@@ -483,11 +554,16 @@ namespace mr {
                 auto assignee = visit_expr(*assign._assignee);
                 if (!is_assignable(assignee)) {
                     // TODO: report unassignable expr
-                    throw std::runtime_error("Can't assign to expr");
+                    ecx.report_diag(errors::un_assignable_expr(assign._assignee->loc));
+                    // these things can't be made into IR
+                    _curr_build_structure_failure = true;
                 }
-                auto       value = visit_expr(*assign._expr.get());
-                const auto ty = _inferer.eq(assignee.type, value.type);
-                if (!ty) { type_error(value.type, assignee.type); }
+                auto value = visit_expr(*assign._expr.get());
+                auto ty = _inferer.eq(assignee.type, value.type);
+                if (!ty) {
+                    type_error(value.type, assignee.type, assign._expr->loc);
+                    ty = assignee.type; // hack
+                }
                 // FXME: do we have to do this? assignments can't change the type
                 // and _inferer.eq handles typevars
                 // _scoped_types.update(assign._id, *ty);
@@ -501,7 +577,7 @@ namespace mr {
                               *bin_op_from_assign_op(assign._op),
                               std::move(value_p)
                           ));
-                return Expr(std::move(kind), _inferer.unit());
+                return Expr(std::move(kind), _inferer.unit(), assign.loc);
             }
 
             std::optional<BinOp> bin_op_from_assign_op(const expr::AssignOp op) {
@@ -521,35 +597,42 @@ namespace mr {
 
             Expr visit_return_expr(const expr::Return& ret) override {
                 auto value = visit_expr(*ret.val);
+                auto return_loc = (*_curr_build).get().return_type().loc;
                 auto return_type = *_scoped_types.look_up(RETURN_NAME);
                 auto eq_result = _inferer.eq(value.type, return_type);
                 // TODO mismatched returns
-                if (!eq_result) { type_error(value.type, return_type); }
+                if (!eq_result) {
+                    ecx.report_diag(errors::mismatched_return_types(
+                        value.type, ret.val->loc, return_type, return_loc
+                    ));
+                }
                 // type of return expr is ! so we set the state
                 control_flow_exit = true;
                 return Expr(
                     tast::Return{std::make_unique<Expr>(std::move(value))},
-                    _inferer.never()
+                    _inferer.never(),
+                    ret.loc
                 );
             }
             Expr visit_break_expr(const expr::Break& brk) override {
                 auto value = visit_expr(*brk.val);
                 auto return_type = *_scoped_types.look_up(RETURN_NAME);
                 auto eq_result = _inferer.eq(value.type, return_type);
-                if (!eq_result) { type_error(value.type, return_type); }
+                if (!eq_result) { type_error(value.type, return_type, brk.val->loc); }
                 // type of break expr is !
                 control_flow_exit = true;
                 return Expr(
                     tast::Break{std::make_unique<Expr>(std::move(value))},
-                    _inferer.never()
+                    _inferer.never(),
+                    brk.loc
                 );
             }
-            Expr visit_continue_expr(const expr::Continue&) override {
-                if (!in_loop) {
-                    std::runtime_error("CAPTURE ERROR: continue not in loop body");
-                }
+            Expr visit_continue_expr(const expr::Continue& c) override {
+                if (!in_loop) { ecx.report_diag(errors::continue_outside_loop(c.loc)); }
                 control_flow_exit = true;
-                return Expr(tast::Continue{}, _inferer.never());
+                // continue outside of loop breaks valid structure
+                _curr_build_structure_failure = true;
+                return Expr(tast::Continue{}, _inferer.never(), c.loc);
             }
 
             Expr visit_call_expr(const expr::CallExpr& expr) override {
@@ -579,16 +662,19 @@ namespace mr {
                     const auto& expected_type = ft->arg_types[i];
                     auto        call_op = visit_expr(*expr._args[i]);
                     if (!_inferer.eq(expected_type, call_op.type)) {
-                        type_error(call_op.type, expected_type);
+                        type_error(call_op.type, expected_type, expr._args[i]->loc);
+                        call_op.type = expected_type;
                     }
                     call_operands.push_back(std::make_unique<Expr>(std::move(call_op)));
                 }
-                return Expr(CallExpr(ft->id, std::move(call_operands)), ft->ret_ty);
+                return Expr(
+                    CallExpr(ft->id, std::move(call_operands)), ft->ret_ty, expr.loc
+                );
             }
             Expr visit_litt_expr(const expr::Literal& lit) override {
                 spdlog::info("Building Litt Expr in to TAST: `{}`", lit.symbol);
                 const auto [l, ty] = Literal::from_ast_lit(lit, _inferer);
-                return Expr(std::move(l), ty);
+                return Expr(std::move(l), ty, lit.loc);
             }
 
             Expr visit_tuple_expr(const expr::TupleExpr& tup) override {
@@ -602,24 +688,18 @@ namespace mr {
                     tys.push_back(tast_expr.type);
                     exprs.push_back(std::move(tast_expr));
                 }
-                return Expr(TupleExpr{std::move(exprs)}, Ty{TupleTy{std::move(tys)}});
+                return Expr(
+                    TupleExpr{std::move(exprs)}, Ty{TupleTy{std::move(tys)}}, tup.loc
+                );
             }
             Expr visit_tuple_idx_expr(const expr::TupleIndexExpr& tup_index) override {
                 auto expr = visit_expr(*tup_index.expr);
-                std::cout << expr::LiteralKind_to_string(tup_index.index->kind) << "\n";
-                if (tup_index.index->kind != expr::LiteralKind::Integer) {
-                    // TODO: emit faulty tuple index type
-                    throw std::runtime_error(fmt::format(
-                        "IDCE: Cant index into tuple with literal: {}, this should be "
-                        "caught by parser",
-                        tup_index.index->symbol
-                    ));
-                }
                 if (!has_variant<types::TupleTy>(expr.type)) {
                     // TODO: emit error: cant tuple index into non tuple type
-                    throw std::runtime_error(
-                        fmt::format("Can't perform tuple index into {}", expr.type)
+                    ecx.report_diag(
+                        errors::no_field_on_primitive(expr.type, tup_index.index->loc)
                     );
+                    _curr_build_structure_failure = true;
                 }
                 // we know that the lexer does this the "right" way
                 auto        index = std::stoul(tup_index.index->symbol);
@@ -627,14 +707,13 @@ namespace mr {
                 auto        result_type = tuple_type.tys[index];
                 if (index >= tuple_type.tys.size()) {
                     ecx.report_diag(errors::unknown_field(
-                        fmt::format("{}", index),
-                        expr.type,
-                        location(position(nullptr, 5, 7), position(nullptr, 5, 8))
+                        fmt::format("{}", index), expr.type, tup_index.index->loc
                     ));
                 }
                 return Expr(
                     FieldExpr(std::make_unique<Expr>(std::move(expr)), index),
-                    std::move(result_type)
+                    std::move(result_type),
+                    tup_index.loc
                 );
             }
 
@@ -642,11 +721,22 @@ namespace mr {
                 spdlog::info("Building Identifier Expr in to TAST");
                 auto type = _scoped_types.look_up(id._id);
                 if (!type) {
-                    throw std::runtime_error(
-                        fmt::format("Identifier {} not found", id._id)
+                    auto similar_name = find_similar_name(id._id);
+                    auto help =
+                        similar_name
+                            ? fmt::format(
+                                  "a local variable with a similar name exists: `{}`",
+                                  similar_name->get().c_str()
+                              )
+                            : "";
+                    ecx.report_diag(
+                        errors::ident_not_found(id._id, id.loc, std::move(help))
                     );
+                    // don't know type of this or what to expect
+                    _curr_build_structure_failure = true;
+                    type = _inferer.create_type_var();
                 }
-                return Expr(Identifier(id._id), *type);
+                return Expr(Identifier(id._id), *type, id.loc);
             }
 
             // --------- checking functions -------------
@@ -657,6 +747,36 @@ namespace mr {
             bool is_assignable(const Expr& expr) {
                 return has_variant<Identifier>(expr.kind) ||
                        has_variant<FieldExpr>(expr.kind);
+            }
+
+            // ----------- helpers ------------
+
+            std::optional<Ref<const std::string>>
+            find_similar_name(const std::string& name) const {
+                std::optional<std::pair<size_t, Ref<const std::string>>> most_similar;
+                for (const auto& scope : _scoped_types) {
+                    for (const auto& [candidate_name, _] : scope) {
+                        if (candidate_name == RETURN_NAME) { continue; }
+                        const auto dist = relative_similar(name, candidate_name);
+                        if (!dist) { continue; }
+
+                        // If we haven't found a match yet, use this one
+                        if (!most_similar) {
+                            most_similar =
+                                std::make_pair(*dist, std::ref(candidate_name));
+                            continue;
+                        }
+
+                        // Update if we found a better match (smaller distance)
+                        if (*dist < most_similar->first) {
+                            most_similar =
+                                std::make_pair(*dist, std::ref(candidate_name));
+                        }
+                    }
+                }
+                return map_optional(most_similar, [](const auto& ms) {
+                    return ms.second;
+                });
             }
         }; // TAstBuilder class
 

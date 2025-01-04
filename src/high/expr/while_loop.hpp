@@ -9,8 +9,9 @@ namespace mr {
         struct WhileLoop : public Expr {
             U<Expr>      _cond;
             U<BlockExpr> _body;
-            WhileLoop(U<Expr> cond, U<BlockExpr> block)
-                : Expr(), _cond(std::move(cond)), _body(std::move(block)) {}
+            WhileLoop(location while_loc, U<Expr> cond, U<BlockExpr> block)
+                : Expr(while_loc + block->loc), _cond(std::move(cond)),
+                  _body(std::move(block)) {}
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');

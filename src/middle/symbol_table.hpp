@@ -28,6 +28,9 @@ namespace mr {
                 auto begin() { return symbols.begin(); }
 
                 auto end() { return symbols.end(); }
+                auto begin() const { return symbols.cbegin(); }
+
+                auto end() const { return symbols.cend(); }
 
                 auto cbegin() const { return symbols.cbegin(); }
 
@@ -101,6 +104,11 @@ namespace mr {
                     get_current_scope().clear();
                 }
             }
+
+            inline auto begin() { return _scopes.rbegin(); }
+            inline auto end() { return _scopes.rend(); }
+            inline auto cbegin() const { return _scopes.crbegin(); }
+            inline auto cend() const { return _scopes.crend(); }
         };
     } // namespace middle
 

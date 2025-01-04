@@ -14,8 +14,10 @@ namespace mr {
             U<Expr>              _implicit_return;
 
           public:
-            BlockExpr(std::vector<U<Stmt>> statements, U<Expr> imlplicit_ret)
-                : Expr(), _statements(std::move(statements)),
+            BlockExpr(
+                std::vector<U<Stmt>> statements, U<Expr> imlplicit_ret, location loc
+            )
+                : Expr(loc), _statements(std::move(statements)),
                   _implicit_return(std::move(imlplicit_ret)) {};
 
             ~BlockExpr() = default;

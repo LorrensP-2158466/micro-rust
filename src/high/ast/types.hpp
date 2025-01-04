@@ -56,11 +56,12 @@ namespace mr {
             using TypeKind = std::variant<Infer, primitive_type, Str, Tuple, Array>;
 
             TypeKind kind;
+            location loc;
 
-            Type() : kind(primitive_type::Unit) {}
-            Type(TypeKind k) : kind(std::move(k)) {}
+            Type(location l = location()) : kind(primitive_type::Unit), loc() {}
+            Type(TypeKind k, location l) : kind(std::move(k)), loc(l) {}
 
-            static inline Type infer() noexcept { return Type(Infer{}); }
+            static inline Type infer(location l) noexcept { return Type(Infer{}, l); }
 
             bool is_primitive() const {
                 return std::holds_alternative<primitive_type>(kind);

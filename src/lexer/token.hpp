@@ -11,13 +11,13 @@ namespace mr {
     // no information about data in token
     // just the text and the size & span
     struct Token {
-        location    loc;
-        //Span        span;
+        location loc;
+        // Span        span;
         std::string symbol; // "hello" -> hello
                             // 128_i32 -> 128_i32
 
         Token() = default;
-        Token(std::string v, location s) : loc(s),  symbol(v) {}
+        Token(std::string v, location s) : loc(s), symbol(v) {}
 
         std::string                string_value() const { return symbol; }
         std::optional<std::size_t> size_t_value() const {

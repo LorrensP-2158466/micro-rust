@@ -9,12 +9,16 @@
 namespace mr {
     namespace middle {
         namespace ir {
-            enum class Mutability {
+            enum class MutabilityType {
                 Mutable,
                 Immutable,
             };
-            static inline std::ostream& operator<<(std::ostream& o, const Mutability m) {
-                if (m == Mutability::Mutable) o << "mut";
+
+            using Mutability = Locusable<MutabilityType>;
+
+            static inline std::ostream&
+            operator<<(std::ostream& o, const MutabilityType m) {
+                if (m == MutabilityType::Mutable) o << "mut";
                 return o;
             }
             struct Local {
@@ -23,11 +27,11 @@ namespace mr {
                 // for later when references are introduced, we have to remember the type
                 types::Ty ty;
 
-                Mutability mutablity; // used for borrow check, can't take mutable
-                                      // reference to non mutable
+                MutabilityType mutablity; // used for borrow check, can't take mutable
+                                          // reference to non mutable
 
                 friend std::ostream& operator<<(std::ostream& o, const Local& l) {
-                    if (l.mutablity == Mutability::Mutable)
+                    if (l.mutablity == MutabilityType::Mutable)
                         o << fmt::format("mut {}:{}", l.id, l.ty);
                     else o << fmt::format("{}: {}", l.id, l.ty);
                     return o;
@@ -50,4 +54,4 @@ namespace mr {
 } // namespace mr
 
 OSTREAM_FORMATTER(mr::middle::ir::Local)
-OSTREAM_FORMATTER(mr::middle::ir::Mutability)
+OSTREAM_FORMATTER(mr::middle::ir::MutabilityType)

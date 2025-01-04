@@ -8,7 +8,8 @@ namespace mr {
         struct TupleExpr : public Expr {
             std::vector<U<Expr>> values;
 
-            TupleExpr(std::vector<U<Expr>> es) : Expr(), values(std::move(es)) {}
+            TupleExpr(std::vector<U<Expr>> es, location loc)
+                : Expr(loc), values(std::move(es)) {}
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');
@@ -26,7 +27,8 @@ namespace mr {
             U<Literal> index;
 
             TupleIndexExpr(U<Expr> _expr, U<Literal> _lit)
-                : Expr(), expr(std::move(_expr)), index(std::move(_lit)) {}
+                : Expr(_expr->loc + _lit->loc), expr(std::move(_expr)),
+                  index(std::move(_lit)) {}
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');

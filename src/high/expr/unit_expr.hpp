@@ -10,6 +10,7 @@ namespace mr
         // will later be used to create tuple expressions
         struct Unit : public Expr
         {
+            Unit(location loc) : Expr(loc){}
             void print(const int depth) const override{
                 std::cout << std::string(depth, '\t') << "UNIT: ()\n";
             }

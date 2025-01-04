@@ -74,6 +74,7 @@ using namespace mr::expr;
 %nterm <U<BlockExpr>> block_expr
 %nterm <U<FunDecl>> function_decl
 %nterm <U<LetStmt>> let 
+%nterm <Identifier> ident
 %nterm <std::vector<U<Expr>>> expr_list
 %nterm <FunArg> func_arg
 %nterm <std::vector<FunArg>> func_arg_list func_decl_args
@@ -81,7 +82,7 @@ using namespace mr::expr;
 %nterm <std::vector<Type>> type_list
 %nterm <Type> func_ret_type
 %nterm <std::optional<Type>> type_decl
-%nterm <bool> opt_mut
+%nterm <Mut> opt_mut
 %nterm <U<Ast>> program 
 %nterm <U<IfElse>> if_expr
 %nterm <U<Expr>> bin_op_expr
@@ -124,7 +125,7 @@ using namespace mr::expr;
 
 
 program
-    : item_list { driver.set_ast(std::make_unique<Ast>(std::move($1))); }
+    : item_list { driver.set_ast(m_u<Ast>(std::move($1))); }
     ;
 
 item_list
@@ -141,18 +142,17 @@ item
   ;
 
 function_decl
-    : FN IDENTIFIER func_decl_args func_ret_type block_expr 
+    : FN IDENTIFIER func_decl_args ARROW type block_expr 
     { 
-        $$ = FunDecl::make_unique($2.string_value(), std::move($3), std::move($4), std::move($5));
+        const auto loc = @1 + $6->loc;
+        $$ = FunDecl::make_unique($2.string_value(), std::move($3), std::move($5), std::move($6),loc);
+    }
+    | FN IDENTIFIER func_decl_args block_expr 
+    { 
+        const auto loc = @1 + $4->loc;
+        $$ = FunDecl::make_unique($2.string_value(), std::move($3), Type(location($4->loc.begin, $4->loc.begin + 1)), std::move($4), loc);
     }
     ;
-
-func_ret_type
-    : ARROW type { DEFAULT_ACTION($$, $2); }
-    /* | ARROW error { driver.ecx().emit_error(std::make_unique<parser::) } */
-    | { $$ = Type(); } // no arrow with type is the same as -> ()
-    ;
-
 
 func_decl_args
     : LPAREN func_arg_list RPAREN {$$ = std::move($2);}
@@ -167,14 +167,13 @@ func_arg_list
 
 func_arg
     : opt_mut IDENTIFIER COLON type { $$ = FunArg{$2.string_value(), std::move($4), $1}; }
-    | opt_mut IDENTIFIER error { std::cerr << "Expected type declaration\n";}
     ;
 
-stmt: SEMICOLON {$$ = std::make_unique<EmptyStmt>();}
+stmt: SEMICOLON {$$ = m_u<EmptyStmt>(@1);}
     | let { DEFAULT_ACTION($$, $1); }
-    | RETURN SEMICOLON {  $$ = std::make_unique<Return>(std::make_unique<Unit>()); }
-    | BREAK SEMICOLON {  $$ = std::make_unique<Break>(std::make_unique<Unit>()); }
-    | CONTINUE SEMICOLON {  $$ = std::make_unique<Continue>(); }
+    | RETURN SEMICOLON {  $$ = m_u<Return>(@1 + @2, m_u<Unit>(@2) ); }
+    | BREAK SEMICOLON {  $$ = m_u<Break>(@1 + @2, m_u<Unit>(@2)); }
+    | CONTINUE SEMICOLON {  $$ = m_u<Continue>(@1 + @2); }
     | expr_stmt { DEFAULT_ACTION($$, $1);}
     | print_ln SEMICOLON { DEFAULT_ACTION($$, $1);}
     | item { DEFAULT_ACTION($$, $1); }
@@ -193,32 +192,36 @@ stmt_list
     ;
 
 print_ln
-    : PRINT_LN LPAREN STR_LITERAL RPAREN { $$ = std::make_unique<PrintLn>($3.string_value()); }
+    : PRINT_LN LPAREN STR_LITERAL RPAREN { $$ = m_u<PrintLn>($3.string_value(), @1 + @4); }
 
 
 type_decl
     : COLON type { DEFAULT_ACTION($$, $2); } // set type to output
-    | COLON error { $$ = Type::infer();  } 
+    | COLON error { $$ = Type::infer(@1);  } 
     | { $$ = {}; } // no type decl no type
     ;
 
 opt_mut
-  : MUT  { $$ = true; }
-  |      { $$ = false; }
+  : MUT  { $$ = Mut{true, @1}; }
+  |      { $$ = Mut{false, location()}; }
   ;
 
+ident
+    : IDENTIFIER { $$ = Identifier{$1.string_value(), @1};}
+    ;
+
 let
-    : LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
-      {$$ = LetStmt::make_unique_init($3.string_value(), std::move($4), std::move($6), $2);}   
-    | LET opt_mut IDENTIFIER type_decl SEMICOLON {
-        $$ = LetStmt::make_unique_decl($3.string_value(), std::move($4), $2);
+    : LET opt_mut ident type_decl EQ expr SEMICOLON
+      {$$ = LetStmt::make_unique_init(std::move($3), std::move($4), std::move($6), $2, @1 + @7);}   
+    | LET opt_mut ident type_decl SEMICOLON {
+        $$ = LetStmt::make_unique_decl(std::move($3), std::move($4), $2, @1 + @5);
     }
     ;
 
 if_expr
-    : IF expr block_expr { $$ = std::make_unique<IfElse>(std::move($2), std::move($3)); } 
-    | IF expr block_expr ELSE if_expr {$$ = std::make_unique<IfElse>(std::move($2), std::move($3), std::move($5)); }
-    | IF expr block_expr ELSE block_expr {$$ = std::make_unique<IfElse>(std::move($2), std::move($3), std::move($5)); }
+    : IF expr block_expr { $$ = m_u<IfElse>(@1, std::move($2), std::move($3), location()); } 
+    | IF expr block_expr ELSE if_expr {$$ = m_u<IfElse>(@1, std::move($2), std::move($3), @4, std::move($5)); }
+    | IF expr block_expr ELSE block_expr {$$ = m_u<IfElse>(@1, std::move($2), std::move($3), @4, std::move($5)); }
     ;
 
 
@@ -234,64 +237,64 @@ type_list
     ;
 
 type
-    : I8 { $$ = Type(primitive_type::I8); }
-    | I16 { $$ = Type(primitive_type::I16); }
-    | I32{ $$ = Type(primitive_type::I32); }
-    | I64 { $$ = Type(primitive_type::I64); }
-    | ISIZE { $$ = Type(primitive_type::ISIZE); }
-    | U8 { $$ = Type(primitive_type::U8); }
-    | U16 { $$ = Type(primitive_type::U16); }
-    | U32{ $$ = Type(primitive_type::U32); }
-    | U64 { $$ = Type(primitive_type::U64); }
-    | USIZE { $$ = Type(primitive_type::USIZE); }
-    | BOOL { $$ = Type(primitive_type::BOOL); }
-    | LPAREN type_list RPAREN { $$ = Type(std::move($2));}
-    | LPAREN RPAREN { $$ = Type(); }
+    : I8 { $$ = Type(primitive_type::I8, @1); }
+    | I16 { $$ = Type(primitive_type::I16, @1); }
+    | I32{ $$ = Type(primitive_type::I32, @1); }
+    | I64 { $$ = Type(primitive_type::I64, @1); }
+    | ISIZE { $$ = Type(primitive_type::ISIZE, @1); }
+    | U8 { $$ = Type(primitive_type::U8, @1); }
+    | U16 { $$ = Type(primitive_type::U16, @1); }
+    | U32{ $$ = Type(primitive_type::U32, @1); }
+    | U64 { $$ = Type(primitive_type::U64, @1); }
+    | USIZE { $$ = Type(primitive_type::USIZE, @1); }
+    | BOOL { $$ = Type(primitive_type::BOOL, @1); }
+    | LPAREN type_list RPAREN { $$ = Type(std::move($2), @1 + @3);}
+    | LPAREN RPAREN { $$ = Type(@1 + @2); }
     ;
 
 
 block_expr
-    : LBRACE stmt_list RBRACE { $$ = std::make_unique<BlockExpr>(std::move($2), std::make_unique<Unit>()); }
-    | LBRACE stmt_list expr RBRACE  { $$ = std::make_unique<BlockExpr>(std::move($2), std::move($3)); }
-    | LBRACE expr RBRACE  { $$ = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::move($2)); }
-    | LBRACE RBRACE  { $$ = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::make_unique<Unit>()); }
+    : LBRACE stmt_list RBRACE { $$ = m_u<BlockExpr>(std::move($2), m_u<Unit>(@3), @1 + @3); }
+    | LBRACE stmt_list expr RBRACE  { $$ = m_u<BlockExpr>(std::move($2), std::move($3), @1 + @4); }
+    | LBRACE expr RBRACE  { $$ = m_u<BlockExpr>(std::vector<U<Stmt>>{}, std::move($2), @1 + @3); }
+    | LBRACE RBRACE  { $$ = m_u<BlockExpr>(std::vector<U<Stmt>>{}, m_u<Unit>(@1 + @2), @1 + @2); }
     ;
 
 unary_op_expr
-    : MINUS expr %prec UMINUS { $$ = std::make_unique<UnaryOpExpr>(UnaryOp::Negate, std::move($2));}
-    | STAR expr %prec DEREF { $$ = std::make_unique<UnaryOpExpr>(UnaryOp::Deref, std::move($2));}
-    | BANG expr %prec NOT { $$ = std::make_unique<UnaryOpExpr>(UnaryOp::Not, std::move($2));}
-    | AMPERSAND expr %prec REF { $$ = std::make_unique<UnaryOpExpr>(UnaryOp::Borrow, std::move($2));}
-    | AMPERSAND_MUT expr %prec REF_MUT { $$ = std::make_unique<UnaryOpExpr>(UnaryOp::MutBorrow, std::move($2));}
+    : MINUS expr %prec UMINUS { $$ = m_u<UnaryOpExpr>(UnaryOp::Negate, @1, std::move($2));}
+    | STAR expr %prec DEREF { $$ = m_u<UnaryOpExpr>(UnaryOp::Deref, @1, std::move($2));}
+    | BANG expr %prec NOT { $$ = m_u<UnaryOpExpr>(UnaryOp::Not, @1, std::move($2));}
+    | AMPERSAND expr %prec REF { $$ = m_u<UnaryOpExpr>(UnaryOp::Borrow, @1, std::move($2));}
+    | AMPERSAND_MUT expr %prec REF_MUT { $$ = m_u<UnaryOpExpr>(UnaryOp::MutBorrow, @1, std::move($2));}
     ;
 
 bin_op_expr
-    : expr PLUS expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Plus, std::move($3)); }
-    | expr MINUS expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Min, std::move($3)); }
-    | expr STAR expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Mul, std::move($3)); }
-    | expr SLASH expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Div, std::move($3)); }
-    | expr L_AND expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::L_AND, std::move($3)); }
-    | expr L_OR expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::L_OR, std::move($3)); }
-    | expr EQEQ expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Eq, std::move($3)); }
-    | expr NE expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::NEq, std::move($3)); }
-    | expr LT expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Lt, std::move($3)); }
-    | expr GT expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::Gt, std::move($3)); }
-    | expr GE expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::GtEq, std::move($3)); }
-    | expr LE expr { $$ = std::make_unique<BinOpExpr>(std::move($1), BinOp::LtEq, std::move($3)); }
+    : expr PLUS expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::Plus, std::move($3)); }
+    | expr MINUS expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::Min, std::move($3)); }
+    | expr STAR expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::Mul, std::move($3)); }
+    | expr SLASH expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::Div, std::move($3)); }
+    | expr L_AND expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::L_AND, std::move($3)); }
+    | expr L_OR expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::L_OR, std::move($3)); }
+    | expr EQEQ expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::Eq, std::move($3)); }
+    | expr NE expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::NEq, std::move($3)); }
+    | expr LT expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::Lt, std::move($3)); }
+    | expr GT expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::Gt, std::move($3)); }
+    | expr GE expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::GtEq, std::move($3)); }
+    | expr LE expr { $$ = m_u<BinOpExpr>(std::move($1), BinOp::LtEq, std::move($3)); }
     // this fixes shift/reduce conflicts
-    | expr EQ expr      { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::Eq, std::move($3));}
-    | expr PLUS_EQ expr { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::PlusEq, std::move($3));}
-    | expr MIN_EQ expr  { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::MinEq, std::move($3));}
-    | expr DIV_EQ expr  { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::DivEq, std::move($3));}
-    | expr MUL_EQ expr  { $$ = std::make_unique<AssignExpr>(std::move($1), AssignOp::MulEq, std::move($3));}
+    | expr EQ expr      { $$ = m_u<AssignExpr>(std::move($1), AssignOp::Eq, std::move($3));}
+    | expr PLUS_EQ expr { $$ = m_u<AssignExpr>(std::move($1), AssignOp::PlusEq, std::move($3));}
+    | expr MIN_EQ expr  { $$ = m_u<AssignExpr>(std::move($1), AssignOp::MinEq, std::move($3));}
+    | expr DIV_EQ expr  { $$ = m_u<AssignExpr>(std::move($1), AssignOp::DivEq, std::move($3));}
+    | expr MUL_EQ expr  { $$ = m_u<AssignExpr>(std::move($1), AssignOp::MulEq, std::move($3));}
     ;
 
 literal
-    : DEC_LITERAL { $$ = Literal::make_int_lit($1.symbol);}
-    | STR_LITERAL { $$ = Literal::make_str_lit($1.symbol); }
+    : DEC_LITERAL { $$ = Literal::make_int_lit($1.symbol, @1);}
+    | STR_LITERAL { $$ = Literal::make_str_lit($1.symbol, @1); }
     | FLOAT_LITERAL { assert(1 && "How did we get here"); }
-    | TRUE { $$ = Literal::make_bool_lit($1.symbol); }
-    | FALSE { $$ = Literal::make_bool_lit($1.symbol); }
+    | TRUE { $$ = Literal::make_bool_lit($1.symbol, @1); }
+    | FALSE { $$ = Literal::make_bool_lit($1.symbol, @1); }
     ;
 
 
@@ -305,15 +308,15 @@ call_expr_args
     ;
 
 call_expr
-    : IDENTIFIER LPAREN call_expr_args RPAREN { $$ = std::make_unique<CallExpr>($1.string_value(), std::move($3)); }
-    | IDENTIFIER LPAREN RPAREN { $$ = std::make_unique<CallExpr>($1.string_value(), std::vector<U<Expr>>{}); }
+    : IDENTIFIER LPAREN call_expr_args RPAREN { $$ = m_u<CallExpr>(@1 + @4, $1.string_value(), std::move($3)); }
+    | IDENTIFIER LPAREN RPAREN { $$ = m_u<CallExpr>(@1 + @3, $1.string_value(), std::vector<U<Expr>>{}); }
 
 while_expr
-    : WHILE expr block_expr {$$ = std::make_unique<WhileLoop>(std::move($2), std::move($3)); }
+    : WHILE expr block_expr {$$ = m_u<WhileLoop>(@1, std::move($2), std::move($3)); }
     ;
 
 tuple_index_expr
-    : expr DOT DEC_LITERAL { $$ = std::make_unique<TupleIndexExpr>(std::move($1), Literal::make_int_lit($3.symbol));}
+    : expr DOT DEC_LITERAL { $$ = m_u<TupleIndexExpr>(std::move($1), Literal::make_int_lit($3.symbol, @3));}
     ;
 
 
@@ -338,17 +341,17 @@ expr_w_block
     | block_expr { DEFAULT_ACTION($$, $1); }
     ;
 expr_wo_block
-    : LPAREN expr RPAREN { DEFAULT_ACTION($$, $2); }
+    : LPAREN expr RPAREN { $2->loc = @1 + @3; DEFAULT_ACTION($$, $2); }
     | bin_op_expr %prec BIN_OP{ DEFAULT_ACTION($$, $1); }
     | tuple_index_expr %prec FIELD_ACCESS { DEFAULT_ACTION($$, $1); }
-    | IDENTIFIER %prec PATH { $$ = std::make_unique<Identifier>($1.string_value()); }
+    | IDENTIFIER %prec PATH { $$ = m_u<Identifier>($1.string_value(), @1); }
     | unary_op_expr %prec UNARY {DEFAULT_ACTION($$, $1); }
-    | LPAREN RPAREN %prec PATH { $$ = std::make_unique<Unit>(); }
+    | LPAREN RPAREN %prec PATH { $$ = m_u<Unit>(@1 + @2); }
     | call_expr %prec CALL_INDEX { DEFAULT_ACTION($$, $1); }
-    | RETURN expr %prec CONTROL_FLOW { $$ = std::make_unique<Return>(std::move($2)); }
-    | BREAK expr %prec CONTROL_FLOW { $$ = std::make_unique<Break>(std::move($2)); }
-    | CONTINUE %prec CONTROL_FLOW { $$ = std::make_unique<Continue>(); }
-    | LPAREN expr_list opt_comma  RPAREN { $$ = std::make_unique<TupleExpr>(std::move($2)); }
+    | RETURN expr %prec CONTROL_FLOW { $$ = m_u<Return>(@1, std::move($2)); }
+    | BREAK expr %prec CONTROL_FLOW { $$ = m_u<Break>(@1, std::move($2)); }
+    | CONTINUE %prec CONTROL_FLOW { $$ = m_u<Continue>(@1); }
+    | LPAREN expr_list opt_comma  RPAREN { $$ = m_u<TupleExpr>(std::move($2), @1 + @4); }
     | literal { DEFAULT_ACTION($$, $1); }
     ;
 

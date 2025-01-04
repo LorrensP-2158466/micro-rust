@@ -18,10 +18,14 @@ namespace mr {
 
             inline bool has_errors() const noexcept { return !_diags.empty(); }
 
-            void show_errors(const std::vector<std::string>& source_in_lines) const {
+            void show_errors(
+                const char* file_name, const std::vector<std::string>& source_in_lines
+            ) const {
                 for (const auto& diag : _diags)
-                    diag.emit_to_user(source_in_lines);
+                    diag.emit_to_user(file_name, source_in_lines);
             }
+
+            inline size_t error_amount() const noexcept { return _diags.size(); }
         };
 
     } // namespace error

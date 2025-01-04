@@ -85,7 +85,7 @@ namespace mr {
                 // then for every executable block of code (fn body, const)
                 // to collecting and checking
                 check_executable_blocks();
-                if (!generated_ir.has_main()) {
+                if (!ecx.has_errors() && !generated_ir.has_main()) {
                     throw std::runtime_error("\nMain function needed as entry point. "
                                              "Please provide:\nfn main(){...}");
                 }
@@ -118,19 +118,25 @@ namespace mr {
 
                 */
                 TAstBuilder      tast_builder{_scoped_types, _inferer, ecx};
-                build::IrBuilder ir_builder{_inferer};
+                build::IrBuilder ir_builder{ecx, _inferer};
                 for (const auto& [fn_name, function] : _functions.get_current_scope()) {
                     auto [outer_tast, inners] = tast_builder.build_everything(*function);
-                    generated_ir.register_function(
-                        fn_name, ir_builder.build_function(std::move(outer_tast))
-                    );
+                    if (!outer_tast.structure_invalid)
+                        generated_ir.register_function(
+                            fn_name, ir_builder.build_function(std::move(outer_tast.tast))
+                        );
 
                     std::vector<std::pair<std::string, ir::Function>> ir_functions{};
                     ir_functions.reserve(inners.size());
-                    for (auto& [name, tast] : inners)
+                    for (auto& [name, tast, structure_failure] : inners) {
+                        // we know errors occured, so we don't have to worry about not
+                        // building this, bcs it will not be executed
+                        if (structure_failure) continue;
                         ir_functions.emplace_back(
                             std::move(name), ir_builder.build_function(std::move(tast))
                         );
+                    }
+
                     generated_ir.register_functions(std::move(ir_functions));
                     _inferer.clear_tables();
                     generated_ir.dump();

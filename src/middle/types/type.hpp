@@ -185,7 +185,8 @@ namespace mr {
             struct Ty : public type_variant_t {
 
                 bool is_known() const noexcept {
-                    return !std::holds_alternative<InferTy>(*this);
+                    return !std::holds_alternative<InferTy>(*this) &&
+                           !std::holds_alternative<UnknownTy>(*this);
                 }
 
                 bool is_integral() const noexcept {

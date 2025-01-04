@@ -61,7 +61,8 @@ namespace mr {
             BinOp   op;
 
             BinOpExpr(U<Expr> left, BinOp bo, U<Expr> right)
-                : left(std::move(left)), right(std::move(right)), op(bo) {}
+                : Expr(left->loc + right->loc), left(std::move(left)),
+                  right(std::move(right)), op(bo) {}
 
             ~BinOpExpr() = default;
 

@@ -33,8 +33,8 @@ namespace mr {
             UnaryOp _op;
             U<Expr> _expr;
 
-            UnaryOpExpr(UnaryOp op, U<Expr> expr)
-                : Expr(), _op(op), _expr(std::move(expr)) {}
+            UnaryOpExpr(UnaryOp op, location op_loc, U<Expr> expr)
+                : Expr(op_loc + expr->loc), _op(op), _expr(std::move(expr)) {}
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');

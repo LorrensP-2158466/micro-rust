@@ -397,6 +397,12 @@ namespace mr {
       // func_arg
       char dummy1[sizeof (FunArg)];
 
+      // ident
+      char dummy2[sizeof (Identifier)];
+
+      // opt_mut
+      char dummy3[sizeof (Mut)];
+
       // DEC_LITERAL
       // FLOAT_LITERAL
       // STR_LITERAL
@@ -455,80 +461,76 @@ namespace mr {
       // OR
       // AMPERSAND_MUT
       // DOT
-      char dummy2[sizeof (Token)];
+      char dummy4[sizeof (Token)];
 
-      // func_ret_type
       // type
-      char dummy3[sizeof (Type)];
+      char dummy5[sizeof (Type)];
 
       // program
-      char dummy4[sizeof (U<Ast>)];
+      char dummy6[sizeof (U<Ast>)];
 
       // block_expr
-      char dummy5[sizeof (U<BlockExpr>)];
+      char dummy7[sizeof (U<BlockExpr>)];
 
       // call_expr
-      char dummy6[sizeof (U<CallExpr>)];
+      char dummy8[sizeof (U<CallExpr>)];
 
       // bin_op_expr
       // expr
       // expr_stmt
       // expr_w_block
       // expr_wo_block
-      char dummy7[sizeof (U<Expr>)];
+      char dummy9[sizeof (U<Expr>)];
 
       // function_decl
-      char dummy8[sizeof (U<FunDecl>)];
+      char dummy10[sizeof (U<FunDecl>)];
 
       // if_expr
-      char dummy9[sizeof (U<IfElse>)];
+      char dummy11[sizeof (U<IfElse>)];
 
       // item
-      char dummy10[sizeof (U<Item>)];
+      char dummy12[sizeof (U<Item>)];
 
       // let
-      char dummy11[sizeof (U<LetStmt>)];
+      char dummy13[sizeof (U<LetStmt>)];
 
       // literal
-      char dummy12[sizeof (U<Literal>)];
+      char dummy14[sizeof (U<Literal>)];
 
       // print_ln
-      char dummy13[sizeof (U<PrintLn>)];
+      char dummy15[sizeof (U<PrintLn>)];
 
       // stmt
-      char dummy14[sizeof (U<Stmt>)];
+      char dummy16[sizeof (U<Stmt>)];
 
       // tuple_index_expr
-      char dummy15[sizeof (U<TupleIndexExpr>)];
+      char dummy17[sizeof (U<TupleIndexExpr>)];
 
       // unary_op_expr
-      char dummy16[sizeof (U<UnaryOpExpr>)];
+      char dummy18[sizeof (U<UnaryOpExpr>)];
 
       // while_expr
-      char dummy17[sizeof (U<WhileLoop>)];
-
-      // opt_mut
-      char dummy18[sizeof (bool)];
+      char dummy19[sizeof (U<WhileLoop>)];
 
       // type_decl
-      char dummy19[sizeof (std::optional<Type>)];
+      char dummy20[sizeof (std::optional<Type>)];
 
       // func_decl_args
       // func_arg_list
-      char dummy20[sizeof (std::vector<FunArg>)];
+      char dummy21[sizeof (std::vector<FunArg>)];
 
       // type_list
-      char dummy21[sizeof (std::vector<Type>)];
+      char dummy22[sizeof (std::vector<Type>)];
 
       // call_expr_args
       // expr_list
-      char dummy22[sizeof (std::vector<U<Expr>>)];
+      char dummy23[sizeof (std::vector<U<Expr>>)];
 
       // item_list
-      char dummy23[sizeof (std::vector<U<Item>>)];
+      char dummy24[sizeof (std::vector<U<Item>>)];
 
       // stmt_list
-      char dummy24[sizeof (std::vector<U<Stmt>>)];
+      char dummy25[sizeof (std::vector<U<Stmt>>)];
     };
 
     /// The size of the largest semantic type.
@@ -760,15 +762,15 @@ namespace mr {
         S_item_list = 83,                        // item_list
         S_item = 84,                             // item
         S_function_decl = 85,                    // function_decl
-        S_func_ret_type = 86,                    // func_ret_type
-        S_func_decl_args = 87,                   // func_decl_args
-        S_func_arg_list = 88,                    // func_arg_list
-        S_func_arg = 89,                         // func_arg
-        S_stmt = 90,                             // stmt
-        S_stmt_list = 91,                        // stmt_list
-        S_print_ln = 92,                         // print_ln
-        S_type_decl = 93,                        // type_decl
-        S_opt_mut = 94,                          // opt_mut
+        S_func_decl_args = 86,                   // func_decl_args
+        S_func_arg_list = 87,                    // func_arg_list
+        S_func_arg = 88,                         // func_arg
+        S_stmt = 89,                             // stmt
+        S_stmt_list = 90,                        // stmt_list
+        S_print_ln = 91,                         // print_ln
+        S_type_decl = 92,                        // type_decl
+        S_opt_mut = 93,                          // opt_mut
+        S_ident = 94,                            // ident
         S_let = 95,                              // let
         S_if_expr = 96,                          // if_expr
         S_type_list = 97,                        // type_list
@@ -825,6 +827,14 @@ namespace mr {
     {
       case symbol_kind::S_func_arg: // func_arg
         value.move< FunArg > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_ident: // ident
+        value.move< Identifier > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.move< Mut > (std::move (that.value));
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
@@ -888,7 +898,6 @@ namespace mr {
         value.move< Token > (std::move (that.value));
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.move< Type > (std::move (that.value));
         break;
@@ -953,10 +962,6 @@ namespace mr {
         value.move< U<WhileLoop> > (std::move (that.value));
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.move< bool > (std::move (that.value));
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         value.move< std::optional<Type> > (std::move (that.value));
         break;
@@ -1014,6 +1019,34 @@ namespace mr {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const FunArg& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Identifier&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Identifier& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Mut&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Mut& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1245,20 +1278,6 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, bool&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const bool& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, std::optional<Type>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -1370,6 +1389,14 @@ switch (yykind)
         value.template destroy< FunArg > ();
         break;
 
+      case symbol_kind::S_ident: // ident
+        value.template destroy< Identifier > ();
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.template destroy< Mut > ();
+        break;
+
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
       case symbol_kind::S_FLOAT_LITERAL: // FLOAT_LITERAL
       case symbol_kind::S_STR_LITERAL: // STR_LITERAL
@@ -1431,7 +1458,6 @@ switch (yykind)
         value.template destroy< Token > ();
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.template destroy< Type > ();
         break;
@@ -1494,10 +1520,6 @@ switch (yykind)
 
       case symbol_kind::S_while_expr: // while_expr
         value.template destroy< U<WhileLoop> > ();
-        break;
-
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.template destroy< bool > ();
         break;
 
       case symbol_kind::S_type_decl: // type_decl
@@ -3218,7 +3240,7 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 702,     ///< Last index in yytable_.
+      yylast_ = 721,     ///< Last index in yytable_.
       yynnts_ = 32,  ///< Number of nonterminal symbols.
       yyfinal_ = 7 ///< Termination state number.
     };
@@ -3235,7 +3257,7 @@ switch (yykind)
 
 #line 5 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/yaccfile.yy"
 } // mr
-#line 3239 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
+#line 3261 "/Users/lorrens/Informatica/Master1/Compilers/mini-rust/src/parser/parser.tab.hpp"
 
 
 

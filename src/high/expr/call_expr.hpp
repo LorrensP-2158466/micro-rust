@@ -8,8 +8,8 @@ namespace mr {
             std::string          _id;
             std::vector<U<Expr>> _args;
 
-            CallExpr(std::string id, std::vector<U<Expr>> args)
-                : Expr(), _id(id), _args(std::move(args)) {}
+            CallExpr(location loc, std::string id, std::vector<U<Expr>> args)
+                : Expr(loc), _id(id), _args(std::move(args)) {}
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');

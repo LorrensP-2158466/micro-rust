@@ -2,6 +2,7 @@
 
 #include "module.hpp"
 #include <string>
+#include "location.hh"
 
 namespace mr {
     namespace expr {
@@ -38,7 +39,7 @@ namespace mr {
             U<Expr>  _expr;
 
             AssignExpr(U<Expr> assignee, AssignOp op, U<Expr> expr)
-                : Expr(), _assignee(std::move(assignee)), _op(op),
+                : Expr(assignee->loc + expr->loc), _assignee(std::move(assignee)), _op(op),
                   _expr(std::move(expr)) {};
             ~AssignExpr() = default;
 

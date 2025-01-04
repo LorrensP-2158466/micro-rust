@@ -8,16 +8,16 @@ namespace mr {
          * The same as a node i think?
          */
         class Stmt {
-          private:
-            /* data */
           public:
-            Stmt(/* args */) {};
+            location loc;
+            Stmt(location l) : loc(l) {};
             virtual ~Stmt() = default;
 
             virtual void print(const int depth) const = 0;
         };
 
-        class EmptyStmt final : public Stmt {
+        struct EmptyStmt final : public Stmt {
+            EmptyStmt(location l) : Stmt(l) {}
             void print(const int) const {}
         };
 

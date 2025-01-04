@@ -8,7 +8,8 @@ namespace mr {
         struct Return : public Expr {
             U<Expr> val;
 
-            Return(U<Expr> val) : Expr(), val(std::move(val)) {}
+            Return(location ret_loc, U<Expr> val)
+                : Expr(ret_loc + val->loc), val(std::move(val)) {}
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');
@@ -24,7 +25,8 @@ namespace mr {
         struct Break : public Expr {
             U<Expr> val;
 
-            Break(U<Expr> val) : Expr(), val(std::move(val)) {}
+            Break(location brk_loc, U<Expr> val)
+                : Expr(brk_loc + val->loc), val(std::move(val)) {}
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');
@@ -37,7 +39,7 @@ namespace mr {
             }
         };
         struct Continue : public Expr {
-
+            Continue(location loc) : Expr(loc) {}
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');
                 std::cout << indent << "Continue Expr: \n";

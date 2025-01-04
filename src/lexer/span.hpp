@@ -4,7 +4,7 @@
 namespace mr {
     struct Span {
         size_t start;
-        size_t _end;
+        size_t end;
     };
 
 } // namespace mr

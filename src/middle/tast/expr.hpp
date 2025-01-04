@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ir/module.hpp"
+#include "location.hh"
 #include "mr_util.hpp"
 #include "type_inference.hpp"
 #include "types/type.hpp"
@@ -412,7 +413,9 @@ namespace mr {
             struct Expr {
                 ExprKind  kind;
                 types::Ty type;
-                Expr(ExprKind k, types::Ty t) : kind(std::move(k)), type(t) {}
+                location  loc;
+                Expr(ExprKind k, types::Ty t, location l)
+                    : kind(std::move(k)), type(t), loc(l) {}
                 Expr(Expr&& other) noexcept = default;
             };
             inline std::ostream& operator<<(std::ostream& o, const Expr& e) {

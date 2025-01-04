@@ -2,6 +2,7 @@
 
 #include "../expr/block_expr.hpp"
 #include "item.hpp"
+#include "let.hpp"
 #include "mr_util.hpp"
 #include "types.hpp"
 #include <iostream>
@@ -14,11 +15,10 @@ namespace mr {
         struct FunArg {
             std::string id;
             ast::Type   type;
-            bool        mut;
+            Mut         mut;
         };
 
         class FunDecl : public Item {
-
             std::string         _id;
             std::vector<FunArg> _args;
             ast::Type           _ret_type;
@@ -27,18 +27,18 @@ namespace mr {
           public:
             FunDecl(
                 std::string id, std::vector<FunArg> args, ast::Type ret_type,
-                U<expr::BlockExpr> body
+                U<expr::BlockExpr> body, location loc
             )
-                : _id(id), _args(std::move(args)), _ret_type(std::move(ret_type)),
-                  _body(std::move(body)) {}
+                : Item(loc), _id(id), _args(std::move(args)),
+                  _ret_type(std::move(ret_type)), _body(std::move(body)) {}
 
             static U<FunDecl> make_unique(
                 std::string id, std::vector<FunArg> args, ast::Type ret_type,
-                U<expr::BlockExpr> body
+                U<expr::BlockExpr> body, location loc
             ) noexcept {
                 std::cout << std::endl;
                 return std::make_unique<FunDecl>(
-                    id, std::move(args), std::move(ret_type), std::move(body)
+                    id, std::move(args), std::move(ret_type), std::move(body), loc
                 );
             }
 

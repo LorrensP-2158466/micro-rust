@@ -6,8 +6,8 @@
 
 namespace mr {
     namespace expr {
-        ENUM_DEFINE(LiteralKind, Bool, Char, Integer, Float, Str);
-        ENUM_DEFINE(Suffix, i8, i16, i32, i64, u8, u16, u32, u64, isize, usize, f32, f64);
+        ENUM_DEFINE(LiteralKind, Bool, Char, Integer, Float, Str)
+        ENUM_DEFINE(Suffix, i8, i16, i32, i64, u8, u16, u32, u64, isize, usize, f32, f64)
 
         static Suffix suffix_from_str(const std::string& suff_str) {
             if (suff_str == "i8") return Suffix::i8;
@@ -32,15 +32,16 @@ namespace mr {
 
             // use makers instead
             Literal(
-                LiteralKind kind, std::string symbol, std::optional<Suffix> suffix = {}
+                location loc, LiteralKind kind, std::string symbol,
+                std::optional<Suffix> suffix = {}
             )
-                : Expr(), kind(kind), symbol(symbol), suffix(suffix) {}
+                : Expr(loc), kind(kind), symbol(symbol), suffix(suffix) {}
 
-            static U<Literal> make_bool_lit(std::string symbol) {
-                return std::make_unique<Literal>(LiteralKind::Bool, symbol);
+            static U<Literal> make_bool_lit(std::string symbol, location loc) {
+                return std::make_unique<Literal>(loc, LiteralKind::Bool, symbol);
             }
 
-            static U<Literal> make_int_lit(std::string entire_literal) {
+            static U<Literal> make_int_lit(std::string entire_literal, location loc) {
                 size_t pos = entire_literal.find_first_not_of("0123456789");
 
                 std::string number_part = entire_literal.substr(0, pos);
@@ -51,17 +52,17 @@ namespace mr {
                         ? std::nullopt
                         : std::make_optional<Suffix>(suffix_from_str(suffix_part));
                 return std::make_unique<Literal>(
-                    LiteralKind::Integer, number_part, suffix
+                    loc, LiteralKind::Integer, number_part, suffix
                 );
             }
 
             static U<Literal>
-            make_float_lit(std::string symbol, std::optional<Suffix> suff) {
-                return std::make_unique<Literal>(LiteralKind::Float, symbol, suff);
+            make_float_lit(std::string symbol, std::optional<Suffix> suff, location loc) {
+                return std::make_unique<Literal>(loc, LiteralKind::Float, symbol, suff);
             }
 
-            static U<Literal> make_str_lit(std::string symbol) {
-                return std::make_unique<Literal>(LiteralKind::Str, symbol);
+            static U<Literal> make_str_lit(std::string symbol, location loc) {
+                return std::make_unique<Literal>(loc, LiteralKind::Str, symbol);
             }
 
             void print(const int depth) const override {

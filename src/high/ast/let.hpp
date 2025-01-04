@@ -9,58 +9,64 @@
 
 namespace mr {
     namespace ast {
+        using Mut = Locusable<bool>;
         /* let (mut)? ID(: TYPE)? ( = INIT)?;
            why type and init optional? Because this is valid rust code.
             let x;
             x = 5;
          */
         class LetStmt : public Stmt {
-            std::string         _id;
+            expr::Identifier    _ident;
             std::optional<Type> _type_decl;
             U<expr::Expr>       _initializer;
-            bool                _mutable;
+            Mut                 _mutable;
 
           public:
             // full constructor
             LetStmt(
-                std::string id, std::optional<Type> type_decl, U<expr::Expr> init,
-                bool mut
+                expr::Identifier id, std::optional<Type> type_decl, U<expr::Expr> init,
+                Mut mut, location l
             )
-                : Stmt(), _id(id), _type_decl(std::move(type_decl)),
+                : Stmt(l), _ident(std::move(id)), _type_decl(std::move(type_decl)),
                   _initializer(std::move(init)), _mutable(mut) {};
 
             ~LetStmt() = default;
 
             static U<LetStmt> make_unique_decl(
-                std::string id, std::optional<Type> type_decl, bool mut
+                expr::Identifier id, std::optional<Type> type_decl, Mut mut, location l
             ) noexcept {
                 return std::make_unique<LetStmt>(
-                    id, std::move(type_decl), std::unique_ptr<expr::Expr>{}, mut
+                    std::move(id),
+                    std::move(type_decl),
+                    std::unique_ptr<expr::Expr>{},
+                    mut,
+                    l
                 );
             }
 
             // it is possible that we declare a type but init is not that type
             // this is a job for typechecker
             static U<LetStmt> make_unique_init(
-                std::string id, std::optional<Type> type_decl, U<expr::Expr> expr,
-                bool mut
+                expr::Identifier id, std::optional<Type> type_decl, U<expr::Expr> expr,
+                Mut mut, location l
             ) noexcept {
                 return std::make_unique<LetStmt>(
-                    id, std::move(type_decl), std::move(expr), mut
+                    std::move(id), std::move(type_decl), std::move(expr), mut, l
                 );
             }
 
-            const std::string&         id() const { return _id; }
+            const expr::Identifier&    id() const { return _ident; }
             const std::optional<Type>& type_decl() const { return _type_decl; }
             const expr::Expr*          initializer() const { return _initializer.get(); }
-            bool                       is_mutable() const { return _mutable; }
+            const Mut&                 mut() const { return _mutable; }
 
             void print(const int depth) const override {
                 const auto indent = std::string(depth, '\t');
                 const auto let = indent + "Let Statement:\n";
-                const auto id = indent + "  identifier: " + _id + '\n';
-                const auto mut = indent + "  mutable: " + bool_to_str(_mutable) + "\n";
-                auto       type_decl = indent + "  type decl: ";
+                const auto id = indent + "  identifier: " + _ident._id + '\n';
+                const auto mut =
+                    indent + "  mutable: " + bool_to_str(_mutable.node) + "\n";
+                auto type_decl = indent + "  type decl: ";
                 if (_type_decl) {
                     type_decl += _type_decl->to_string() + "\n";
                 } else {
