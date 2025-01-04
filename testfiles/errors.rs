@@ -5,6 +5,6 @@ fn foo() -> bool{
 }
 
 fn main(){
-    let x = 10;
-    x.1 = 10;
+    let x: i32 = {
+        let y: usize = 10; {let z = y; z}};
 }

@@ -165,7 +165,18 @@ namespace mr {
             }
 
           private:
-            void type_error(const Ty& found, const Ty& expected, location loc) {
+            void
+            type_error(const Ty& found, const Ty& expected, const expr::Expr& on_expr) {
+                // so when expr is a block, we want to point to the tail, not the entire
+                // block;
+                //     let x: i32 = {let y: usize = 10; y};
+                // focus on `y` instead of the entire block
+                auto loc = on_expr.loc;
+                auto blk = dynamic_cast<const expr::BlockExpr*>(&on_expr);
+                while (blk) {
+                    loc = blk->tail_expr()->loc;
+                    blk = dynamic_cast<const expr::BlockExpr*>(blk->tail_expr());
+                }
                 ecx.report_diag(errors::mismatched_types(
                     _inferer.shallow_resolve(found),
                     _inferer.shallow_resolve(expected),
@@ -209,7 +220,7 @@ namespace mr {
                 // the initializer must match the user defined type
                 auto equated = _inferer.eq(user_decl_type, (*initializer).type);
                 if (!equated) {
-                    type_error(initializer->type, user_decl_type, let.initializer()->loc);
+                    type_error(initializer->type, user_decl_type, *let.initializer());
                     equated = std::move(user_decl_type);
                 }
 
@@ -320,7 +331,7 @@ namespace mr {
                 auto condition = visit_expr(*expr._cond);
                 // condition is always of boolean type
                 if (!_inferer.eq(condition.type, _inferer.bool_t())) {
-                    type_error(condition.type, _inferer.bool_t(), expr._cond->loc);
+                    type_error(condition.type, _inferer.bool_t(), *expr._cond);
                     // hack?
                     condition.type = _inferer.bool_t();
                 };
@@ -331,7 +342,7 @@ namespace mr {
                 // body is always of unit type
                 if (!_inferer.eq(block_expr.type, _inferer.unit())) {
                     type_error(
-                        block_expr.type, _inferer.unit(), expr._body->tail_expr()->loc
+                        block_expr.type, _inferer.unit(), *expr._body->tail_expr()
                     );
                     block_expr.type = _inferer.unit(); // hack
                 }
@@ -371,9 +382,7 @@ namespace mr {
                 // check that condition is a boolean
                 auto condition = visit_expr(*expr.conditional_expr);
                 if (!_inferer.eq(condition.type, _inferer.bool_t())) {
-                    type_error(
-                        condition.type, _inferer.bool_t(), expr.conditional_expr->loc
-                    );
+                    type_error(condition.type, _inferer.bool_t(), *expr.conditional_expr);
                     condition.type = _inferer.bool_t(); // hack
                 };
                 auto cond_p = std::make_unique<Expr>(std::move(condition));
@@ -384,9 +393,7 @@ namespace mr {
                 if (!expr.else_block) {
                     if (!_inferer.eq(_inferer.unit(), then_expr.type)) {
                         type_error(
-                            then_expr.type,
-                            _inferer.unit(),
-                            expr.then_block->tail_expr()->loc
+                            then_expr.type, _inferer.unit(), *expr.then_block->tail_expr()
                         );
                         then_block._tail->type = _inferer.unit();
                     }
@@ -414,7 +421,7 @@ namespace mr {
                             expr.else_loc
                         ));
                     // for now, just report error on the `else` token
-                    else { type_error(els.type, then_expr.type, expr.else_loc); }
+                    else { type_error(els.type, then_expr.type, *(*expr.else_block)); }
                     // hack
                     ty = then_expr.type;
                 }
@@ -438,7 +445,7 @@ namespace mr {
                 case expr::BinOp::Plus:
                 case expr::BinOp::Min: {
                     if (!_inferer.eq(left_type, right_type)) {
-                        type_error(right_type, left_type, bin_op.right->loc);
+                        type_error(right_type, left_type, *bin_op.right);
                         right_type = left_type;
                     }
                     result_type = left_type;
@@ -449,11 +456,11 @@ namespace mr {
                     auto bool_type = _inferer.bool_t();
                     // if both left and right are boolean, than they are equal
                     if (!_inferer.eq(left_type, bool_type)) {
-                        type_error(left_type, bool_type, bin_op.left->loc);
+                        type_error(left_type, bool_type, *bin_op.left);
                         left_type = _inferer.bool_t();
                     }
                     if (!_inferer.eq(right_type, bool_type)) {
-                        type_error(right_type, bool_type, bin_op.right->loc);
+                        type_error(right_type, bool_type, *bin_op.right);
                         right_type = _inferer.bool_t();
                     }
                     return Expr(
@@ -473,7 +480,7 @@ namespace mr {
                 case expr::BinOp::GtEq:
                 case expr::BinOp::LtEq: {
                     if (!_inferer.eq(left_type, right_type)) {
-                        type_error(right_type, left_type, bin_op.right->loc);
+                        type_error(right_type, left_type, *bin_op.right);
                         right_type = left_type;
                     }
                     result_type = _inferer.bool_t();
@@ -561,7 +568,7 @@ namespace mr {
                 auto value = visit_expr(*assign._expr.get());
                 auto ty = _inferer.eq(assignee.type, value.type);
                 if (!ty) {
-                    type_error(value.type, assignee.type, assign._expr->loc);
+                    type_error(value.type, assignee.type, *assign._expr);
                     ty = assignee.type; // hack
                 }
                 // FXME: do we have to do this? assignments can't change the type
@@ -618,7 +625,7 @@ namespace mr {
                 auto value = visit_expr(*brk.val);
                 auto return_type = *_scoped_types.look_up(RETURN_NAME);
                 auto eq_result = _inferer.eq(value.type, return_type);
-                if (!eq_result) { type_error(value.type, return_type, brk.val->loc); }
+                if (!eq_result) { type_error(value.type, return_type, *brk.val); }
                 // type of break expr is !
                 control_flow_exit = true;
                 return Expr(
@@ -662,7 +669,7 @@ namespace mr {
                     const auto& expected_type = ft->arg_types[i];
                     auto        call_op = visit_expr(*expr._args[i]);
                     if (!_inferer.eq(expected_type, call_op.type)) {
-                        type_error(call_op.type, expected_type, expr._args[i]->loc);
+                        type_error(call_op.type, expected_type, *expr._args[i]);
                         call_op.type = expected_type;
                     }
                     call_operands.push_back(std::make_unique<Expr>(std::move(call_op)));
