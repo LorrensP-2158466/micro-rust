@@ -35,7 +35,9 @@ int mr::driver::MRDriver::start() {
     middle::ir::Ir ir;
     try {
         if (parser.parse()) {
-            std::cerr << "Parsing failure\n";
+            fmt::println(
+                "\nCompilation failed due to `{}` errors", _err_ctx.error_amount()
+            );
             return 1;
         }
         _ast->print();
@@ -43,6 +45,8 @@ int mr::driver::MRDriver::start() {
     } catch (const std::exception& e) {
         show_errors();
         fmt::println("ICE: {}", e.what());
+
+        fmt::println("\nCompilation failed due to `{}` errors", _err_ctx.error_amount());
         return 1;
     }
 
@@ -52,9 +56,9 @@ int mr::driver::MRDriver::start() {
 
     if (_err_ctx.has_errors()) {
         show_errors();
+        fmt::println("\nCompilation failed due to `{}` errors", _err_ctx.error_amount());
         return 1;
     }
-    DBG("not here");
     auto interp = middle_interpreter::Interpreter(std::move(ir));
 
     auto start_interp = clock::now();

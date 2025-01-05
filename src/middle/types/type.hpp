@@ -14,23 +14,15 @@
 #include <variant>
 #include <vector>
 
-#define STANDARD_TYPE_VARIANT(name)                                                      \
-    struct name {                                                                        \
-        friend bool operator==(const name&, const name&) {                               \
-            return true;                                                                 \
-        }                                                                                \
+#define STANDARD_TYPE_VARIANT(name)                                                                                    \
+    struct name {                                                                                                      \
+        friend bool operator==(const name &, const name &) { return true; }                                            \
     };
 
-#define TYPE_VARIABLE(name)                                                              \
-    struct name {                                                                        \
-        size_t _id;                                                                      \
-        name(size_t i) : _id(i) {};                                                      \
-        inline size_t id() const {                                                       \
-            return _id;                                                                  \
-        }                                                                                \
-        friend bool operator==(const name& l, const name& r) {                           \
-            return l._id == r._id;                                                       \
-        }                                                                                \
+#define TYPE_VARIABLE(name)                                                                                            \
+    struct name {                                                                                                      \
+        size_t _id;                                                                                                    \
+        INDEX_TYPE(name, _id)                                                                                          \
     };
 
 namespace mr {
@@ -108,38 +100,32 @@ namespace mr {
             STANDARD_TYPE_VARIANT(BoolTy);
 
             // type variables with id into inferer storage
-            TYPE_VARIABLE(TypeVar);
-            TYPE_VARIABLE(IntVar);
-            TYPE_VARIABLE(FloatVar);
+            TYPE_VARIABLE(TypeVar)
+            TYPE_VARIABLE(IntVar)
+            TYPE_VARIABLE(FloatVar)
 
             struct IntVarValue : public std::variant<UnknownTy, IntTy, UIntTy> {
-                friend std::ostream& operator<<(std::ostream& o, const IntVarValue& t) {
-                    o << std::visit(
-                        overloaded{
-                            [](const UnknownTy&) { return "{integer}"; },
-                            [](const IntTy& t) { return IntTy_to_string(t); },
-                            [](const UIntTy& t) { return UIntTy_to_string(t); }
-                        },
-                        t
-                    );
+                friend std::ostream &operator<<(std::ostream &o, const IntVarValue &t) {
+                    o << std::visit(overloaded{[](const UnknownTy &) { return "{integer}"; },
+                                               [](const IntTy &t) { return IntTy_to_string(t); },
+                                               [](const UIntTy &t) { return UIntTy_to_string(t); }},
+                                    t);
                     return o;
                 }
             };
             struct FloatVarValue : public std::variant<UnknownTy, FloatTy> {
-                friend std::ostream& operator<<(std::ostream& o, const FloatVarValue& t) {
-                    o << std::visit(
-                        overloaded{
-                            [](const UnknownTy&) { return "{float}"; },
-                            [](const FloatTy& t) { return FloatTy_to_string(t); },
-                        },
-                        t
-                    );
+                friend std::ostream &operator<<(std::ostream &o, const FloatVarValue &t) {
+                    o << std::visit(overloaded{
+                                        [](const UnknownTy &) { return "{float}"; },
+                                        [](const FloatTy &t) { return FloatTy_to_string(t); },
+                                    },
+                                    t);
                     return o;
                 }
             };
 
             struct InferTy : public std::variant<TypeVar, IntVar, FloatVar> {
-                inline const char* infer_ty_to_string() const {
+                inline const char *infer_ty_to_string() const {
                     // yeah this is weird
                     switch (this->index()) {
                     case 0:
@@ -149,20 +135,16 @@ namespace mr {
                     case 2:
                         return "{float}";
                     default:
-                        mr::unreachable<const char*>();
+                        mr::unreachable<const char *>();
                     }
                 }
 
                 bool is_int_var() const { return std::holds_alternative<IntVar>(*this); }
 
-                bool is_float_var() const {
-                    return std::holds_alternative<FloatVar>(*this);
-                }
+                bool is_float_var() const { return std::holds_alternative<FloatVar>(*this); }
 
-                bool is_infer_var() const {
-                    return std::holds_alternative<TypeVar>(*this);
-                }
-                friend std::ostream& operator<<(std::ostream& o, const InferTy ft) {
+                bool is_infer_var() const { return std::holds_alternative<TypeVar>(*this); }
+                friend std::ostream &operator<<(std::ostream &o, const InferTy ft) {
                     o << ft.infer_ty_to_string();
                     return o;
                 }
@@ -172,99 +154,73 @@ namespace mr {
             struct TupleTy {
                 std::vector<Ty> tys;
 
-                friend bool operator==(const TupleTy& l, const TupleTy& r) = default;
-                friend bool operator!=(const TupleTy& l, const TupleTy& r) = default;
+                friend bool operator==(const TupleTy &l, const TupleTy &r) = default;
+                friend bool operator!=(const TupleTy &l, const TupleTy &r) = default;
             };
 
             struct FunctionType;
-            static std::string function_type_to_string(const FunctionType* ft);
+            static std::string function_type_to_string(const FunctionType *ft);
 
-            using type_variant_t = std::variant<
-                UnknownTy, NeverTy, InferTy, BoolTy, IntTy, UIntTy, UnitTy, FloatTy,
-                TupleTy, const FunctionType*>;
+            using type_variant_t = std::variant<UnknownTy, NeverTy, InferTy, BoolTy, IntTy, UIntTy, UnitTy, FloatTy,
+                                                TupleTy, const FunctionType *>;
             struct Ty : public type_variant_t {
 
                 bool is_known() const noexcept {
-                    return !std::holds_alternative<InferTy>(*this) &&
-                           !std::holds_alternative<UnknownTy>(*this);
+                    return !std::holds_alternative<InferTy>(*this) && !std::holds_alternative<UnknownTy>(*this);
                 }
 
                 bool is_integral() const noexcept {
-                    return std::holds_alternative<IntTy>(*this) ||
-                           std::holds_alternative<UIntTy>(*this);
+                    return std::holds_alternative<IntTy>(*this) || std::holds_alternative<UIntTy>(*this);
                 }
 
-                bool is_signed_integral() const noexcept {
-                    return std::holds_alternative<IntTy>(*this);
-                }
+                bool is_signed_integral() const noexcept { return std::holds_alternative<IntTy>(*this); }
 
                 static Ty unit() { return Ty{UnitTy{}}; }
 
                 size_t size() const noexcept {
-                    return std::visit(
-                        overloaded{
-                            [](const FunctionType* const&) { return 8ul; },
-                            [](const NeverTy&) { return 0ul; },
-                            [](const UnitTy&) { return 0ul; },
-                            [](const BoolTy&) { return 8ul; },
-                            [](const IntTy& t) { return size_of_int_ty(t); },
-                            [](const UIntTy& t) { return size_of_u_int_ty(t); },
-                            [](const FloatTy& t) { return size_of_float_ty(t); },
-                            [](const TupleTy& t) {
-                                return std::accumulate(
-                                    t.tys.cbegin(),
-                                    t.tys.cend(),
-                                    0ul,
-                                    [](size_t sum, const Ty& ty) {
-                                        // yeah were keeping it simple
-                                        return sum + std::max(ty.size(), 8ul);
-                                    }
-                                );
-                            },
-                            [](const auto&) {
-                                std::runtime_error("SIZE OF UNKOWN WTF?!");
-                                return 0ul;
-                            },
-                        },
-                        *this
-                    );
+                    return std::visit(overloaded{
+                                          [](const FunctionType *const &) { return 8ul; },
+                                          [](const NeverTy &) { return 0ul; },
+                                          [](const UnitTy &) { return 0ul; },
+                                          [](const BoolTy &) { return 8ul; },
+                                          [](const IntTy &t) { return size_of_int_ty(t); },
+                                          [](const UIntTy &t) { return size_of_u_int_ty(t); },
+                                          [](const FloatTy &t) { return size_of_float_ty(t); },
+                                          [](const TupleTy &t) {
+                                              return std::accumulate(t.tys.cbegin(), t.tys.cend(), 0ul,
+                                                                     [](size_t sum, const Ty &ty) {
+                                                                         // yeah were keeping it simple
+                                                                         return sum + std::max(ty.size(), 8ul);
+                                                                     });
+                                          },
+                                          [](const auto &) {
+                                              std::runtime_error("SIZE OF UNKOWN WTF?!");
+                                              return 0ul;
+                                          },
+                                      },
+                                      *this);
                 }
 
-                friend std::ostream& operator<<(std::ostream& o, const Ty& ft) {
+                friend std::ostream &operator<<(std::ostream &o, const Ty &ft) {
                     o << std::visit(
-                        overloaded{
-                            [](const FunctionType* const& t) {
-                                return function_type_to_string(t);
-                            },
-                            [](const NeverTy&) { return "!"s; },
-                            [](const UnitTy&) { return "()"s; },
-                            [](const BoolTy&) { return "bool"s; },
-                            [](const UnknownTy&) { return "Unknown"s; },
-                            [](const InferTy& t) -> std::string {
-                                return t.infer_ty_to_string();
-                            },
-                            [](const IntTy& t) -> std::string {
-                                return IntTy_to_string(t);
-                            },
-                            [](const UIntTy& t) -> std::string {
-                                return UIntTy_to_string(t);
-                            },
-                            [](const FloatTy& t) -> std::string {
-                                return FloatTy_to_string(t);
-                            },
-                            [](const TupleTy& t) -> std::string {
-                                std::stringstream s;
-                                s << "(";
-                                for (const auto& ty : t.tys) {
-                                    s << ty << ", ";
-                                }
-                                s << ')';
-                                return s.str();
-                            },
-                            [](const auto&) { return "buhhhhh"; }
-                        },
-                        ft
-                    );
+                        overloaded{[](const FunctionType *const &t) { return function_type_to_string(t); },
+                                   [](const NeverTy &) { return "!"s; }, [](const UnitTy &) { return "()"s; },
+                                   [](const BoolTy &) { return "bool"s; }, [](const UnknownTy &) { return "Unknown"s; },
+                                   [](const InferTy &t) -> std::string { return t.infer_ty_to_string(); },
+                                   [](const IntTy &t) -> std::string { return IntTy_to_string(t); },
+                                   [](const UIntTy &t) -> std::string { return UIntTy_to_string(t); },
+                                   [](const FloatTy &t) -> std::string { return FloatTy_to_string(t); },
+                                   [](const TupleTy &t) -> std::string {
+                                       std::stringstream s;
+                                       s << "(";
+                                       for (const auto &ty : t.tys) {
+                                           s << ty << ", ";
+                                       }
+                                       s << ')';
+                                       return s.str();
+                                   },
+                                   [](const auto &) { return "buhhhhh"; }},
+                        ft);
                     return o;
                 }
             };
@@ -283,9 +239,9 @@ namespace mr {
                     o << *this;
                     return o.str();
                 }
-                friend std::ostream& operator<<(std::ostream& o, const FunctionType& ft) {
+                friend std::ostream &operator<<(std::ostream &o, const FunctionType &ft) {
                     o << "fn(";
-                    for (const auto& t : ft.arg_types) {
+                    for (const auto &t : ft.arg_types) {
                         o << t << ", ";
                     }
                     o << ") -> " << ft.ret_ty << " {" << ft.id << '}';
@@ -293,9 +249,7 @@ namespace mr {
                 }
             };
 
-            static std::string function_type_to_string(const FunctionType* ft) {
-                return ft->to_string();
-            }
+            static std::string function_type_to_string(const FunctionType *ft) { return ft->to_string(); }
         } // namespace types
 
     } // namespace middle
@@ -306,11 +260,8 @@ template <> struct fmt::formatter<mr::middle::types::Ty> : fmt::ostream_formatte
 
 namespace std {
 
-    template <>
-    struct variant_size<mr::middle::types::Ty>
-        : variant_size<mr::middle::types::type_variant_t> {};
+    template <> struct variant_size<mr::middle::types::Ty> : variant_size<mr::middle::types::type_variant_t> {};
 
     template <std::size_t I>
-    struct variant_alternative<I, mr::middle::types::Ty>
-        : variant_alternative<I, mr::middle::types::type_variant_t> {};
+    struct variant_alternative<I, mr::middle::types::Ty> : variant_alternative<I, mr::middle::types::type_variant_t> {};
 } // namespace std

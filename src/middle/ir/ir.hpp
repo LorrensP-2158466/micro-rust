@@ -1,14 +1,16 @@
 #pragma once
 
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+#include <spdlog/spdlog.h>
+
+#include <span>
+#include <unordered_map>
+#include <vector>
+
 #include "function.hpp"
 #include "mr_util.hpp"
 #include "types/type.hpp"
-#include <fmt/format.h>
-#include <fmt/ranges.h>
-#include <span>
-#include <spdlog/spdlog.h>
-#include <unordered_map>
-#include <vector>
 
 namespace mr {
     namespace middle {
@@ -16,20 +18,19 @@ namespace mr {
             class Ir {
                 struct FunctionId {
                     size_t id;
-                    auto   operator<=>(const FunctionId&) const = default;
+                    auto operator<=>(const FunctionId&) const = default;
                 };
                 std::unordered_map<std::string, Function> _functions;
 
-              public:
-                auto&       functions() { return _functions; }
+               public:
+                auto& functions() { return _functions; }
                 const auto& functions() const { return _functions; }
 
                 void register_function(std::string name, Function fn) {
                     _functions.emplace(std::move(name), std::move(fn));
                 }
 
-                void register_functions(std::vector<std::pair<std::string, Function>> fns
-                ) {
+                void register_functions(std::vector<std::pair<std::string, Function>> fns) {
                     _functions.reserve(_functions.size() + fns.size());
                     for (auto& [name, fn] : fns) {
                         register_function(std::move(name), std::move(fn));
@@ -38,31 +39,16 @@ namespace mr {
 
                 bool has_main() const noexcept { return _functions.contains("main"); }
 
-                Function& get_function_by_name(const std::string& name) {
-                    return _functions.at(name);
-                }
+                Function& get_function_by_name(const std::string& name) { return _functions.at(name); }
 
                 void dump() {
                     for (const auto& [fn_name, ir_fn] : _functions) {
-                        const auto args = std::span(
-                            ir_fn.locals.cbegin() + 1,
-                            ir_fn.locals.cbegin() + 1 + ir_fn.arg_count
-                        );
-                        fmt::println(
-                            "function {}({}) -> {} {{",
-                            fn_name,
-                            fmt::join(args, ", "),
-                            ir_fn.locals[0].ty
-                        );
+                        const auto args =
+                            std::span(ir_fn.locals.cbegin() + 1, ir_fn.locals.cbegin() + 1 + ir_fn.arg_count);
+                        fmt::println("function {}({}) -> {} {{", fn_name, fmt::join(args, ", "), ir_fn.locals[0].ty);
                         size_t i = 0;
                         for (const auto& local : ir_fn.locals) {
-                            fmt::println(
-                                "  let {} _{}: {} => {}",
-                                local.mutablity,
-                                i++,
-                                local.ty,
-                                local.id
-                            );
+                            fmt::println("  let {} _{}: {} => {}", local.mutablity, i++, local.ty, local.id);
                         }
                         fmt::println("");
                         i = 0;
@@ -78,8 +64,8 @@ namespace mr {
                     }
                 }
             };
-        } // namespace ir
+        }  // namespace ir
 
-    } // namespace middle
+    }  // namespace middle
 
-} // namespace mr
+}  // namespace mr

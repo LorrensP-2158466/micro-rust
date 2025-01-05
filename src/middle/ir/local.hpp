@@ -16,9 +16,9 @@ namespace mr {
 
             using Mutability = Locusable<MutabilityType>;
 
-            static inline std::ostream&
-            operator<<(std::ostream& o, const MutabilityType m) {
-                if (m == MutabilityType::Mutable) o << "mut";
+            static inline std::ostream &operator<<(std::ostream &o, const MutabilityType m) {
+                if (m == MutabilityType::Mutable)
+                    o << "mut";
                 return o;
             }
             struct Local {
@@ -30,21 +30,18 @@ namespace mr {
                 MutabilityType mutablity; // used for borrow check, can't take mutable
                                           // reference to non mutable
 
-                friend std::ostream& operator<<(std::ostream& o, const Local& l) {
+                friend std::ostream &operator<<(std::ostream &o, const Local &l) {
                     if (l.mutablity == MutabilityType::Mutable)
                         o << fmt::format("mut {}:{}", l.id, l.ty);
-                    else o << fmt::format("{}: {}", l.id, l.ty);
+                    else
+                        o << fmt::format("{}: {}", l.id, l.ty);
                     return o;
                 }
             };
 
             struct LocalId {
-                size_t id;
-
-                friend std::ostream& operator<<(std::ostream& o, const LocalId id) {
-                    o << '_' << id.id;
-                    return o;
-                }
+                size_t idx;
+                INDEX_TYPE(LocalId, idx)
             };
             const LocalId RETURN_LOCAL = LocalId{0};
         } // namespace ir

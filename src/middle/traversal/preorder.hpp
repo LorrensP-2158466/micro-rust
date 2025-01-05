@@ -44,9 +44,9 @@ namespace mr {
                         while (!self->to_visit.empty()) {
                             current = self->to_visit.back();
                             self->to_visit.pop_back();
-                            if (self->visited[current.id]) { continue; }
+                            if (self->visited[current.id()]) { continue; }
                             // fmt::println("visited: {}", self->visited);
-                            self->visited[current.id] = true;
+                            self->visited[current.id()] = true;
                             addSuccessors();
                             return *this;
                         }

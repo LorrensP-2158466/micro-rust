@@ -17,7 +17,7 @@ namespace mr {
             // x = 10
             // ...
             struct Assign {
-                Place  place;
+                Place place;
                 RValue value;
             };
 
@@ -49,36 +49,34 @@ namespace mr {
 
             using statement_variant_t = std::variant<Assign, FPrintLn, SPrintLn>;
             struct Statement : statement_variant_t {
+                Statement(Assign as)
+                    : statement_variant_t(as) {}
+                Statement(FPrintLn format)
+                    : statement_variant_t(std::move(format)) {}
+                Statement(SPrintLn print)
+                    : statement_variant_t(std::move(print)) {}
 
-                Statement(Assign as) : statement_variant_t(as) {}
-                Statement(FPrintLn format) : statement_variant_t(std::move(format)) {}
-                Statement(SPrintLn print) : statement_variant_t(std::move(print)) {}
-
-                friend std::ostream& operator<<(std::ostream& o, const Statement& s) {
-                    std::visit(
-                        overloaded{
-                            [&](const Assign& as) {
-                                o << '_' << as.place.local.id << " = " << as.value
-                                  << std::endl;
-                            },
-                            [&](const FPrintLn& fmt) {
-                                o << "PRINT(\"";
-                                if (fmt.start) { o << '{' << *fmt.start << '}'; }
-                                for (const auto& [str, var] : fmt._format_structure) {
-                                    o << str << '{' << var << '}';
-                                }
-                                if (fmt.end) o << *fmt.end;
-                                o << "\")" << std::endl;
-                            },
-                            [&](const SPrintLn& print) {
-                                o << "PRINT(\"" << print._string << "\")" << std::endl;
-                            },
-                            [&](const auto&) {
-                                o << "UNKNOWN STATEMENT" << std::endl;
-                            }
-                        },
-                        s
-                    );
+                friend std::ostream &operator<<(std::ostream &o, const Statement &s) {
+                    std::visit(overloaded{[&](const Assign &as) {
+                                              o << '_' << as.place.local.id() << " = " << as.value << std::endl;
+                                          },
+                                          [&](const FPrintLn &fmt) {
+                                              o << "PRINT(\"";
+                                              if (fmt.start) {
+                                                  o << '{' << *fmt.start << '}';
+                                              }
+                                              for (const auto &[str, var] : fmt._format_structure) {
+                                                  o << str << '{' << var << '}';
+                                              }
+                                              if (fmt.end)
+                                                  o << *fmt.end;
+                                              o << "\")" << std::endl;
+                                          },
+                                          [&](const SPrintLn &print) {
+                                              o << "PRINT(\"" << print._string << "\")" << std::endl;
+                                          },
+                                          [&](const auto &) { o << "UNKNOWN STATEMENT" << std::endl; }},
+                               s);
                     return o;
                 } // namespace ir
             }; // namespace middle

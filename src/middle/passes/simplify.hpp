@@ -26,7 +26,7 @@ namespace mr {
                     predecessor_count[0] = 1;
                     for (const auto& [idx, data] : traversal::PreOrder(blocks)) {
                         for (const auto target : data.terminator().successors()) {
-                            predecessor_count[target.id] += 1;
+                            predecessor_count[target.id()] += 1;
                         }
                     }
                 }
@@ -72,7 +72,7 @@ namespace mr {
                     // replace the original go to's with the new ones
                     for (auto& block : blocks) {
                         for (auto& target : block.terminator().successors()) {
-                            target = replacements[target.id];
+                            target = replacements[target.id()];
                         }
                     }
                 }
@@ -85,7 +85,7 @@ namespace mr {
                         for (const auto bb : blocks.indices()) {
                             // if block is not reachable, skip it because it will never be
                             // made reachable
-                            if (predecessor_count[bb.id] == 0) continue;
+                            if (predecessor_count[bb.id()] == 0) continue;
                             fmt::println("doing: {}", bb);
                             auto terminator_opt = take(blocks.block(bb)._terminator);
                             if (!terminator_opt)
@@ -153,7 +153,7 @@ namespace mr {
 
                         if (blocks[bb_idx].statements.empty() &&
                             has_variant<ir::Return>(blocks[bb_idx].terminator())) {
-                            simple_returns[bb_idx.id] = true;
+                            simple_returns[bb_idx.id()] = true;
                         }
                     }
                     fmt::println("here");
@@ -161,7 +161,7 @@ namespace mr {
                         std::visit(
                             overloaded{
                                 [&](const GoTo& go) {
-                                    if (simple_returns[go.target.id]) {
+                                    if (simple_returns[go.target.id()]) {
                                         bb.terminator() = Terminator(ir::Return{});
                                     }
                                 },
@@ -208,12 +208,12 @@ namespace mr {
                         BlockId& target = std::get<ir::GoTo>(terminator).target;
                         changed |= (target != last);
                         target = last;
-                        if (predecessor_count[current.id] == 1) {
+                        if (predecessor_count[current.id()] == 1) {
                             // This is the last reference to current
-                            predecessor_count[current.id] = 0;
+                            predecessor_count[current.id()] = 0;
                         } else {
-                            predecessor_count[target.id] += 1;
-                            predecessor_count[current.id] -= 1;
+                            predecessor_count[target.id()] += 1;
+                            predecessor_count[current.id()] -= 1;
                         }
 
                         blocks.block(current)._terminator = std::move(terminator);
@@ -230,7 +230,7 @@ namespace mr {
                 // the flow of the program is straight forward.
                 bool merge_successors(std::vector<BlockId>& to_merge, Terminator& term) {
                     if (const auto* goto_term = std::get_if<GoTo>(&term);
-                        goto_term && predecessor_count[goto_term->target.id] == 1) {
+                        goto_term && predecessor_count[goto_term->target.id()] == 1) {
                         BlockId target = goto_term->target;
                         auto    target_term = take(blocks.block(target)._terminator);
                         // this is weird, but handle it like nothing is wrong
@@ -239,7 +239,7 @@ namespace mr {
 
                         // we have a merge
                         to_merge.push_back(target);
-                        predecessor_count[target.id] = 0;
+                        predecessor_count[target.id()] = 0;
                         return true;
                     }
                     return false;

@@ -26,7 +26,7 @@ namespace mr {
                 std::span<BlockId> successors() { return std::span(&target, 1); }
 
                 friend std::ostream& operator<<(std::ostream& o, const GoTo& t) {
-                    o << "goto -> bb" << t.target.id;
+                    o << "goto -> bb" << t.target.id();
                     return o;
                 }
             };
@@ -65,7 +65,7 @@ namespace mr {
                 }
                 std::span<BlockId>   successors() { return std::span(&target, 1); }
                 friend std::ostream& operator<<(std::ostream& o, const Call& call) {
-                    o << '_' << call.dest_place.local.id << " = " << call.fun << '(';
+                    o << '_' << call.dest_place.local.id() << " = " << call.fun << '(';
                     std::copy(
                         call.args.begin(),
                         call.args.end(),

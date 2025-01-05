@@ -52,6 +52,7 @@ namespace mr {
                     rendered.push_back(std::move(rendered_line));
                     rendered_line = std::vector<StyledString>();
                 }
+                return rendered;
             }
             void set_char(size_t line, size_t col, char c, Style style) {
                 extra_lines(line);

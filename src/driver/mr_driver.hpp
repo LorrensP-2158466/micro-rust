@@ -43,10 +43,6 @@ namespace mr {
                     source_in_lines.push_back(line);
                 }
                 _err_ctx.show_errors(file_name, source_in_lines);
-
-                fmt::println(
-                    "\nCompilation failed due to `{}` errors", _err_ctx.error_amount()
-                );
             }
         };
     } // namespace driver

@@ -52,6 +52,7 @@
 #include "build/ir_builder.hpp"
 #include "high/ast/module.hpp"
 #include "high/expr/module.hpp"
+#include "ir/checker.hpp"
 #include "mr_util.hpp"
 #include "passes/passmanager.hpp"
 #include "symbol_table.hpp"
@@ -69,15 +70,16 @@ namespace mr {
     namespace middle {
         using namespace types;
         class MiddlePhase {
-            error::ErrorCtx&                 ecx;
-            SymbolTable<const ast::FunDecl*> _functions;
-            SymbolTable<Ty>                  _scoped_types;
-            inference::TyInferer             _inferer;
-            ir_pass::PassManager             _pass_manager;
-            ir::Ir                           generated_ir;
+            error::ErrorCtx &ecx;
+            SymbolTable<const ast::FunDecl *> _functions;
+            SymbolTable<Ty> _scoped_types;
+            inference::TyInferer _inferer;
+            ir_pass::PassManager _pass_manager;
+            ir::Ir generated_ir;
 
           public:
-            MiddlePhase(error::ErrorCtx& _ecx) : ecx(_ecx) {}
+            MiddlePhase(error::ErrorCtx &_ecx)
+                : ecx(_ecx) {}
             ir::Ir run(const U<ast::Ast> ast) {
                 // first we collect every global item (fn, struct, enum, const)
                 collect_global_items(*ast.get());
@@ -95,8 +97,7 @@ namespace mr {
           private:
             [[noreturn]] void type_error(Ty found, Ty expected) {
                 std::cerr << "Mismatched Types found: " << _inferer.ty_to_string(found)
-                          << " but expected: " << _inferer.ty_to_string(expected)
-                          << std::endl;
+                          << " but expected: " << _inferer.ty_to_string(expected) << std::endl;
                 std::abort();
             }
 
@@ -117,24 +118,21 @@ namespace mr {
                     lookup "0_return" and tada
 
                 */
-                TAstBuilder      tast_builder{_scoped_types, _inferer, ecx};
+                TAstBuilder tast_builder{_scoped_types, _inferer, ecx};
                 build::IrBuilder ir_builder{ecx, _inferer};
-                for (const auto& [fn_name, function] : _functions.get_current_scope()) {
+                for (const auto &[fn_name, function] : _functions.get_current_scope()) {
                     auto [outer_tast, inners] = tast_builder.build_everything(*function);
                     if (!outer_tast.structure_invalid)
-                        generated_ir.register_function(
-                            fn_name, ir_builder.build_function(std::move(outer_tast.tast))
-                        );
+                        generated_ir.register_function(fn_name, ir_builder.build_function(std::move(outer_tast.tast)));
 
                     std::vector<std::pair<std::string, ir::Function>> ir_functions{};
                     ir_functions.reserve(inners.size());
-                    for (auto& [name, tast, structure_failure] : inners) {
+                    for (auto &[name, tast, structure_failure] : inners) {
                         // we know errors occured, so we don't have to worry about not
                         // building this, bcs it will not be executed
-                        if (structure_failure) continue;
-                        ir_functions.emplace_back(
-                            std::move(name), ir_builder.build_function(std::move(tast))
-                        );
+                        if (structure_failure)
+                            continue;
+                        ir_functions.emplace_back(std::move(name), ir_builder.build_function(std::move(tast)));
                     }
 
                     generated_ir.register_functions(std::move(ir_functions));
@@ -142,33 +140,31 @@ namespace mr {
                     generated_ir.dump();
                     spdlog::info("RUNNING PASSES");
                     _pass_manager.run_passes(generated_ir);
+                    check_ir(generated_ir, ecx);
                     generated_ir.dump();
                 }
             }
             // collects items from statements in a scope
-            void collect_scope_items(const std::vector<U<ast::Stmt>>& scope_statements) {
-                for (const auto& stmt : scope_statements) {
-                    if (auto fn_item = dynamic_cast<const ast::FunDecl*>(stmt.get()))
-                        std::runtime_error(
-                            "Function Items in function scopes not supported yet"
-                        );
+            void collect_scope_items(const std::vector<U<ast::Stmt>> &scope_statements) {
+                for (const auto &stmt : scope_statements) {
+                    if (auto fn_item = dynamic_cast<const ast::FunDecl *>(stmt.get()))
+                        std::runtime_error("Function Items in function scopes not supported yet");
                     // collect_function_item(fn_item);
                 }
             }
-            void collect_global_items(const ast::Ast& ast) {
-                for (const auto& item : ast.items()) {
-                    if (auto fn_item = dynamic_cast<const ast::FunDecl*>(item.get())) {
+            void collect_global_items(const ast::Ast &ast) {
+                for (const auto &item : ast.items()) {
+                    if (auto fn_item = dynamic_cast<const ast::FunDecl *>(item.get())) {
                         collect_function_item(fn_item);
                     }
                 }
             }
 
-            void collect_function_item(const ast::FunDecl* fn_item) {
+            void collect_function_item(const ast::FunDecl *fn_item) {
                 auto typ = _inferer.create_function_type(*fn_item);
                 _scoped_types.insert(fn_item->name(), Ty{typ});
                 if (_functions.get_current_scope().contains(fn_item->name())) {
-                    std::cerr << "function definition for name: " << fn_item->name()
-                              << " already exits\n";
+                    std::cerr << "function definition for name: " << fn_item->name() << " already exits\n";
                     throw std::runtime_error("");
                 }
                 _functions.insert(fn_item->name(), fn_item);

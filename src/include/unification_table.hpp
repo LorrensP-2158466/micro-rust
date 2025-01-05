@@ -1,21 +1,18 @@
 #pragma once
 
+#include "datastructures.hpp"
 #include <optional>
 #include <vector>
 
 namespace mr {
     namespace middle {
-        template <typename K>
-        concept Key = requires(K k) {
-            { k.id() } -> std::same_as<size_t>;
-        } && std::is_constructible_v<K, size_t>;
 
         template <typename T>
         concept Value = std::equality_comparable<T>;
 
         template <Key K, Value T> class UnificationTable {
             struct Entry {
-                T      value;  // Holds a specific type or remains undefined
+                T value;       // Holds a specific type or remains undefined
                 size_t parent; // Points to the representative of the set or itself
             };
             std::vector<Entry> table;

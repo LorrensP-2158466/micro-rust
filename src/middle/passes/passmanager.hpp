@@ -3,6 +3,7 @@
 #include "const_fold.hpp"
 #include "mr_util.hpp"
 #include "pass.hpp"
+#include "remove_unused_locals.hpp"
 #include "simplify.hpp"
 #include <array>
 
@@ -11,7 +12,7 @@ namespace mr {
         namespace ir_pass {
             class PassManager {
                 static inline const std::array<U<IrPass>, 2> passes = {
-                    std::make_unique<Simplify>(), std::make_unique<ConstFold>()
+                    std::make_unique<Simplify>(), std::make_unique<RemovedUnusedLocals>()
                 };
 
               public:

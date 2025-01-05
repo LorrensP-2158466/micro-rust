@@ -8,15 +8,17 @@
  * A CFG if you will
  */
 
+#include <optional>
+#include <ranges>
+#include <vector>
+
 #include "block_id.hpp"
+#include "iterators.hpp"
 #include "module.hpp"
 #include "mr_util.hpp"
 #include "statement.hpp"
 #include "terminator.hpp"
 #include "types/type.hpp"
-#include <optional>
-#include <ranges>
-#include <vector>
 
 namespace mr {
     namespace middle {
@@ -44,16 +46,16 @@ namespace mr {
             // inside that function,  going to another function requires a function call
 
             struct Block {
-                std::vector<Statement>    statements;
+                std::vector<Statement> statements;
                 std::optional<Terminator> _terminator;
 
-                Terminator& terminator() {
+                Terminator &terminator() {
                     if (!_terminator)
                         throw std::runtime_error("Invalid terminator state");
                     return *_terminator;
                 }
 
-                const Terminator& terminator() const {
+                const Terminator &terminator() const {
                     if (!_terminator)
                         throw std::runtime_error("Invalid terminator state");
                     return *_terminator;
@@ -65,14 +67,13 @@ namespace mr {
 
               public:
                 BasicBlocks() = default;
-                BasicBlocks(BasicBlocks&& other) : _blocks(std::move(other._blocks)) {}
+                BasicBlocks(BasicBlocks &&other)
+                    : _blocks(std::move(other._blocks)) {}
 
-                inline const Block& block(BlockId block) const {
-                    return _blocks.at(block.id);
-                }
-                inline Block& block(BlockId block) { return _blocks.at(block.id); }
+                inline const Block &block(BlockId block) const { return _blocks.at(block.id()); }
+                inline Block &block(BlockId block) { return _blocks.at(block.id()); }
 
-                std::vector<Block>& raw_blocks() { return _blocks; }
+                std::vector<Block> &raw_blocks() { return _blocks; }
 
                 auto begin() { return _blocks.begin(); }
                 auto end() { return _blocks.end(); }
@@ -82,18 +83,16 @@ namespace mr {
                 auto cbegin() const { return _blocks.cbegin(); }
                 auto cend() const { return _blocks.cend(); }
 
-                inline Block&       operator[](const BlockId idx) { return block(idx); }
-                inline const Block& operator[](const BlockId idx) const {
-                    return block(idx);
-                }
+                inline Block &operator[](const BlockId idx) { return block(idx); }
+                inline const Block &operator[](const BlockId idx) const { return block(idx); }
 
-                auto indices() const {
-                    return std::views::iota(BlockId{0}, BlockId{_blocks.size()});
-                }
+                auto indices() const { return std::views::iota(BlockId(0), BlockId{_blocks.size()}); }
+
+                auto bb_iter() const { return iterators::zip(indices(), _blocks); }
 
                 // amount of blocks
                 size_t size() const noexcept { return _blocks.size(); }
-                bool   empty() const noexcept { return _blocks.empty(); }
+                bool empty() const noexcept { return _blocks.empty(); }
 
                 BlockId create_new_block() {
                     const auto id = BlockId{_blocks.size()};
@@ -101,33 +100,22 @@ namespace mr {
                     return id;
                 }
 
-                void terminate(BlockId block, Terminator term) {
-                    _blocks.at(block.id)._terminator = term;
-                }
+                void terminate(BlockId block, Terminator term) { _blocks.at(block.id())._terminator = term; }
 
                 void return_(BlockId block) { terminate(block, Terminator{Return{}}); }
 
                 void go_to(BlockId from, BlockId target) {
-                    assert(target.id < _blocks.size());
+                    assert(target.id() < _blocks.size());
                     terminate(from, Terminator(GoTo{target}));
                 }
 
-                void push_stmt(BlockId bb, Statement stmt) {
-                    block(bb).statements.push_back(std::move(stmt));
-                }
+                void push_stmt(BlockId bb, Statement stmt) { block(bb).statements.push_back(std::move(stmt)); }
 
-                void push_assign(BlockId block, Place lhs, RValue rhs) {
-                    return push_stmt(block, Assign{lhs, rhs});
-                }
+                void push_assign(BlockId block, Place lhs, RValue rhs) { return push_stmt(block, Assign{lhs, rhs}); }
 
                 void push_unit_assign(BlockId block, Place lhs) {
-                    return push_stmt(
-                        block,
-                        Assign{
-                            lhs,
-                            RValue(AsIs(Operand::const_(Scalar{0, 0}, types::Ty::unit())))
-                        }
-                    );
+                    return push_stmt(block,
+                                     Assign{lhs, RValue(AsIs(Operand::const_(Scalar{0, 0}, types::Ty::unit())))});
                 }
             };
         } // namespace ir
