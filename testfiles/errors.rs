@@ -7,9 +7,10 @@ fn random_bool() -> bool{
 
 fn main(){
     let x: i32;
-    if random_bool(){
+    while false{
         x = 10;
-    }else{
-    };
+        break;
+    }
     let b = x;
+    println!("{b}");
 }

@@ -1,8 +1,12 @@
 #pragma once
 
 #include "datastructures.hpp"
+#include "fmt/std.h"
 #include "ir/module.hpp"
+#include "spdlog/spdlog.h"
 #include "traversal/postorder.hpp"
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 namespace mr {
     namespace middle {
@@ -29,6 +33,14 @@ namespace mr {
                     for (const auto &[idx, _] : traversal::reverse_postorder(f._blocks)) {
                         queue.insert(idx);
                     }
+                    const auto propogate = [&](BlockId target, State &state) {
+                        auto changed = result_states[target.id()].union_changed(state);
+
+                        // if it changed, we need to check it again
+                        if (changed) {
+                            queue.insert(target);
+                        }
+                    };
                     auto state = bottom_value(f);
                     while (auto bb_idx = queue.pop()) {
                         state = result_states[bb_idx->id()];
@@ -38,22 +50,14 @@ namespace mr {
                             apply_statement(state, statement);
                         }
 
-                        const auto propogate = [&](BlockId target, State &target_state) {
-                            auto changed = target_state.union_changed(state);
-                            // if it changed, we need to check it again
-                            if (changed) {
-                                queue.insert(target);
-                            }
-                        };
-
                         std::visit(overloaded{[&](const Call &r) {
                                                   apply_call(state, r.dest_place);
                                                   const auto target = r.successors()[0].id();
-                                                  propogate(target, result_states[target]);
+                                                  propogate(target, state);
                                               },
                                               [&](const auto &t) {
                                                   for (const auto bb : t.successors()) {
-                                                      propogate(bb, result_states[bb.id()]);
+                                                      propogate(bb, state);
                                                   }
                                               }},
                                    bb.terminator());

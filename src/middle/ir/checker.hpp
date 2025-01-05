@@ -29,31 +29,26 @@ namespace mr {
 
                 void visit_local(const LocalId &local, PlaceCtx ctx, Location l) override {
                     // based on ctx, we know what to do
-                    spdlog::info("CHECKING USES OF LOCAL: {} in block: {}", local.id(), l.basic_block);
                     auto &uninit_state = uninit_entry_states.at(l.basic_block.id());
                     auto &init_state = init_entry_states.at(l.basic_block.id());
-                    std::visit(
-                        overloaded{[&](const MutUseCtx cx) {
-                                       // local is mutated, so we update state
-                                       spdlog::info("MUT USE: local_id: {} | uninit: {} and init: {}", local.id(),
-                                                    uninit_state.contains(local), init_state.contains(local));
-                                       uninit_state.remove(local);
-                                       init_state.insert(local);
-                                   },
-                                   [&](const NonMutUseCtx cx) {
-                                       // we use it as a value that should be initialized
-                                       // if init_state = true and uninit_state is false, we are 100% sure this
-                                       // local is initialized
-                                       // so the reverse is uninitialized
-                                       auto uninitialized = !init_state.contains(local) && uninit_state.contains(local);
-                                       spdlog::info("NON MUT USE: local_id: {} | uninit: {} and init: {}", local.id(),
-                                                    uninit_state.contains(local), init_state.contains(local));
-                                       if (uninitialized) {
-                                           // TODO error
-                                           // ICE("CAN'T RESOLVE UNINIT VARIABLE BEING USED...");
-                                       }
-                                   }},
-                        ctx);
+                    std::visit(overloaded{[&](const MutUseCtx cx) {
+                                              uninit_state.remove(local);
+                                              init_state.insert(local);
+                                          },
+                                          [&](const NonMutUseCtx cx) {
+                                              // we use it as a value that should be initialized
+                                              // if init_state = true and uninit_state is false, we are 100% sure this
+                                              // local is initialized
+                                              // so the reverse is uninitialized
+                                              auto uninitialized =
+                                                  !init_state.contains(local) ^ uninit_state.contains(local);
+                                              if (uninitialized) {
+                                                  // TODO error
+                                                  spdlog::info("local: {} is uninitalized when used", local.id());
+                                                  // ICE("CAN'T RESOLVE UNINIT VARIABLE BEING USED...");
+                                              }
+                                          }},
+                               ctx);
                 }
             };
 

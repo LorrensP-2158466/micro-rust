@@ -480,7 +480,7 @@ namespace mr {
                 }
                 auto value = visit_expr(*assign._expr.get());
                 auto ty = _inferer.eq(assignee.type, value.type);
-                spdlog::info("assign eq: {}", ty);
+                spdlog::info("assign eq: {}", *ty);
                 spdlog::info("type after eq: {}", _inferer.shallow_resolve(assignee.type));
                 if (!ty) {
                     type_error(value.type, assignee.type, *assign._expr);

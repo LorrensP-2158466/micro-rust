@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <deque>
 #include <functional>
+#include <span>
 #include <type_traits>
 #include <vector>
 
@@ -44,15 +45,16 @@ namespace mr {
             }
         }
 
-        bool bit_wise(BitSet &out, const BitSet &in, std::function<bool(bool, bool)> &&op) {
-            if (bits.size() != in.bits.size()) {
+        static bool bit_wise(BitSet &out, const BitSet &in, std::function<bool(bool, bool)> &&op) {
+            if (out.bits.size() != in.bits.size()) {
                 throw std::invalid_argument("Sets must be of equal size");
             }
             bool changed = false;
-            for (auto [out_elem, in_elem] : iterators::zip(out.bits, in.bits)) {
-                bool old_elem = out_elem;
-                bool new_elem = op(out_elem, in_elem);
-                out_elem = new_elem;
+            for (size_t i = 0; i < out.bits.size(); ++i) {
+                bool old_elem = out.bits[i];
+                bool in_elem = in.bits[i];
+                bool new_elem = op(old_elem, in_elem);
+                out.bits[i] = new_elem;
                 changed |= old_elem != new_elem;
             }
             return changed;
