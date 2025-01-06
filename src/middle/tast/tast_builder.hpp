@@ -528,10 +528,14 @@ namespace mr {
             }
             Expr visit_break_expr(const expr::Break &brk) override {
                 auto value = visit_expr(*brk.val);
-                auto return_type = *_scoped_types.look_up(RETURN_NAME);
-                auto eq_result = _inferer.eq(value.type, return_type);
+                if (!in_loop) {
+                    // don't know what to do here
+                    _curr_build_structure_failure = true;
+                    ecx.report_diag(errors::break_outside_loop(brk.loc));
+                }
+                auto eq_result = _inferer.eq(value.type, _inferer.unit());
                 if (!eq_result) {
-                    type_error(value.type, return_type, *brk.val);
+                    type_error(value.type, _inferer.unit(), *brk.val);
                 }
                 // type of break expr is !
                 control_flow_exit = true;

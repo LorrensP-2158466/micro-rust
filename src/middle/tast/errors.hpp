@@ -143,6 +143,18 @@ namespace mr {
                         }},
                     };
                 }
+                static inline error::Diagnostic break_outside_loop(location loc) {
+                    return error::Diagnostic{
+                        error::Level::Error,
+                        "`break` outside of a loop",
+                        loc,
+                        std::vector{error::DiagnosticLabel{
+                            loc,
+                            "cannot `break` outside of a loop",
+                            error::Style::Primary
+                        }},
+                    };
+                }
 
             } // namespace errors
         } // namespace tast

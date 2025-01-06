@@ -6,11 +6,5 @@ fn random_bool() -> bool{
 
 
 fn main(){
-    let x: i32;
-    while false{
-        x = 10;
-        break;
-    }
-    let b = x;
-    println!("{b}");
+    break;
 }

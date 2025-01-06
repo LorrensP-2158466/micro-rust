@@ -36,16 +36,11 @@ namespace mr {
                                               init_state.insert(local);
                                           },
                                           [&](const NonMutUseCtx cx) {
-                                              // we use it as a value that should be initialized
-                                              // if init_state = true and uninit_state is false, we are 100% sure this
-                                              // local is initialized
-                                              // so the reverse is uninitialized
                                               auto uninitialized =
                                                   !init_state.contains(local) ^ uninit_state.contains(local);
                                               if (uninitialized) {
                                                   // TODO error
                                                   spdlog::info("local: {} is uninitalized when used", local.id());
-                                                  // ICE("CAN'T RESOLVE UNINIT VARIABLE BEING USED...");
                                               }
                                           }},
                                ctx);
