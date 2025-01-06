@@ -30,6 +30,7 @@ namespace mr {
                 MutabilityType mutablity; // used for borrow check, can't take mutable
                                           // reference to non mutable
 
+                inline bool is_mutable() const noexcept { return mutablity == MutabilityType::Mutable; }
                 friend std::ostream &operator<<(std::ostream &o, const Local &l) {
                     if (l.mutablity == MutabilityType::Mutable)
                         o << fmt::format("mut {}:{}", l.id, l.ty);
