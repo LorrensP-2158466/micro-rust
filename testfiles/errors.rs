@@ -10,7 +10,10 @@ fn main(){
 
     if random_bool(){
         x = 10;
-    }else{}
+    }else{
+        x = 20;
+    }
+    x = 10;
     let b = x;
 
 }

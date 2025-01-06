@@ -32,6 +32,12 @@ namespace mr {
                     auto &uninit_state = uninit_entry_states.at(l.basic_block.id());
                     auto &init_state = init_entry_states.at(l.basic_block.id());
                     std::visit(overloaded{[&](const MutUseCtx cx) {
+                                              // we don't have drops so we can use the maybe init to know that a
+                                              // variable is initalized somewhere before this location
+                                              if (init_state.contains(local)) {
+                                                  spdlog::info("Can't assign twice to immutable variable");
+                                                  return;
+                                              }
                                               uninit_state.remove(local);
                                               init_state.insert(local);
                                           },
