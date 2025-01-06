@@ -6,5 +6,11 @@ fn random_bool() -> bool{
 
 
 fn main(){
-    break;
+    let x;
+
+    if random_bool(){
+        x = 10;
+    }else{}
+    let b = x;
+
 }

@@ -108,6 +108,7 @@ namespace mr {
                 _fn_namer.push_scope();
                 _scoped_types.push_scope();
                 _inferer.push_scope();
+                _inferer.clear_tables();
 
                 // insert arguments and return_type
                 const auto return_type = _inferer.from_ast_type(fun_decl.return_type());

@@ -13,19 +13,23 @@ namespace mr {
         namespace analysis {
             using namespace ir;
             // only analyze on locals fuck that
-            using State = BitSet<LocalId>;
-            class ForwardAnalysis {
+            template <typename DomainT> class ForwardAnalysis {
               public:
-                virtual State bottom_value(const Function &f) = 0;
-                virtual void init_start_bb(const Function &f, State &state) = 0;
-                virtual void apply_statement(State &state, const Statement &stmt) = 0;
-                virtual void apply_call(State &state, const Place &) = 0;
+                using Domain = DomainT;
+                using Results = std::vector<Domain>;
+                virtual Domain bottom_value(const Function &f) = 0;
+                // Transfer functions
+                virtual void init_start_bb(const Function &f, Domain &state) = 0;
+                virtual void apply_statement(Domain &state, const Statement &stmt) = 0;
+                virtual void apply_call(Domain &state, const Place &) = 0;
+                // TODO: when we need terminator transfer, i will add it
 
                 // returns state for every block
-                std::vector<State> iterate_till_fixpoint(const Function &f) {
-                    auto result_states = std::vector<State>(f._blocks.size(), State(f.locals.size()));
+                Results iterate_till_fixpoint(const Function &f) {
+                    Results result_states{};
+                    result_states.reserve(f._blocks.size());
                     for (size_t i = 0; i < f._blocks.size(); ++i) {
-                        result_states[i] = bottom_value(f);
+                        result_states.emplace_back(bottom_value(f));
                     }
                     init_start_bb(f, result_states.front());
 
@@ -33,7 +37,7 @@ namespace mr {
                     for (const auto &[idx, _] : traversal::reverse_postorder(f._blocks)) {
                         queue.insert(idx);
                     }
-                    const auto propogate = [&](BlockId target, State &state) {
+                    const auto propogate = [&](BlockId target, Domain &state) {
                         auto changed = result_states[target.id()].union_changed(state);
 
                         // if it changed, we need to check it again

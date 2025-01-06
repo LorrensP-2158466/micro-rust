@@ -138,9 +138,15 @@ namespace mr {
                     generated_ir.register_functions(std::move(ir_functions));
                     _inferer.clear_tables();
                     generated_ir.dump();
-                    spdlog::info("RUNNING PASSES");
-                    _pass_manager.run_passes(generated_ir);
+                    spdlog::info("RUNNING CHECKER");
+                    // check before opt passes?
                     check_ir(generated_ir, ecx);
+                    // don't bother optimizing when 
+                    if (ecx.has_errors()) {
+                        spdlog::info("RUNNING PASSES");
+                        _pass_manager.run_passes(generated_ir);
+                    }
+
                     generated_ir.dump();
                 }
             }

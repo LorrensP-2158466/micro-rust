@@ -15,8 +15,8 @@ namespace mr {
             class Checker : public Visitor {
                 const Function &fn;
                 error::ErrorCtx &ecx;
-                std::vector<BitSet<LocalId>> uninit_entry_states;
-                std::vector<BitSet<LocalId>> init_entry_states;
+                analysis::MaybeUninit::Results uninit_entry_states;
+                analysis::MaybeInit::Results init_entry_states;
 
               public:
                 Checker(const Function &fn, error::ErrorCtx &ecx)
