@@ -7,11 +7,8 @@ fn random_bool() -> bool{
 
 fn main(){
     let x;
-
     if random_bool(){
         x = 10;
-    }else{
-        x = 20;
     }
     x = 10;
     let b = x;
