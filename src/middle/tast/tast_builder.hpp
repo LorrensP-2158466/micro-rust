@@ -16,10 +16,10 @@
 #include <variant>
 
 namespace mr { namespace middle {
-    using namespace ::mr::middle::types;
-    using namespace ::mr::middle::tast;
-    using namespace ::mr::middle::inference;
-    using namespace ::mr::middle::ir;
+    using namespace types;
+    using namespace tast;
+    using namespace inference;
+    using namespace ir;
 
     class FunctionNamer {
       private:
@@ -57,57 +57,80 @@ namespace mr { namespace middle {
             , structure_invalid(si) {}
     };
 
-    class TAstBuilder : public ast::AstVisitor<Stmt, Expr, void> {
-        static inline const char *RETURN_NAME = "0_RETURN";
-        SymbolTable<Ty> &_scoped_types;
-        TyInferer &_inferer;
-        error::ErrorCtx &ecx;
-
-        FunctionNamer _fn_namer;
-
-        std::optional<Ref<const ast::FunDecl>> _curr_build;
-        bool _curr_build_structure_failure;
-        // possible to have nested functions
-        std::vector<std::pair<std::string, Ref<const ast::FunDecl>>> _inner_functions_to_build;
-        std::vector<TAstBuildResult> _built_functions;
-
+    class BuildCtx {
+        const ast::FunDecl *ast_fun;
+        size_t in_loop = 0;
         // it is possible that a block contains a return/continue/break
         // these result in the ! type of that block, but we can't know when this
         // happend, this state variable keeps trakc of those exited control flows
         bool control_flow_exit = false;
-        // used to check if "continue" is only called inside a loop
-        // counter because we can have nested loops, but we only check on 0
-        size_t in_loop = 0;
+        // some valid grammars can cause invalid IR structure, in that case, we don't want to build
+        // it
+        bool structure_failure = false;
 
       public:
-        TAstBuilder(SymbolTable<Ty> &scoped_types, TyInferer &inferer, error::ErrorCtx &_ecx)
-            : _scoped_types(scoped_types)
+        // no default constructor, only from a const reference, this guarantees the pointer is live
+        BuildCtx() = delete;
+        explicit BuildCtx(const ast::FunDecl &_ast_fun)
+            : ast_fun(&_ast_fun) {}
+
+        // ast decl info
+        inline auto name() const noexcept { return ast_fun->name(); }
+        inline location return_ty_loc() const noexcept { return ast_fun->return_type().loc; }
+        // loop stuff
+        inline void enter_loop() noexcept { in_loop += 1; }
+        inline void exit_loop() noexcept { in_loop += 1; }
+        inline bool is_in_loop() noexcept { return in_loop != 0; }
+
+        inline void control_flow_reset() noexcept { control_flow_exit = false; }
+        inline bool exited_control_flow() const noexcept { return control_flow_exit; }
+
+        inline void set_structure_failure() noexcept { structure_failure = true; }
+        inline bool structure_failed() const noexcept { return structure_failure; }
+    };
+
+    class TAstBuilder : public ast::AstVisitor<Stmt, Expr, void> {
+        static inline const char *RETURN_NAME = "0_RETURN";
+        BuildCtx _build_ctx;
+        SymbolTable<Ty> &_scoped_types;
+        TyInferer &_inferer;
+        error::ErrorCtx &ecx;
+
+        FunctionNamer _fn_namer{};
+
+        std::vector<std::pair<std::string, Ref<const ast::FunDecl>>> _functions_to_build{};
+
+      public:
+        TAstBuilder(
+            const ast::FunDecl &ast_fun, SymbolTable<Ty> &scoped_types, TyInferer &inferer,
+            error::ErrorCtx &_ecx
+        )
+            : _build_ctx(ast_fun)
+            , _scoped_types(scoped_types)
             , _inferer(inferer)
-            , ecx(_ecx)
-            , _fn_namer() {};
+            , ecx(_ecx) {};
 
         ~TAstBuilder() = default;
 
         std::pair<TAstBuildResult, std::vector<TAstBuildResult>>
         build_everything(const ast::FunDecl &fun_decl) {
             auto outer = TAstBuildResult{
-                fun_decl.name(), build_function(fun_decl), _curr_build_structure_failure
+                fun_decl.name(), build_function(fun_decl), _build_ctx.structure_failed()
             };
-            while (!_inner_functions_to_build.empty()) {
-                const auto &[mangled_name, fn_decl] = _inner_functions_to_build.back();
-                _curr_build = fn_decl;
-                _inner_functions_to_build.pop_back();
-                _built_functions.emplace_back(
-                    std::move(mangled_name), build_function(fn_decl), _curr_build_structure_failure
+            std::vector<TAstBuildResult> built_functions{};
+            while (!_functions_to_build.empty()) {
+                const auto &[mangled_name, fn_decl] = _functions_to_build.back();
+                _build_ctx = BuildCtx(fun_decl);
+                _functions_to_build.pop_back();
+                built_functions.emplace_back(
+                    std::move(mangled_name), build_function(fn_decl), _build_ctx.structure_failed()
                 );
             }
-            return std::make_pair(std::move(outer), std::move(_built_functions));
+            return std::make_pair(std::move(outer), std::move(built_functions));
         }
 
         // build function and every nested item of that function
         TAst build_function(const ast::FunDecl &fun_decl) {
-            _curr_build = fun_decl;
-            _curr_build_structure_failure = false;
             spdlog::info("Beginning TAST build of function {}", fun_decl.name());
             std::vector<Param> args{};
             _fn_namer.push_scope();
@@ -181,14 +204,14 @@ namespace mr { namespace middle {
                 return;
             }
             // mangle name
-            auto mangled_name = _fn_namer.get_unique_name(_curr_build->get().name(), typ->id);
+            auto mangled_name = _fn_namer.get_unique_name(_build_ctx.name(), typ->id);
 
             typ->id = mangled_name;
 
             // but still keep the name of the decl in the scope
             _scoped_types.insert(p.name(), Ty{typ});
 
-            _inner_functions_to_build.emplace_back(mangled_name, p);
+            _functions_to_build.emplace_back(mangled_name, p);
         }
 
         Stmt visit_let_stmt(const ast::LetStmt &let) override {
@@ -265,7 +288,7 @@ namespace mr { namespace middle {
             _inferer.push_scope();
             _fn_namer.push_scope();
 
-            control_flow_exit = false;
+            _build_ctx.control_flow_reset();
             auto statements = std::vector<U<Stmt>>();
             statements.reserve(block.statements().size());
             for (auto &stmt : block.statements())
@@ -282,8 +305,9 @@ namespace mr { namespace middle {
                                  ? std::make_optional<Expr>(visit_expr(*block.tail_expr()))
                                  : std::nullopt;
 
-            auto ty = control_flow_exit ? _inferer.never()
-                                        : (tail_expr ? tail_expr->type : _inferer.unit());
+            auto ty = _build_ctx.exited_control_flow()
+                          ? _inferer.never()
+                          : (tail_expr ? tail_expr->type : _inferer.unit());
             _scoped_types.pop_scope();
             _inferer.pop_scope();
             _fn_namer.pop_scope();
@@ -323,7 +347,7 @@ namespace mr { namespace middle {
             };
 
             auto cond_p = std::make_unique<Expr>(std::move(condition));
-            in_loop += 1;
+            _build_ctx.enter_loop();
             auto block_expr = visit_block_expr(*expr._body);
             // body is always of unit type
             if (!_inferer.eq(block_expr.type, _inferer.unit())) {
@@ -331,7 +355,7 @@ namespace mr { namespace middle {
                 block_expr.type = _inferer.unit(); // hack
             }
             auto body = std::get<BlockExpr>(std::move(block_expr.kind));
-            in_loop -= 1;
+            _build_ctx.exit_loop();
             auto break_branch = std::make_unique<Expr>(
                 BlockExpr(std::make_unique<Expr>(
                     Break(std::make_unique<Expr>(Unit(), _inferer.unit(), location())),
@@ -530,7 +554,7 @@ namespace mr { namespace middle {
             if (!is_assignable(assignee)) {
                 ecx.report_diag(errors::un_assignable_expr(assign._assignee->loc));
                 // these things can't be made into IR
-                _curr_build_structure_failure = true;
+                _build_ctx.set_structure_failure();
             }
             auto value = visit_expr(*assign._expr.get());
             auto ty = _inferer.eq(assignee.type, value.type);
@@ -572,7 +596,7 @@ namespace mr { namespace middle {
 
         Expr visit_return_expr(const expr::Return &ret) override {
             auto value = visit_expr(*ret.val);
-            auto return_loc = (*_curr_build).get().return_type().loc;
+            auto return_loc = _build_ctx.return_ty_loc();
             auto return_type = *_scoped_types.look_up(RETURN_NAME);
             auto eq_result = _inferer.eq(value.type, return_type);
             // TODO mismatched returns
@@ -582,16 +606,16 @@ namespace mr { namespace middle {
                 ));
             }
             // type of return expr is ! so we set the state
-            control_flow_exit = true;
+            _build_ctx.exited_control_flow();
             return Expr(
                 tast::Return{std::make_unique<Expr>(std::move(value))}, _inferer.never(), ret.loc
             );
         }
         Expr visit_break_expr(const expr::Break &brk) override {
             auto value = visit_expr(*brk.val);
-            if (!in_loop) {
+            if (!_build_ctx.is_in_loop()) {
                 // don't know what to do here
-                _curr_build_structure_failure = true;
+                _build_ctx.set_structure_failure();
                 ecx.report_diag(errors::break_outside_loop(brk.loc));
             }
             auto eq_result = _inferer.eq(value.type, _inferer.unit());
@@ -599,18 +623,18 @@ namespace mr { namespace middle {
                 type_error(value.type, _inferer.unit(), *brk.val);
             }
             // type of break expr is !
-            control_flow_exit = true;
+            _build_ctx.exited_control_flow();
             return Expr(
                 tast::Break{std::make_unique<Expr>(std::move(value))}, _inferer.never(), brk.loc
             );
         }
         Expr visit_continue_expr(const expr::Continue &c) override {
-            if (!in_loop) {
+            if (!_build_ctx.is_in_loop()) {
+                _build_ctx.set_structure_failure();
+
                 ecx.report_diag(errors::continue_outside_loop(c.loc));
             }
-            control_flow_exit = true;
-            // continue outside of loop breaks valid structure
-            _curr_build_structure_failure = true;
+            _build_ctx.exited_control_flow();
             return Expr(tast::Continue{}, _inferer.never(), c.loc);
         }
 
@@ -670,7 +694,7 @@ namespace mr { namespace middle {
             if (!has_variant<types::TupleTy>(expr.type)) {
                 // TODO: emit error: cant tuple index into non tuple type
                 ecx.report_diag(errors::no_field_on_primitive(expr.type, tup_index.index->loc));
-                _curr_build_structure_failure = true;
+                _build_ctx.set_structure_failure();
             }
             // we know that the lexer does this the "right" way
             auto index = std::stoul(tup_index.index->symbol);
@@ -700,8 +724,8 @@ namespace mr { namespace middle {
                                          : "";
                 ecx.report_diag(errors::ident_not_found(id._id, id.loc, std::move(help)));
                 // don't know type of this or what to expect
-                _curr_build_structure_failure = true;
-                type = _inferer.create_type_var();
+                _build_ctx.set_structure_failure();
+                type = _inferer.create_type_var(); // typevar to to make typechecking work
             }
             return Expr(Identifier(id._id), *type, id.loc);
         }

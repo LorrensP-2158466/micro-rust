@@ -117,9 +117,10 @@ namespace mr { namespace middle {
                 lookup "0_return" and tada
 
             */
-            TAstBuilder tast_builder{_scoped_types, _inferer, ecx};
             build::IrBuilder ir_builder{ecx, _inferer};
             for (const auto &[fn_name, function] : _functions.get_current_scope()) {
+                TAstBuilder tast_builder(*function, _scoped_types, _inferer, ecx);
+
                 auto [outer_tast, inners] = tast_builder.build_everything(*function);
                 if (!outer_tast.structure_invalid)
                     generated_ir.register_function(
