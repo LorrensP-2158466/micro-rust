@@ -14,12 +14,14 @@ namespace mr { namespace middle { namespace tast {
         std::vector<std::pair<std::string, std::string>> _fmt_structure;
         // str
         std::optional<std::string> _end_str;
+        location loc;
 
-        static PrintLn from_str(const std::string &format_str) {
+        static PrintLn from_str(const std::string &format_str, location loc) {
             std::regex pattern(R"(\{([^}]+)\})"); // Regex to match {placeholder}
             std::smatch matches;
 
             PrintLn result;
+            result.loc = loc;
             std::string::const_iterator searchStart = format_str.cbegin();
             std::string::const_iterator searchEnd = format_str.cend();
 
@@ -96,7 +98,6 @@ namespace mr { namespace middle { namespace tast {
         static Stmt let(expr::Identifier i, types::Ty td, U<Expr> init, ir::Mutability m) {
             return Stmt(LetStmt(std::move(i), td, std::move(init), m));
         }
-        static Stmt print(std::string s) { return Stmt(PrintLn(std::move(s))); }
     };
 
 }}} // namespace mr::middle::tast

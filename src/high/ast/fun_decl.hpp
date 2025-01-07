@@ -14,6 +14,7 @@ namespace mr { namespace ast {
     struct FunArg {
         std::string id;
         ast::Type type;
+        location loc;
         Mut mut;
     };
 
@@ -24,7 +25,10 @@ namespace mr { namespace ast {
         U<expr::BlockExpr> _body;
 
       public:
-        FunDecl(std::string id, std::vector<FunArg> args, ast::Type ret_type, U<expr::BlockExpr> body, location loc)
+        FunDecl(
+            std::string id, std::vector<FunArg> args, ast::Type ret_type, U<expr::BlockExpr> body,
+            location loc
+        )
             : Item(loc)
             , _id(id)
             , _args(std::move(args))
@@ -32,10 +36,13 @@ namespace mr { namespace ast {
             , _body(std::move(body)) {}
 
         static U<FunDecl> make_unique(
-            std::string id, std::vector<FunArg> args, ast::Type ret_type, U<expr::BlockExpr> body, location loc
+            std::string id, std::vector<FunArg> args, ast::Type ret_type, U<expr::BlockExpr> body,
+            location loc
         ) noexcept {
             std::cout << std::endl;
-            return std::make_unique<FunDecl>(id, std::move(args), std::move(ret_type), std::move(body), loc);
+            return std::make_unique<FunDecl>(
+                id, std::move(args), std::move(ret_type), std::move(body), loc
+            );
         }
 
         void print(const int depth) const override {
@@ -46,7 +53,8 @@ namespace mr { namespace ast {
             for (const auto &arg : _args) {
                 args += arg.id + ": " + arg.type.to_string();
             }
-            std::string ret = indent + std::string("  return_type: ") + _ret_type.to_string() + "\n";
+            std::string ret =
+                indent + std::string("  return_type: ") + _ret_type.to_string() + "\n";
             const auto body = indent + std::string("  body:\n");
             std::cout << decl << id << args << body;
             _body->print(depth + 1);

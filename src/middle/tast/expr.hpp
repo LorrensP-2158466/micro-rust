@@ -414,7 +414,9 @@ namespace mr { namespace middle { namespace tast {
     inline std::ostream &operator<<(std::ostream &o, const Expr &e) {
         o << "Expr: \n"
           << "  Type: " << e.type << '\n'
-          << "  kind: ??\n";
+          << "  kind: ";
+        std::visit([&o](const auto &k) { o << k; }, e.kind);
+        o << '\n';
         return o;
     }
 

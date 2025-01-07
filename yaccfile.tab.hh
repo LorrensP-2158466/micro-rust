@@ -53,7 +53,6 @@ namespace mr {
         class MRDriver;
     }
 }
-#include "lexer/span.hpp"
 #include "lexer/token.hpp"
 #include "high/ast/module.hpp"
 #include "high/expr/module.hpp"
@@ -63,7 +62,7 @@ using namespace mr;
 using namespace mr::ast;
 using namespace mr::expr;
 
-#line 67 "yaccfile.tab.hh"
+#line 66 "yaccfile.tab.hh"
 
 
 # include <cstdlib> // std::abort
@@ -199,7 +198,7 @@ using namespace mr::expr;
 
 #line 5 "src/parser/yaccfile.yy"
 namespace mr {
-#line 203 "yaccfile.tab.hh"
+#line 202 "yaccfile.tab.hh"
 
 
 
@@ -398,6 +397,12 @@ namespace mr {
       // func_arg
       char dummy1[sizeof (FunArg)];
 
+      // ident
+      char dummy2[sizeof (Identifier)];
+
+      // opt_mut
+      char dummy3[sizeof (Mut)];
+
       // DEC_LITERAL
       // FLOAT_LITERAL
       // STR_LITERAL
@@ -456,80 +461,76 @@ namespace mr {
       // OR
       // AMPERSAND_MUT
       // DOT
-      char dummy2[sizeof (Token)];
+      char dummy4[sizeof (Token)];
 
-      // func_ret_type
       // type
-      char dummy3[sizeof (Type)];
+      char dummy5[sizeof (Type)];
 
       // program
-      char dummy4[sizeof (U<Ast>)];
+      char dummy6[sizeof (U<Ast>)];
 
       // block_expr
-      char dummy5[sizeof (U<BlockExpr>)];
+      char dummy7[sizeof (U<BlockExpr>)];
 
       // call_expr
-      char dummy6[sizeof (U<CallExpr>)];
+      char dummy8[sizeof (U<CallExpr>)];
 
       // bin_op_expr
       // expr
       // expr_stmt
       // expr_w_block
       // expr_wo_block
-      char dummy7[sizeof (U<Expr>)];
+      char dummy9[sizeof (U<Expr>)];
 
       // function_decl
-      char dummy8[sizeof (U<FunDecl>)];
+      char dummy10[sizeof (U<FunDecl>)];
 
       // if_expr
-      char dummy9[sizeof (U<IfElse>)];
+      char dummy11[sizeof (U<IfElse>)];
 
       // item
-      char dummy10[sizeof (U<Item>)];
+      char dummy12[sizeof (U<Item>)];
 
       // let
-      char dummy11[sizeof (U<LetStmt>)];
+      char dummy13[sizeof (U<LetStmt>)];
 
       // literal
-      char dummy12[sizeof (U<Literal>)];
+      char dummy14[sizeof (U<Literal>)];
 
       // print_ln
-      char dummy13[sizeof (U<PrintLn>)];
+      char dummy15[sizeof (U<PrintLn>)];
 
       // stmt
-      char dummy14[sizeof (U<Stmt>)];
+      char dummy16[sizeof (U<Stmt>)];
 
       // tuple_index_expr
-      char dummy15[sizeof (U<TupleIndexExpr>)];
+      char dummy17[sizeof (U<TupleIndexExpr>)];
 
       // unary_op_expr
-      char dummy16[sizeof (U<UnaryOpExpr>)];
+      char dummy18[sizeof (U<UnaryOpExpr>)];
 
       // while_expr
-      char dummy17[sizeof (U<WhileLoop>)];
-
-      // opt_mut
-      char dummy18[sizeof (bool)];
+      char dummy19[sizeof (U<WhileLoop>)];
 
       // type_decl
-      char dummy19[sizeof (std::optional<Type>)];
+      char dummy20[sizeof (std::optional<Type>)];
 
       // func_decl_args
       // func_arg_list
-      char dummy20[sizeof (std::vector<FunArg>)];
+      char dummy21[sizeof (std::vector<FunArg>)];
 
       // type_list
-      char dummy21[sizeof (std::vector<Type>)];
+      char dummy22[sizeof (std::vector<Type>)];
 
       // call_expr_args
       // expr_list
-      char dummy22[sizeof (std::vector<U<Expr>>)];
+      char dummy23[sizeof (std::vector<U<Expr>>)];
 
       // item_list
-      char dummy23[sizeof (std::vector<U<Item>>)];
+      char dummy24[sizeof (std::vector<U<Item>>)];
 
       // stmt_list
-      char dummy24[sizeof (std::vector<U<Stmt>>)];
+      char dummy25[sizeof (std::vector<U<Stmt>>)];
     };
 
     /// The size of the largest semantic type.
@@ -637,26 +638,26 @@ namespace mr {
     OR = 313,                      // OR
     AMPERSAND_MUT = 314,           // AMPERSAND_MUT
     DOT = 315,                     // DOT
-    MOD_EQ = 316,                  // MOD_EQ
-    BIT_AND_EQ = 317,              // BIT_AND_EQ
-    BIT_OR_EQ = 318,               // BIT_OR_EQ
-    BIT_XOR_EQ = 319,              // BIT_XOR_EQ
-    SHL_EQ = 320,                  // SHL_EQ
-    SHR_EQ = 321,                  // SHR_EQ
-    MOD = 322,                     // MOD
-    UMINUS = 323,                  // UMINUS
-    DEREF = 324,                   // DEREF
-    NOT = 325,                     // NOT
-    REF = 326,                     // REF
-    REF_MUT = 327,                 // REF_MUT
-    METHOD_CALL = 328,             // METHOD_CALL
-    FIELD_ACCESS = 329,            // FIELD_ACCESS
-    FUNC_CALL = 330,               // FUNC_CALL
-    PATH = 331,                    // PATH
-    CALL_INDEX = 332,              // CALL_INDEX
-    UNARY = 333,                   // UNARY
-    BIN_OP = 334,                  // BIN_OP
-    CONTROL_FLOW = 335             // CONTROL_FLOW
+    CONTROL_FLOW = 316,            // CONTROL_FLOW
+    MOD_EQ = 317,                  // MOD_EQ
+    BIT_AND_EQ = 318,              // BIT_AND_EQ
+    BIT_OR_EQ = 319,               // BIT_OR_EQ
+    BIT_XOR_EQ = 320,              // BIT_XOR_EQ
+    SHL_EQ = 321,                  // SHL_EQ
+    SHR_EQ = 322,                  // SHR_EQ
+    MOD = 323,                     // MOD
+    BIN_OP = 324,                  // BIN_OP
+    UMINUS = 325,                  // UMINUS
+    DEREF = 326,                   // DEREF
+    NOT = 327,                     // NOT
+    REF = 328,                     // REF
+    REF_MUT = 329,                 // REF_MUT
+    UNARY = 330,                   // UNARY
+    METHOD_CALL = 331,             // METHOD_CALL
+    FIELD_ACCESS = 332,            // FIELD_ACCESS
+    FUNC_CALL = 333,               // FUNC_CALL
+    CALL_INDEX = 334,              // CALL_INDEX
+    PATH = 335                     // PATH
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -736,40 +737,40 @@ namespace mr {
         S_OR = 58,                               // OR
         S_AMPERSAND_MUT = 59,                    // AMPERSAND_MUT
         S_DOT = 60,                              // DOT
-        S_MOD_EQ = 61,                           // MOD_EQ
-        S_BIT_AND_EQ = 62,                       // BIT_AND_EQ
-        S_BIT_OR_EQ = 63,                        // BIT_OR_EQ
-        S_BIT_XOR_EQ = 64,                       // BIT_XOR_EQ
-        S_SHL_EQ = 65,                           // SHL_EQ
-        S_SHR_EQ = 66,                           // SHR_EQ
-        S_MOD = 67,                              // MOD
-        S_UMINUS = 68,                           // UMINUS
-        S_DEREF = 69,                            // DEREF
-        S_NOT = 70,                              // NOT
-        S_REF = 71,                              // REF
-        S_REF_MUT = 72,                          // REF_MUT
-        S_METHOD_CALL = 73,                      // METHOD_CALL
-        S_FIELD_ACCESS = 74,                     // FIELD_ACCESS
-        S_FUNC_CALL = 75,                        // FUNC_CALL
-        S_PATH = 76,                             // PATH
-        S_CALL_INDEX = 77,                       // CALL_INDEX
-        S_UNARY = 78,                            // UNARY
-        S_BIN_OP = 79,                           // BIN_OP
-        S_CONTROL_FLOW = 80,                     // CONTROL_FLOW
+        S_CONTROL_FLOW = 61,                     // CONTROL_FLOW
+        S_MOD_EQ = 62,                           // MOD_EQ
+        S_BIT_AND_EQ = 63,                       // BIT_AND_EQ
+        S_BIT_OR_EQ = 64,                        // BIT_OR_EQ
+        S_BIT_XOR_EQ = 65,                       // BIT_XOR_EQ
+        S_SHL_EQ = 66,                           // SHL_EQ
+        S_SHR_EQ = 67,                           // SHR_EQ
+        S_MOD = 68,                              // MOD
+        S_BIN_OP = 69,                           // BIN_OP
+        S_UMINUS = 70,                           // UMINUS
+        S_DEREF = 71,                            // DEREF
+        S_NOT = 72,                              // NOT
+        S_REF = 73,                              // REF
+        S_REF_MUT = 74,                          // REF_MUT
+        S_UNARY = 75,                            // UNARY
+        S_METHOD_CALL = 76,                      // METHOD_CALL
+        S_FIELD_ACCESS = 77,                     // FIELD_ACCESS
+        S_FUNC_CALL = 78,                        // FUNC_CALL
+        S_CALL_INDEX = 79,                       // CALL_INDEX
+        S_PATH = 80,                             // PATH
         S_YYACCEPT = 81,                         // $accept
         S_program = 82,                          // program
         S_item_list = 83,                        // item_list
         S_item = 84,                             // item
         S_function_decl = 85,                    // function_decl
-        S_func_ret_type = 86,                    // func_ret_type
-        S_func_decl_args = 87,                   // func_decl_args
-        S_func_arg_list = 88,                    // func_arg_list
-        S_func_arg = 89,                         // func_arg
-        S_stmt = 90,                             // stmt
-        S_stmt_list = 91,                        // stmt_list
-        S_print_ln = 92,                         // print_ln
-        S_type_decl = 93,                        // type_decl
-        S_opt_mut = 94,                          // opt_mut
+        S_func_decl_args = 86,                   // func_decl_args
+        S_func_arg_list = 87,                    // func_arg_list
+        S_func_arg = 88,                         // func_arg
+        S_stmt = 89,                             // stmt
+        S_stmt_list = 90,                        // stmt_list
+        S_print_ln = 91,                         // print_ln
+        S_type_decl = 92,                        // type_decl
+        S_opt_mut = 93,                          // opt_mut
+        S_ident = 94,                            // ident
         S_let = 95,                              // let
         S_if_expr = 96,                          // if_expr
         S_type_list = 97,                        // type_list
@@ -826,6 +827,14 @@ namespace mr {
     {
       case symbol_kind::S_func_arg: // func_arg
         value.move< FunArg > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_ident: // ident
+        value.move< Identifier > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.move< Mut > (std::move (that.value));
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
@@ -889,7 +898,6 @@ namespace mr {
         value.move< Token > (std::move (that.value));
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.move< Type > (std::move (that.value));
         break;
@@ -954,10 +962,6 @@ namespace mr {
         value.move< U<WhileLoop> > (std::move (that.value));
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.move< bool > (std::move (that.value));
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         value.move< std::optional<Type> > (std::move (that.value));
         break;
@@ -1015,6 +1019,34 @@ namespace mr {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const FunArg& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Identifier&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Identifier& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Mut&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Mut& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1246,20 +1278,6 @@ namespace mr {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, bool&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const bool& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, std::optional<Type>&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -1371,6 +1389,14 @@ switch (yykind)
         value.template destroy< FunArg > ();
         break;
 
+      case symbol_kind::S_ident: // ident
+        value.template destroy< Identifier > ();
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.template destroy< Mut > ();
+        break;
+
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
       case symbol_kind::S_FLOAT_LITERAL: // FLOAT_LITERAL
       case symbol_kind::S_STR_LITERAL: // STR_LITERAL
@@ -1432,7 +1458,6 @@ switch (yykind)
         value.template destroy< Token > ();
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.template destroy< Type > ();
         break;
@@ -1497,10 +1522,6 @@ switch (yykind)
         value.template destroy< U<WhileLoop> > ();
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.template destroy< bool > ();
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         value.template destroy< std::optional<Type> > ();
         break;
@@ -1535,7 +1556,7 @@ switch (yykind)
       }
 
       /// The user-facing name of this symbol.
-      std::string name () const YY_NOEXCEPT
+      const char *name () const YY_NOEXCEPT
       {
         return Parser::symbol_name (this->kind ());
       }
@@ -1676,7 +1697,7 @@ switch (yykind)
 
     /// The user-facing name of the symbol whose (internal) number is
     /// YYSYMBOL.  No bounds checking.
-    static std::string symbol_name (symbol_kind_type yysymbol);
+    static const char *symbol_name (symbol_kind_type yysymbol);
 
     // Implementation of make_symbol for each token kind.
 #if 201103L <= YY_CPLUSPLUS
@@ -2597,6 +2618,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_CONTROL_FLOW (location_type l)
+      {
+        return symbol_type (token::CONTROL_FLOW, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_CONTROL_FLOW (const location_type& l)
+      {
+        return symbol_type (token::CONTROL_FLOW, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_MOD_EQ (location_type l)
       {
         return symbol_type (token::MOD_EQ, std::move (l));
@@ -2702,6 +2738,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_BIN_OP (location_type l)
+      {
+        return symbol_type (token::BIN_OP, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_BIN_OP (const location_type& l)
+      {
+        return symbol_type (token::BIN_OP, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_UMINUS (location_type l)
       {
         return symbol_type (token::UMINUS, std::move (l));
@@ -2777,6 +2828,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_UNARY (location_type l)
+      {
+        return symbol_type (token::UNARY, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_UNARY (const location_type& l)
+      {
+        return symbol_type (token::UNARY, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_METHOD_CALL (location_type l)
       {
         return symbol_type (token::METHOD_CALL, std::move (l));
@@ -2822,21 +2888,6 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_PATH (location_type l)
-      {
-        return symbol_type (token::PATH, std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_PATH (const location_type& l)
-      {
-        return symbol_type (token::PATH, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
       make_CALL_INDEX (location_type l)
       {
         return symbol_type (token::CALL_INDEX, std::move (l));
@@ -2852,46 +2903,16 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_UNARY (location_type l)
+      make_PATH (location_type l)
       {
-        return symbol_type (token::UNARY, std::move (l));
+        return symbol_type (token::PATH, std::move (l));
       }
 #else
       static
       symbol_type
-      make_UNARY (const location_type& l)
+      make_PATH (const location_type& l)
       {
-        return symbol_type (token::UNARY, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_BIN_OP (location_type l)
-      {
-        return symbol_type (token::BIN_OP, std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_BIN_OP (const location_type& l)
-      {
-        return symbol_type (token::BIN_OP, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_CONTROL_FLOW (location_type l)
-      {
-        return symbol_type (token::CONTROL_FLOW, std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_CONTROL_FLOW (const location_type& l)
-      {
-        return symbol_type (token::CONTROL_FLOW, l);
+        return symbol_type (token::PATH, l);
       }
 #endif
 
@@ -2954,11 +2975,6 @@ switch (yykind)
     /// are valid, yet not members of the token_kind_type enum.
     static symbol_kind_type yytranslate_ (int t) YY_NOEXCEPT;
 
-    /// Convert the symbol name \a n to a form suitable for a diagnostic.
-    static std::string yytnamerr_ (const char *yystr);
-
-    /// For a symbol, its name in clear.
-    static const char* const yytname_[];
 
 
     // Tables.
@@ -3224,9 +3240,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 700,     ///< Last index in yytable_.
+      yylast_ = 580,     ///< Last index in yytable_.
       yynnts_ = 32,  ///< Number of nonterminal symbols.
-      yyfinal_ = 8 ///< Termination state number.
+      yyfinal_ = 7 ///< Termination state number.
     };
 
 
@@ -3241,7 +3257,7 @@ switch (yykind)
 
 #line 5 "src/parser/yaccfile.yy"
 } // mr
-#line 3245 "yaccfile.tab.hh"
+#line 3261 "yaccfile.tab.hh"
 
 
 

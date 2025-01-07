@@ -80,7 +80,6 @@ using namespace mr::expr;
 %nterm <std::vector<FunArg>> func_arg_list func_decl_args
 %nterm <Type> type 
 %nterm <std::vector<Type>> type_list
-%nterm <Type> func_ret_type
 %nterm <std::optional<Type>> type_decl
 %nterm <Mut> opt_mut
 %nterm <U<Ast>> program 
@@ -94,27 +93,18 @@ using namespace mr::expr;
 %nterm <U<PrintLn>> print_ln
 
 
+%left CONTROL_FLOW
 %right EQ PLUS_EQ MIN_EQ MUL_EQ DIV_EQ MOD_EQ BIT_AND_EQ BIT_OR_EQ BIT_XOR_EQ SHL_EQ SHR_EQ    // right to left
-// %left DOT DOT_EQ                                     // Require parentheses
 %left L_OR                                           // left to right ||
 %left L_AND                                          // left to right &&
-// %left BIT_OR                                         // left to right |
-// %left BIT_XOR                                        // left to right ^
-// %left BIT_AND                                        // left to right &
 %left EQEQ NE LT GT LE GE                           // Require parentheses for comparisons
-// %left SHL SHR                                        // left to right << >>
 %left PLUS MINUS                                     // left to right
-%left STAR SLASH MOD                                 // left to right
-// %right AS                                            // left to right type casting
-%right UMINUS DEREF NOT REF REF_MUT                 // Unary operators - * ! & &mut
-%left METHOD_CALL FIELD_ACCESS FUNC_CALL            // Field expressions, Function calls, array indexing
+%left STAR SLASH MOD  BIN_OP                             // left to right
+%right UMINUS DEREF NOT REF REF_MUT UNARY             // Unary operators - * ! & &mut
+%left METHOD_CALL FIELD_ACCESS FUNC_CALL CALL_INDEX        // Field expressions, Function calls, array indexing
 %left PATH // paths are identifiers for now
 
 // for the expr_wo_block, we need some ordering as well
-%left CALL_INDEX
-%left UNARY
-%left BIN_OP
-%left CONTROL_FLOW
 
 
 %start program
@@ -166,15 +156,16 @@ func_arg_list
     ;
 
 func_arg
-    : opt_mut IDENTIFIER COLON type { $$ = FunArg{$2.string_value(), std::move($4), $1}; }
+    : opt_mut IDENTIFIER COLON type { $$ = FunArg{$2.string_value(), std::move($4), $1.loc + $4.loc, $1}; }
     ;
 
 stmt: SEMICOLON {$$ = m_u<EmptyStmt>(@1);}
     | let { DEFAULT_ACTION($$, $1); }
-    | RETURN SEMICOLON {  $$ = m_u<Return>(@1 + @2, m_u<Unit>(@2) ); }
+    /* | RETURN SEMICOLON {  $$ = m_u<Return>(@1 + @2, m_u<Unit>(@2) ); }
     | BREAK SEMICOLON {  $$ = m_u<Break>(@1 + @2, m_u<Unit>(@2)); }
-    | CONTINUE SEMICOLON {  $$ = m_u<Continue>(@1 + @2); }
-    | expr_stmt { DEFAULT_ACTION($$, $1);}
+    | CONTINUE SEMICOLON {  $$ = m_u<Continue>(@1 + @2); } */
+    | expr_stmt SEMICOLON { DEFAULT_ACTION($$, $1);}
+    // | expr_stmt SEMICOLON { DEFAULT_ACTION($$, $1);} // the reduce/reduce conflicts, which work
     | print_ln SEMICOLON { DEFAULT_ACTION($$, $1);}
     | item { DEFAULT_ACTION($$, $1); }
     ;
@@ -332,7 +323,7 @@ expr_list
 
 expr_stmt
     : expr_w_block  { DEFAULT_ACTION($$, $1);}
-    | expr_wo_block SEMICOLON { DEFAULT_ACTION($$, $1); }
+    | expr_wo_block { DEFAULT_ACTION($$, $1); }
     ;
 
 expr_w_block

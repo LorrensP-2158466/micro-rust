@@ -2,6 +2,7 @@
 
 #include "block_id.hpp"
 #include "local.hpp"
+#include "location.hh"
 #include "mr_util.hpp"
 #include "values.hpp"
 #include <fmt/ostream.h>
@@ -82,7 +83,7 @@ namespace mr { namespace middle { namespace ir {
     };
     using terminator_variant_t = std::variant<GoTo, Return, Assert, CondGoTo, Call>;
     struct Terminator : terminator_variant_t {
-
+        location loc;
         std::span<const BlockId> successors() const {
             return std::visit(overloaded{[&](const auto &t) { return t.successors(); }}, *this);
         }

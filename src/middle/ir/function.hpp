@@ -19,6 +19,7 @@ namespace mr { namespace middle { namespace ir {
         std::vector<Local> locals;
         size_t arg_count;
 
+        inline const Local &local(LocalId l) const noexcept { return locals[l.id()]; }
         std::span<const Local> all_locals() const { return std::span(locals); }
 
         auto args_indices() const { return std::views::iota(LocalId{1}, LocalId{1 + arg_count}); }

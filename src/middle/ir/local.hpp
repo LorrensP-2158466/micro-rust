@@ -13,6 +13,8 @@ namespace mr { namespace middle { namespace ir {
     };
 
     using Mutability = Locusable<MutabilityType>;
+    // Temorary or User Defined?
+    enum class LocalType { UserDef, Temp };
 
     static inline std::ostream &operator<<(std::ostream &o, const MutabilityType m) {
         if (m == MutabilityType::Mutable)
@@ -21,12 +23,11 @@ namespace mr { namespace middle { namespace ir {
     }
     struct Local {
         std::string id; // error reporting
-
         // for later when references are introduced, we have to remember the type
         types::Ty ty;
-
-        MutabilityType mutablity; // used for borrow check, can't take mutable
-                                  // reference to non mutable
+        MutabilityType mutablity;
+        LocalType local_type;
+        location loc;
 
         inline bool is_mutable() const noexcept { return mutablity == MutabilityType::Mutable; }
         friend std::ostream &operator<<(std::ostream &o, const Local &l) {

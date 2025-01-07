@@ -55,7 +55,8 @@ target_link_libraries(mr
 
 # Compiler flags
 target_compile_options(mr PRIVATE 
-    -O3
+    -g
+    #-O3
     -ferror-limit=40
     -DNDEBUG
     -march=native

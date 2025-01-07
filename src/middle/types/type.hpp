@@ -182,6 +182,7 @@ namespace mr { namespace middle { namespace types {
         bool is_signed_integral() const noexcept { return std::holds_alternative<IntTy>(*this); }
 
         static Ty unit() { return Ty{UnitTy{}}; }
+        inline bool is_unit() const noexcept { return has_variant<UnitTy>(*this); }
 
         size_t size() const noexcept {
             return std::visit(
@@ -267,6 +268,9 @@ namespace mr { namespace middle { namespace types {
     };
 
     static std::string function_type_to_string(const FunctionType *ft) { return ft->to_string(); }
+
+
+
 }}} // namespace mr::middle::types
 
 template <> struct fmt::formatter<mr::middle::types::Ty> : fmt::ostream_formatter {};

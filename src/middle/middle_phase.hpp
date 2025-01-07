@@ -141,18 +141,18 @@ namespace mr { namespace middle {
 
                 generated_ir.register_functions(std::move(ir_functions));
                 _inferer.clear_tables();
-                generated_ir.dump();
-                spdlog::info("RUNNING CHECKER");
-                // check before opt passes?
-                ir::checker::check_ir(generated_ir, ecx);
-                // don't bother optimizing when
-                if (!ecx.has_errors()) {
-                    spdlog::info("RUNNING PASSES");
-                    _pass_manager.run_passes(generated_ir);
-                }
-
-                generated_ir.dump();
             }
+            generated_ir.dump();
+            spdlog::info("RUNNING CHECKER");
+            // check before opt passes?
+            ir::checker::check_ir(generated_ir, ecx);
+            // don't bother optimizing when
+            if (!ecx.has_errors()) {
+                spdlog::info("RUNNING PASSES");
+                _pass_manager.run_passes(generated_ir);
+            }
+
+            generated_ir.dump();
         }
         // collects items from statements in a scope
         void collect_scope_items(const std::vector<U<ast::Stmt>> &scope_statements) {

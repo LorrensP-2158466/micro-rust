@@ -15,3 +15,14 @@ fn main() {
 fn add_tuple(pair: (i32, i32)) -> i32 {
     pair.0 + pair.1
 }
+
+
+fn test_shift_reduce(){
+    let tup = ((true, true), false, true, 10);
+
+    if !tup.0.0{
+        println!("its working");
+    }else{
+        
+    };
+}

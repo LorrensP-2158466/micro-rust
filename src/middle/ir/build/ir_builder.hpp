@@ -45,11 +45,18 @@ namespace mr { namespace middle { namespace build {
 
         Function build_function(const tast::TAst fn) {
             spdlog::info("BEGINNING IR BUILD OF FUNCTION {}", fn.name);
-            return_local =
-                create_local("0_RETURN", _inferer.resolve(fn.ret_type), MutabilityType::Mutable);
+            return_local = create_local(
+                "0_RETURN",
+                _inferer.resolve(fn.ret_type),
+                MutabilityType::Mutable,
+                LocalType::Temp,
+                location()
+            );
             for (const auto &param : fn.params) {
                 const auto ty = _inferer.resolve(param.type);
-                create_local(param.id, ty, param.mut.node);
+                create_local(
+                    param.id, std::move(ty), param.mut.node, LocalType::UserDef, param.loc
+                );
             }
             auto block_id = _blocks.create_new_block();
             for (const auto &stmt : fn.body._statements) {
@@ -58,7 +65,7 @@ namespace mr { namespace middle { namespace build {
             if (fn.body._tail) {
                 unpack(block_id, expr_into_place(Place(RETURN_LOCAL), *fn.body._tail, block_id));
             }
-            _blocks.return_(block_id);
+            _blocks.return_(block_id, fn.body._tail->loc);
 
             return Function{fn.name, std::move(_blocks), std::move(_locals), fn.params.size()};
         }
@@ -67,11 +74,13 @@ namespace mr { namespace middle { namespace build {
         Scalar from_tast_literal(const tast::Literal lit) {
             return Scalar{lit.raw_value(), lit.size()};
         }
-        LocalId create_local(const std::string name, Ty ty, MutabilityType mut) {
+        LocalId create_local(
+            const std::string name, Ty ty, MutabilityType mut, LocalType type, location loc
+        ) {
             spdlog::info("CREATING LOCAL `{}`", name);
             const auto id = LocalId{_locals.size()};
             _locals_table.insert(name, id);
-            _locals.emplace_back(std::move(name), std::move(ty), mut);
+            _locals.emplace_back(std::move(name), std::move(ty), mut, type, loc);
             return id;
         }
 
@@ -99,10 +108,10 @@ namespace mr { namespace middle { namespace build {
 
             const auto exit_block = _blocks.create_new_block();
             for (const auto block : _need_go_tos.back()) {
-                _blocks.go_to(block, exit_block);
+                _blocks.go_to(block, exit_block, location());
             }
             for (const auto block : _need_continues.back()) {
-                _blocks.go_to(block, loop_block);
+                _blocks.go_to(block, loop_block, location());
             }
             _need_go_tos.pop_back();
             _need_continues.pop_back();
@@ -146,7 +155,8 @@ namespace mr { namespace middle { namespace build {
             if (!resolved_ty.is_known()) {
                 ecx.report_diag(errors::unknown_type(let.id.loc));
             }
-            const auto local = create_local(let.id._id, resolved_ty, let.mut.node);
+            const auto local =
+                create_local(let.id._id, resolved_ty, let.mut.node, LocalType::UserDef, let.id.loc);
             // no initalizer nothing to do
             if (!let.initializer)
                 return block.empty();
@@ -158,7 +168,8 @@ namespace mr { namespace middle { namespace build {
                     [&](const AssignExpr &assign) {
                         const auto rhs = unpack(block, expr_as_rvalue(*assign.rhs, block));
                         const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
-                        _blocks.push_assign(block, std::move(lhs), std::move(rhs));
+                        spdlog::info("ASSIGN EXPR LOC: {}", expr.loc);
+                        _blocks.push_assign(block, std::move(lhs), std::move(rhs), expr.loc);
                         return block.empty();
                     },
                     [&](const AssignOpExpr &assign) {
@@ -166,7 +177,7 @@ namespace mr { namespace middle { namespace build {
                         const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
                         const auto result =
                             RValue(BinaryOp{assign.op, Operand::copy(Place(lhs)), rhs});
-                        _blocks.push_assign(block, std::move(lhs), std::move(result));
+                        _blocks.push_assign(block, std::move(lhs), std::move(result), expr.loc);
                         return block.empty();
                     },
                     [&](const Break &br) {
@@ -186,7 +197,7 @@ namespace mr { namespace middle { namespace build {
                         // but this one gets deleted
                         auto return_place = Place(LocalId{0});
                         block = expr_into_place(return_place, *ret.val, block).into_block();
-                        _blocks.return_(block);
+                        _blocks.return_(block, expr.loc);
                         // terminate block, but we need a new block for the
                         // following statements these will be deleted because they
                         // are unreachable
@@ -198,8 +209,9 @@ namespace mr { namespace middle { namespace build {
                         return _blocks.create_new_block().empty();
                     },
                     [&](const auto &) {
-                        const auto tmp =
-                            Place(create_local("", expr.type, MutabilityType::Immutable));
+                        const auto tmp = Place(create_local(
+                            "", expr.type, MutabilityType::Immutable, LocalType::Temp, expr.loc
+                        ));
                         return expr_into_place(tmp, expr, block);
                     },
                 },
@@ -209,7 +221,7 @@ namespace mr { namespace middle { namespace build {
         BlockWith<void> build_print_stmt(const PrintLn &print, BlockId block) {
             auto end_str = print._end_str.value_or("");
             if (!print._start_fmt && print._fmt_structure.empty()) {
-                _blocks.push_stmt(block, Statement{SPrintLn{std::move(end_str)}});
+                _blocks.push_stmt(block, Statement{SPrintLn{std::move(end_str)}, print.loc});
                 return block.empty();
             }
             auto first_operand = map_optional(print._start_fmt, [&](const std::string &s) {
@@ -222,9 +234,12 @@ namespace mr { namespace middle { namespace build {
             }
             _blocks.push_stmt(
                 block,
-                Statement{FPrintLn{
-                    std::move(first_operand), std::move(format_structure), std::move(end_str)
-                }}
+                Statement{
+                    FPrintLn{
+                        std::move(first_operand), std::move(format_structure), std::move(end_str)
+                    },
+                    print.loc
+                }
             );
             // we already checked the names inside the format, just take them
             // out
@@ -240,8 +255,14 @@ namespace mr { namespace middle { namespace build {
                 if (!resolved_type.is_known()) {
                     ecx.report_diag(errors::unknown_type(expr.loc));
                 }
-                const auto temp_place =
-                    Place(create_local("temp", std::move(resolved_type), MutabilityType::Mutable));
+                const auto temp_place = Place(create_local(
+                    "temp",
+                    std::move(resolved_type),
+                    MutabilityType::Mutable,
+                    LocalType::Temp,
+                    expr.loc
+                ));
+                spdlog::info("Building expr: {} into temp", expr);
                 unpack(block, expr_into_place(Place(temp_place), expr, block));
                 return block.with(Operand::move(Place(temp_place)));
             };
@@ -327,7 +348,7 @@ namespace mr { namespace middle { namespace build {
                         const auto else_blk = _blocks.create_new_block();
                         // goto then/else from conditinonal
                         _blocks.terminate(
-                            block, Terminator(CondGoTo{cond_op, {else_blk, then_blk}})
+                            block, Terminator(CondGoTo{cond_op, {else_blk, then_blk}}, expr.loc)
                         );
 
                         // we have to create the short-circuit structure:
@@ -354,13 +375,14 @@ namespace mr { namespace middle { namespace build {
                         _blocks.push_assign(
                             short_circuit,
                             place,
-                            AsIs(Operand::const_(Scalar::from_bool(const_bool), _inferer.bool_t()))
+                            AsIs(Operand::const_(Scalar::from_bool(const_bool), _inferer.bool_t())),
+                            expr.loc
                         );
                         const auto rhs =
                             expr_into_place(place, *log_op.right, continue_block).into_block();
                         const auto join = _blocks.create_new_block();
-                        _blocks.go_to(short_circuit, join);
-                        _blocks.go_to(rhs, join);
+                        _blocks.go_to(short_circuit, join, expr.loc);
+                        _blocks.go_to(rhs, join, expr.loc);
                         return join.empty();
                     },
                     [&](const CallExpr &call) {
@@ -378,7 +400,9 @@ namespace mr { namespace middle { namespace build {
                         auto new_block = _blocks.create_new_block();
                         _blocks.terminate(
                             block,
-                            Terminator{Call{call.id, std::move(call_operands), place, new_block}}
+                            Terminator{
+                                Call{call.id, std::move(call_operands), place, new_block}, expr.loc
+                            }
                         );
                         return new_block.empty();
                     },
@@ -438,14 +462,18 @@ namespace mr { namespace middle { namespace build {
 
                         // goto then/else from conditinonal
                         _blocks.terminate(
-                            block, Terminator(CondGoTo{cond_op, {begin_else_blk, begin_then_blk}})
+                            block,
+                            Terminator(
+                                CondGoTo{cond_op, {begin_else_blk, begin_then_blk}},
+                                if_el.conditional_expr->loc
+                            )
                         );
 
                         // we have build both branches, we now join them into a
                         // new block
                         const auto join_block = _blocks.create_new_block();
-                        _blocks.go_to(end_then_blk, join_block);
-                        _blocks.go_to(end_else_blk, join_block);
+                        _blocks.go_to(end_then_blk, join_block, expr.loc);
+                        _blocks.go_to(end_else_blk, join_block, expr.loc);
                         return join_block.empty();
                     },
                     [&](const Loop &loop) {
@@ -466,17 +494,17 @@ namespace mr { namespace middle { namespace build {
                         // that have nothing to do with this loop
                         const auto loop_block = _blocks.create_new_block();
 
-                        _blocks.go_to(block, loop_block);
+                        _blocks.go_to(block, loop_block, expr.loc);
                         return build_in_breakable_scope(loop_block, place, [&](IrBuilder &builder) {
                             const auto body_block = builder._blocks.create_new_block();
-                            builder._blocks.go_to(loop_block, body_block);
+                            builder._blocks.go_to(loop_block, body_block, expr.loc);
 
                             // return value of loop BODY should be unit
                             const auto body_tmp = builder.unit_temp();
                             const auto body_end =
                                 builder.expr_into_place(body_tmp, *loop.body, body_block)
                                     .into_block();
-                            builder._blocks.go_to(body_end, loop_block);
+                            builder._blocks.go_to(body_end, loop_block, expr.loc);
                         });
                     },
                     [&](const Break &) {
@@ -496,9 +524,19 @@ namespace mr { namespace middle { namespace build {
                         //_blocks.push_unit_assign(block, unit_temp());
                         return block.empty();
                     },
+                    [&](const AssignExpr &assign) {
+                        block = build_expr_stmt(expr, block).into_block();
+                        _blocks.push_unit_assign(block, place, expr.loc);
+                        return block.empty();
+                    },
+                    [&](const AssignOpExpr &assign) {
+                        block = build_expr_stmt(expr, block).into_block();
+                        _blocks.push_unit_assign(block, place, expr.loc);
+                        return block.empty();
+                    },
                     [&](const auto &) {
                         const auto rvalue = unpack(block, expr_as_rvalue(expr, block));
-                        _blocks.push_assign(block, place, std::move(rvalue));
+                        _blocks.push_assign(block, place, std::move(rvalue), expr.loc);
                         return block.empty();
                     },
                 },
@@ -541,8 +579,13 @@ namespace mr { namespace middle { namespace build {
             if (_unit_temp)
                 return *_unit_temp;
             else {
-                const auto unit_temp =
-                    Place(create_local("UNIT_TEMP", _inferer.unit(), MutabilityType::Mutable));
+                const auto unit_temp = Place(create_local(
+                    "UNIT_TEMP",
+                    _inferer.unit(),
+                    MutabilityType::Mutable,
+                    LocalType::Temp,
+                    location()
+                ));
                 _unit_temp = unit_temp;
                 return unit_temp;
             }

@@ -11,6 +11,7 @@
 #include <source_location>
 #include <variant>
 
+#include "formatters.hpp"
 #include "location.hh"
 #include "ops.hpp"
 #include "optional_util.hpp"

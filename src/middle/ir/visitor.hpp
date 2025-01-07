@@ -88,7 +88,7 @@ namespace mr { namespace middle { namespace ir {
                 term
             );
         }
-        virtual void visit_local(const LocalId &, PlaceCtx, Location) {}
+        virtual void visit_local(const LocalId, PlaceCtx, Location) {}
         virtual void visit_operand(const Operand &op, Location l) {
             std::visit(
                 overloaded{

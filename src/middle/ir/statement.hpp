@@ -1,6 +1,7 @@
 #pragma once
 
 #include "local.hpp"
+#include "location.hh"
 #include "values.hpp"
 #include <utility>
 #include <variant>
@@ -47,12 +48,16 @@ namespace mr { namespace middle { namespace ir {
 
     using statement_variant_t = std::variant<Assign, FPrintLn, SPrintLn>;
     struct Statement : statement_variant_t {
-        Statement(Assign as)
-            : statement_variant_t(as) {}
-        Statement(FPrintLn format)
-            : statement_variant_t(std::move(format)) {}
-        Statement(SPrintLn print)
-            : statement_variant_t(std::move(print)) {}
+        location loc;
+        Statement(Assign as, location l)
+            : statement_variant_t(as)
+            , loc(l) {}
+        Statement(FPrintLn format, location l)
+            : statement_variant_t(std::move(format))
+            , loc(l) {}
+        Statement(SPrintLn print, location l)
+            : statement_variant_t(std::move(print))
+            , loc(l) {}
 
         friend std::ostream &operator<<(std::ostream &o, const Statement &s) {
             std::visit(

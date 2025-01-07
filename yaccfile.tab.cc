@@ -35,7 +35,7 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 39 "src/parser/yaccfile.yy"
+#line 38 "src/parser/yaccfile.yy"
 
 #include <string>
 #include <variant>
@@ -187,6 +187,14 @@ namespace mr {
         value.copy< FunArg > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_ident: // ident
+        value.copy< Identifier > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.copy< Mut > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
       case symbol_kind::S_FLOAT_LITERAL: // FLOAT_LITERAL
       case symbol_kind::S_STR_LITERAL: // STR_LITERAL
@@ -248,7 +256,6 @@ namespace mr {
         value.copy< Token > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.copy< Type > (YY_MOVE (that.value));
         break;
@@ -313,10 +320,6 @@ namespace mr {
         value.copy< U<WhileLoop> > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.copy< bool > (YY_MOVE (that.value));
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         value.copy< std::optional<Type> > (YY_MOVE (that.value));
         break;
@@ -376,6 +379,14 @@ namespace mr {
     {
       case symbol_kind::S_func_arg: // func_arg
         value.move< FunArg > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_ident: // ident
+        value.move< Identifier > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.move< Mut > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
@@ -439,7 +450,6 @@ namespace mr {
         value.move< Token > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.move< Type > (YY_MOVE (s.value));
         break;
@@ -502,10 +512,6 @@ namespace mr {
 
       case symbol_kind::S_while_expr: // while_expr
         value.move< U<WhileLoop> > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.move< bool > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_type_decl: // type_decl
@@ -639,6 +645,14 @@ namespace mr {
         value.YY_MOVE_OR_COPY< FunArg > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_ident: // ident
+        value.YY_MOVE_OR_COPY< Identifier > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.YY_MOVE_OR_COPY< Mut > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
       case symbol_kind::S_FLOAT_LITERAL: // FLOAT_LITERAL
       case symbol_kind::S_STR_LITERAL: // STR_LITERAL
@@ -700,7 +714,6 @@ namespace mr {
         value.YY_MOVE_OR_COPY< Token > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.YY_MOVE_OR_COPY< Type > (YY_MOVE (that.value));
         break;
@@ -765,10 +778,6 @@ namespace mr {
         value.YY_MOVE_OR_COPY< U<WhileLoop> > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.YY_MOVE_OR_COPY< bool > (YY_MOVE (that.value));
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         value.YY_MOVE_OR_COPY< std::optional<Type> > (YY_MOVE (that.value));
         break;
@@ -812,6 +821,14 @@ namespace mr {
     {
       case symbol_kind::S_func_arg: // func_arg
         value.move< FunArg > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_ident: // ident
+        value.move< Identifier > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.move< Mut > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
@@ -875,7 +892,6 @@ namespace mr {
         value.move< Token > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.move< Type > (YY_MOVE (that.value));
         break;
@@ -940,10 +956,6 @@ namespace mr {
         value.move< U<WhileLoop> > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.move< bool > (YY_MOVE (that.value));
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         value.move< std::optional<Type> > (YY_MOVE (that.value));
         break;
@@ -987,6 +999,14 @@ namespace mr {
     {
       case symbol_kind::S_func_arg: // func_arg
         value.copy< FunArg > (that.value);
+        break;
+
+      case symbol_kind::S_ident: // ident
+        value.copy< Identifier > (that.value);
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.copy< Mut > (that.value);
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
@@ -1050,7 +1070,6 @@ namespace mr {
         value.copy< Token > (that.value);
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.copy< Type > (that.value);
         break;
@@ -1115,10 +1134,6 @@ namespace mr {
         value.copy< U<WhileLoop> > (that.value);
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.copy< bool > (that.value);
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         value.copy< std::optional<Type> > (that.value);
         break;
@@ -1161,6 +1176,14 @@ namespace mr {
     {
       case symbol_kind::S_func_arg: // func_arg
         value.move< FunArg > (that.value);
+        break;
+
+      case symbol_kind::S_ident: // ident
+        value.move< Identifier > (that.value);
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        value.move< Mut > (that.value);
         break;
 
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
@@ -1224,7 +1247,6 @@ namespace mr {
         value.move< Token > (that.value);
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         value.move< Type > (that.value);
         break;
@@ -1287,10 +1309,6 @@ namespace mr {
 
       case symbol_kind::S_while_expr: // while_expr
         value.move< U<WhileLoop> > (that.value);
-        break;
-
-      case symbol_kind::S_opt_mut: // opt_mut
-        value.move< bool > (that.value);
         break;
 
       case symbol_kind::S_type_decl: // type_decl
@@ -1581,6 +1599,14 @@ namespace mr {
         yylhs.value.emplace< FunArg > ();
         break;
 
+      case symbol_kind::S_ident: // ident
+        yylhs.value.emplace< Identifier > ();
+        break;
+
+      case symbol_kind::S_opt_mut: // opt_mut
+        yylhs.value.emplace< Mut > ();
+        break;
+
       case symbol_kind::S_DEC_LITERAL: // DEC_LITERAL
       case symbol_kind::S_FLOAT_LITERAL: // FLOAT_LITERAL
       case symbol_kind::S_STR_LITERAL: // STR_LITERAL
@@ -1642,7 +1668,6 @@ namespace mr {
         yylhs.value.emplace< Token > ();
         break;
 
-      case symbol_kind::S_func_ret_type: // func_ret_type
       case symbol_kind::S_type: // type
         yylhs.value.emplace< Type > ();
         break;
@@ -1707,10 +1732,6 @@ namespace mr {
         yylhs.value.emplace< U<WhileLoop> > ();
         break;
 
-      case symbol_kind::S_opt_mut: // opt_mut
-        yylhs.value.emplace< bool > ();
-        break;
-
       case symbol_kind::S_type_decl: // type_decl
         yylhs.value.emplace< std::optional<Type> > ();
         break;
@@ -1758,702 +1779,668 @@ namespace mr {
           switch (yyn)
             {
   case 2: // program: item_list
-#line 130 "src/parser/yaccfile.yy"
-                { driver.set_ast(std::make_unique<Ast>(std::move(yystack_[0].value.as < std::vector<U<Item>> > ()))); }
-#line 1764 "yaccfile.tab.cc"
+#line 118 "src/parser/yaccfile.yy"
+                { driver.set_ast(m_u<Ast>(std::move(yystack_[0].value.as < std::vector<U<Item>> > ()))); }
+#line 1785 "yaccfile.tab.cc"
     break;
 
   case 3: // item_list: item_list item
-#line 134 "src/parser/yaccfile.yy"
+#line 122 "src/parser/yaccfile.yy"
                      {yystack_[1].value.as < std::vector<U<Item>> > ().push_back(std::move(yystack_[0].value.as < U<Item> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Item>> > (), yystack_[1].value.as < std::vector<U<Item>> > ());}
-#line 1770 "yaccfile.tab.cc"
+#line 1791 "yaccfile.tab.cc"
     break;
 
-  case 4: // item_list: item_list error item
-#line 136 "src/parser/yaccfile.yy"
-                           {yystack_[2].value.as < std::vector<U<Item>> > ().push_back(std::move(yystack_[0].value.as < U<Item> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Item>> > (), yystack_[2].value.as < std::vector<U<Item>> > ());}
-#line 1776 "yaccfile.tab.cc"
-    break;
-
-  case 5: // item_list: item
-#line 137 "src/parser/yaccfile.yy"
+  case 4: // item_list: item
+#line 123 "src/parser/yaccfile.yy"
            {
         auto vec = std::vector<U<Item>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Item> > ()));
         yylhs.value.as < std::vector<U<Item>> > () = std::move(vec) ;}
-#line 1785 "yaccfile.tab.cc"
+#line 1800 "yaccfile.tab.cc"
     break;
 
-  case 6: // item_list: error
-#line 141 "src/parser/yaccfile.yy"
-            { std::cerr << "Expected Item\n"; }
-#line 1791 "yaccfile.tab.cc"
-    break;
-
-  case 7: // item: function_decl
-#line 145 "src/parser/yaccfile.yy"
+  case 5: // item: function_decl
+#line 130 "src/parser/yaccfile.yy"
                   { DEFAULT_ACTION(yylhs.value.as < U<Item> > (), yystack_[0].value.as < U<FunDecl> > ()); }
-#line 1797 "yaccfile.tab.cc"
+#line 1806 "yaccfile.tab.cc"
     break;
 
-  case 8: // function_decl: FN IDENTIFIER func_decl_args func_ret_type block_expr
-#line 151 "src/parser/yaccfile.yy"
+  case 6: // function_decl: FN IDENTIFIER func_decl_args ARROW type block_expr
+#line 136 "src/parser/yaccfile.yy"
     { 
-        yylhs.value.as < U<FunDecl> > () = FunDecl::make_unique(yystack_[3].value.as < Token > ().string_value(), std::move(yystack_[2].value.as < std::vector<FunArg> > ()), std::move(yystack_[1].value.as < Type > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ()));
+        const auto loc = yystack_[5].location + yystack_[0].value.as < U<BlockExpr> > ()->loc;
+        yylhs.value.as < U<FunDecl> > () = FunDecl::make_unique(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::vector<FunArg> > ()), std::move(yystack_[1].value.as < Type > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ()),loc);
     }
-#line 1805 "yaccfile.tab.cc"
+#line 1815 "yaccfile.tab.cc"
     break;
 
-  case 9: // func_ret_type: ARROW type
-#line 157 "src/parser/yaccfile.yy"
-                 { DEFAULT_ACTION(yylhs.value.as < Type > (), yystack_[0].value.as < Type > ()); }
-#line 1811 "yaccfile.tab.cc"
+  case 7: // function_decl: FN IDENTIFIER func_decl_args block_expr
+#line 141 "src/parser/yaccfile.yy"
+    { 
+        const auto loc = yystack_[3].location + yystack_[0].value.as < U<BlockExpr> > ()->loc;
+        yylhs.value.as < U<FunDecl> > () = FunDecl::make_unique(yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::vector<FunArg> > ()), Type(location(yystack_[0].value.as < U<BlockExpr> > ()->loc.begin, yystack_[0].value.as < U<BlockExpr> > ()->loc.begin + 1)), std::move(yystack_[0].value.as < U<BlockExpr> > ()), loc);
+    }
+#line 1824 "yaccfile.tab.cc"
     break;
 
-  case 10: // func_ret_type: %empty
-#line 158 "src/parser/yaccfile.yy"
-      { yylhs.value.as < Type > () = Type(); }
-#line 1817 "yaccfile.tab.cc"
-    break;
-
-  case 11: // func_decl_args: LPAREN func_arg_list RPAREN
-#line 163 "src/parser/yaccfile.yy"
+  case 8: // func_decl_args: LPAREN func_arg_list RPAREN
+#line 148 "src/parser/yaccfile.yy"
                                   {yylhs.value.as < std::vector<FunArg> > () = std::move(yystack_[1].value.as < std::vector<FunArg> > ());}
-#line 1823 "yaccfile.tab.cc"
+#line 1830 "yaccfile.tab.cc"
     break;
 
-  case 12: // func_decl_args: LPAREN RPAREN
-#line 164 "src/parser/yaccfile.yy"
+  case 9: // func_decl_args: LPAREN RPAREN
+#line 149 "src/parser/yaccfile.yy"
                     { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
-#line 1829 "yaccfile.tab.cc"
+#line 1836 "yaccfile.tab.cc"
     break;
 
-  case 13: // func_decl_args: error
-#line 165 "src/parser/yaccfile.yy"
+  case 10: // func_decl_args: error
+#line 150 "src/parser/yaccfile.yy"
             { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{};}
-#line 1835 "yaccfile.tab.cc"
+#line 1842 "yaccfile.tab.cc"
     break;
 
-  case 14: // func_arg_list: func_arg_list COMMA func_arg
-#line 169 "src/parser/yaccfile.yy"
+  case 11: // func_arg_list: func_arg_list COMMA func_arg
+#line 154 "src/parser/yaccfile.yy"
                                    { yystack_[2].value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<FunArg> > (), yystack_[2].value.as < std::vector<FunArg> > ());}
-#line 1841 "yaccfile.tab.cc"
+#line 1848 "yaccfile.tab.cc"
     break;
 
-  case 15: // func_arg_list: func_arg
-#line 170 "src/parser/yaccfile.yy"
+  case 12: // func_arg_list: func_arg
+#line 155 "src/parser/yaccfile.yy"
                { yylhs.value.as < std::vector<FunArg> > () = std::vector<FunArg>{}; yylhs.value.as < std::vector<FunArg> > ().push_back(std::move(yystack_[0].value.as < FunArg > ())); }
-#line 1847 "yaccfile.tab.cc"
+#line 1854 "yaccfile.tab.cc"
     break;
 
-  case 16: // func_arg: opt_mut IDENTIFIER COLON type
-#line 174 "src/parser/yaccfile.yy"
-                                    { yylhs.value.as < FunArg > () = FunArg{yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[0].value.as < Type > ()), yystack_[3].value.as < bool > ()}; }
-#line 1853 "yaccfile.tab.cc"
+  case 13: // func_arg: opt_mut IDENTIFIER COLON type
+#line 159 "src/parser/yaccfile.yy"
+                                    { yylhs.value.as < FunArg > () = FunArg{yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[0].value.as < Type > ()), yystack_[3].value.as < Mut > ().loc + yystack_[0].value.as < Type > ().loc, yystack_[3].value.as < Mut > ()}; }
+#line 1860 "yaccfile.tab.cc"
     break;
 
-  case 17: // func_arg: opt_mut IDENTIFIER error
-#line 175 "src/parser/yaccfile.yy"
-                               { std::cerr << "Expected type declaration\n";}
-#line 1859 "yaccfile.tab.cc"
+  case 14: // stmt: SEMICOLON
+#line 162 "src/parser/yaccfile.yy"
+                {yylhs.value.as < U<Stmt> > () = m_u<EmptyStmt>(yystack_[0].location);}
+#line 1866 "yaccfile.tab.cc"
     break;
 
-  case 18: // stmt: SEMICOLON
-#line 178 "src/parser/yaccfile.yy"
-                {yylhs.value.as < U<Stmt> > () = std::make_unique<EmptyStmt>();}
-#line 1865 "yaccfile.tab.cc"
-    break;
-
-  case 19: // stmt: let
-#line 179 "src/parser/yaccfile.yy"
+  case 15: // stmt: let
+#line 163 "src/parser/yaccfile.yy"
           { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<LetStmt> > ()); }
-#line 1871 "yaccfile.tab.cc"
+#line 1872 "yaccfile.tab.cc"
     break;
 
-  case 20: // stmt: RETURN SEMICOLON
-#line 180 "src/parser/yaccfile.yy"
-                       {  yylhs.value.as < U<Stmt> > () = std::make_unique<Return>(std::make_unique<Unit>()); }
-#line 1877 "yaccfile.tab.cc"
+  case 16: // stmt: expr_stmt SEMICOLON
+#line 167 "src/parser/yaccfile.yy"
+                          { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[1].value.as < U<Expr> > ());}
+#line 1878 "yaccfile.tab.cc"
     break;
 
-  case 21: // stmt: BREAK SEMICOLON
-#line 181 "src/parser/yaccfile.yy"
-                      {  yylhs.value.as < U<Stmt> > () = std::make_unique<Break>(std::make_unique<Unit>()); }
-#line 1883 "yaccfile.tab.cc"
-    break;
-
-  case 22: // stmt: CONTINUE SEMICOLON
-#line 182 "src/parser/yaccfile.yy"
-                         {  yylhs.value.as < U<Stmt> > () = std::make_unique<Continue>(); }
-#line 1889 "yaccfile.tab.cc"
-    break;
-
-  case 23: // stmt: expr_stmt
-#line 183 "src/parser/yaccfile.yy"
-                { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 1895 "yaccfile.tab.cc"
-    break;
-
-  case 24: // stmt: print_ln SEMICOLON
-#line 184 "src/parser/yaccfile.yy"
+  case 17: // stmt: print_ln SEMICOLON
+#line 168 "src/parser/yaccfile.yy"
                          { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[1].value.as < U<PrintLn> > ());}
-#line 1901 "yaccfile.tab.cc"
+#line 1884 "yaccfile.tab.cc"
     break;
 
-  case 25: // stmt: item
-#line 185 "src/parser/yaccfile.yy"
+  case 18: // stmt: item
+#line 169 "src/parser/yaccfile.yy"
            { DEFAULT_ACTION(yylhs.value.as < U<Stmt> > (), yystack_[0].value.as < U<Item> > ()); }
-#line 1907 "yaccfile.tab.cc"
+#line 1890 "yaccfile.tab.cc"
     break;
 
-  case 26: // stmt_list: stmt_list stmt
-#line 189 "src/parser/yaccfile.yy"
+  case 19: // stmt_list: stmt_list stmt
+#line 173 "src/parser/yaccfile.yy"
                      { yystack_[1].value.as < std::vector<U<Stmt>> > ().push_back(std::move(yystack_[0].value.as < U<Stmt> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Stmt>> > (), yystack_[1].value.as < std::vector<U<Stmt>> > ()); }
-#line 1913 "yaccfile.tab.cc"
+#line 1896 "yaccfile.tab.cc"
     break;
 
-  case 27: // stmt_list: stmt
-#line 190 "src/parser/yaccfile.yy"
+  case 20: // stmt_list: stmt_list error
+#line 175 "src/parser/yaccfile.yy"
+                      { DEFAULT_ACTION(yylhs.value.as < std::vector<U<Stmt>> > (), yystack_[1].value.as < std::vector<U<Stmt>> > ());}
+#line 1902 "yaccfile.tab.cc"
+    break;
+
+  case 21: // stmt_list: stmt
+#line 176 "src/parser/yaccfile.yy"
            {
         auto vec = std::vector<U<Stmt>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Stmt> > ()));
         yylhs.value.as < std::vector<U<Stmt>> > () = std::move(vec); 
       }
-#line 1923 "yaccfile.tab.cc"
+#line 1912 "yaccfile.tab.cc"
     break;
 
-  case 28: // print_ln: PRINT_LN LPAREN STR_LITERAL RPAREN
-#line 198 "src/parser/yaccfile.yy"
-                                         { yylhs.value.as < U<PrintLn> > () = std::make_unique<PrintLn>(yystack_[1].value.as < Token > ().string_value()); }
-#line 1929 "yaccfile.tab.cc"
+  case 22: // print_ln: PRINT_LN LPAREN STR_LITERAL RPAREN
+#line 185 "src/parser/yaccfile.yy"
+                                         { yylhs.value.as < U<PrintLn> > () = m_u<PrintLn>(yystack_[1].value.as < Token > ().string_value(), yystack_[3].location + yystack_[0].location); }
+#line 1918 "yaccfile.tab.cc"
     break;
 
-  case 29: // type_decl: COLON type
-#line 202 "src/parser/yaccfile.yy"
+  case 23: // type_decl: COLON type
+#line 189 "src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < std::optional<Type> > (), yystack_[0].value.as < Type > ()); }
-#line 1935 "yaccfile.tab.cc"
+#line 1924 "yaccfile.tab.cc"
     break;
 
-  case 30: // type_decl: COLON error
-#line 203 "src/parser/yaccfile.yy"
-                  { yylhs.value.as < std::optional<Type> > () = Type(); printf("failure"); }
-#line 1941 "yaccfile.tab.cc"
+  case 24: // type_decl: COLON error
+#line 190 "src/parser/yaccfile.yy"
+                  { yylhs.value.as < std::optional<Type> > () = Type::infer(yystack_[1].location);  }
+#line 1930 "yaccfile.tab.cc"
     break;
 
-  case 31: // type_decl: %empty
-#line 204 "src/parser/yaccfile.yy"
+  case 25: // type_decl: %empty
+#line 191 "src/parser/yaccfile.yy"
       { yylhs.value.as < std::optional<Type> > () = {}; }
-#line 1947 "yaccfile.tab.cc"
+#line 1936 "yaccfile.tab.cc"
     break;
 
-  case 32: // opt_mut: MUT
-#line 208 "src/parser/yaccfile.yy"
-         { yylhs.value.as < bool > () = true; }
-#line 1953 "yaccfile.tab.cc"
+  case 26: // opt_mut: MUT
+#line 195 "src/parser/yaccfile.yy"
+         { yylhs.value.as < Mut > () = Mut{true, yystack_[0].location}; }
+#line 1942 "yaccfile.tab.cc"
     break;
 
-  case 33: // opt_mut: %empty
-#line 209 "src/parser/yaccfile.yy"
-         { yylhs.value.as < bool > () = false; }
-#line 1959 "yaccfile.tab.cc"
+  case 27: // opt_mut: %empty
+#line 196 "src/parser/yaccfile.yy"
+         { yylhs.value.as < Mut > () = Mut{false, location()}; }
+#line 1948 "yaccfile.tab.cc"
     break;
 
-  case 34: // let: LET opt_mut IDENTIFIER type_decl EQ expr SEMICOLON
-#line 214 "src/parser/yaccfile.yy"
-      {yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::move(yystack_[1].value.as < U<Expr> > ()), yystack_[5].value.as < bool > ());}
-#line 1965 "yaccfile.tab.cc"
+  case 28: // ident: IDENTIFIER
+#line 200 "src/parser/yaccfile.yy"
+                 { yylhs.value.as < Identifier > () = Identifier{yystack_[0].value.as < Token > ().string_value(), yystack_[0].location};}
+#line 1954 "yaccfile.tab.cc"
     break;
 
-  case 35: // let: LET opt_mut IDENTIFIER type_decl error EQ SEMICOLON
-#line 216 "src/parser/yaccfile.yy"
-      {
-        yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(yystack_[4].value.as < Token > ().string_value(), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::unique_ptr<Expr>(nullptr), yystack_[5].value.as < bool > ()); 
-      }
-#line 1973 "yaccfile.tab.cc"
+  case 29: // let: LET opt_mut ident type_decl EQ expr SEMICOLON
+#line 205 "src/parser/yaccfile.yy"
+      {yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_init(std::move(yystack_[4].value.as < Identifier > ()), std::move(yystack_[3].value.as < std::optional<Type> > ()), std::move(yystack_[1].value.as < U<Expr> > ()), yystack_[5].value.as < Mut > (), yystack_[6].location + yystack_[0].location);}
+#line 1960 "yaccfile.tab.cc"
     break;
 
-  case 36: // let: LET opt_mut IDENTIFIER type_decl SEMICOLON
-#line 219 "src/parser/yaccfile.yy"
-                                                 {
-        yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_decl(yystack_[2].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::optional<Type> > ()), yystack_[3].value.as < bool > ());
+  case 30: // let: LET opt_mut ident type_decl SEMICOLON
+#line 206 "src/parser/yaccfile.yy"
+                                            {
+        yylhs.value.as < U<LetStmt> > () = LetStmt::make_unique_decl(std::move(yystack_[2].value.as < Identifier > ()), std::move(yystack_[1].value.as < std::optional<Type> > ()), yystack_[3].value.as < Mut > (), yystack_[4].location + yystack_[0].location);
     }
-#line 1981 "yaccfile.tab.cc"
+#line 1968 "yaccfile.tab.cc"
     break;
 
-  case 37: // if_expr: IF expr block_expr
+  case 31: // if_expr: IF expr block_expr
+#line 212 "src/parser/yaccfile.yy"
+                         { yylhs.value.as < U<IfElse> > () = m_u<IfElse>(yystack_[2].location, std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ()), location()); }
+#line 1974 "yaccfile.tab.cc"
+    break;
+
+  case 32: // if_expr: IF expr block_expr ELSE if_expr
+#line 213 "src/parser/yaccfile.yy"
+                                      {yylhs.value.as < U<IfElse> > () = m_u<IfElse>(yystack_[4].location, std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), yystack_[1].location, std::move(yystack_[0].value.as < U<IfElse> > ())); }
+#line 1980 "yaccfile.tab.cc"
+    break;
+
+  case 33: // if_expr: IF expr block_expr ELSE block_expr
+#line 214 "src/parser/yaccfile.yy"
+                                         {yylhs.value.as < U<IfElse> > () = m_u<IfElse>(yystack_[4].location, std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), yystack_[1].location, std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
+#line 1986 "yaccfile.tab.cc"
+    break;
+
+  case 34: // type_list: type_list COMMA type
 #line 225 "src/parser/yaccfile.yy"
-                         { yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 1987 "yaccfile.tab.cc"
-    break;
-
-  case 38: // if_expr: IF expr block_expr ELSE if_expr
-#line 226 "src/parser/yaccfile.yy"
-                                      {yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), std::move(yystack_[0].value.as < U<IfElse> > ())); }
-#line 1993 "yaccfile.tab.cc"
-    break;
-
-  case 39: // if_expr: IF expr block_expr ELSE block_expr
-#line 227 "src/parser/yaccfile.yy"
-                                         {yylhs.value.as < U<IfElse> > () = std::make_unique<IfElse>(std::move(yystack_[3].value.as < U<Expr> > ()), std::move(yystack_[2].value.as < U<BlockExpr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 1999 "yaccfile.tab.cc"
-    break;
-
-  case 40: // type_list: type_list COMMA type
-#line 238 "src/parser/yaccfile.yy"
                            {yylhs.value.as < std::vector<Type> > () = std::move(yystack_[2].value.as < std::vector<Type> > ()); yylhs.value.as < std::vector<Type> > ().push_back(std::move(yystack_[0].value.as < Type > ()));}
-#line 2005 "yaccfile.tab.cc"
+#line 1992 "yaccfile.tab.cc"
     break;
 
-  case 41: // type_list: type
-#line 239 "src/parser/yaccfile.yy"
+  case 35: // type_list: type
+#line 226 "src/parser/yaccfile.yy"
            {yylhs.value.as < std::vector<Type> > () = std::vector<Type>(); yylhs.value.as < std::vector<Type> > ().push_back(std::move(yystack_[0].value.as < Type > ()));}
-#line 2011 "yaccfile.tab.cc"
+#line 1998 "yaccfile.tab.cc"
     break;
 
-  case 42: // type: I8
-#line 243 "src/parser/yaccfile.yy"
-         { yylhs.value.as < Type > () = Type(primitive_type::I8); }
-#line 2017 "yaccfile.tab.cc"
+  case 36: // type: I8
+#line 230 "src/parser/yaccfile.yy"
+         { yylhs.value.as < Type > () = Type(primitive_type::I8, yystack_[0].location); }
+#line 2004 "yaccfile.tab.cc"
     break;
 
-  case 43: // type: I16
-#line 244 "src/parser/yaccfile.yy"
-          { yylhs.value.as < Type > () = Type(primitive_type::I16); }
-#line 2023 "yaccfile.tab.cc"
+  case 37: // type: I16
+#line 231 "src/parser/yaccfile.yy"
+          { yylhs.value.as < Type > () = Type(primitive_type::I16, yystack_[0].location); }
+#line 2010 "yaccfile.tab.cc"
     break;
 
-  case 44: // type: I32
-#line 245 "src/parser/yaccfile.yy"
-         { yylhs.value.as < Type > () = Type(primitive_type::I32); }
-#line 2029 "yaccfile.tab.cc"
+  case 38: // type: I32
+#line 232 "src/parser/yaccfile.yy"
+         { yylhs.value.as < Type > () = Type(primitive_type::I32, yystack_[0].location); }
+#line 2016 "yaccfile.tab.cc"
     break;
 
-  case 45: // type: I64
-#line 246 "src/parser/yaccfile.yy"
-          { yylhs.value.as < Type > () = Type(primitive_type::I64); }
-#line 2035 "yaccfile.tab.cc"
+  case 39: // type: I64
+#line 233 "src/parser/yaccfile.yy"
+          { yylhs.value.as < Type > () = Type(primitive_type::I64, yystack_[0].location); }
+#line 2022 "yaccfile.tab.cc"
     break;
 
-  case 46: // type: ISIZE
+  case 40: // type: ISIZE
+#line 234 "src/parser/yaccfile.yy"
+            { yylhs.value.as < Type > () = Type(primitive_type::ISIZE, yystack_[0].location); }
+#line 2028 "yaccfile.tab.cc"
+    break;
+
+  case 41: // type: U8
+#line 235 "src/parser/yaccfile.yy"
+         { yylhs.value.as < Type > () = Type(primitive_type::U8, yystack_[0].location); }
+#line 2034 "yaccfile.tab.cc"
+    break;
+
+  case 42: // type: U16
+#line 236 "src/parser/yaccfile.yy"
+          { yylhs.value.as < Type > () = Type(primitive_type::U16, yystack_[0].location); }
+#line 2040 "yaccfile.tab.cc"
+    break;
+
+  case 43: // type: U32
+#line 237 "src/parser/yaccfile.yy"
+         { yylhs.value.as < Type > () = Type(primitive_type::U32, yystack_[0].location); }
+#line 2046 "yaccfile.tab.cc"
+    break;
+
+  case 44: // type: U64
+#line 238 "src/parser/yaccfile.yy"
+          { yylhs.value.as < Type > () = Type(primitive_type::U64, yystack_[0].location); }
+#line 2052 "yaccfile.tab.cc"
+    break;
+
+  case 45: // type: USIZE
+#line 239 "src/parser/yaccfile.yy"
+            { yylhs.value.as < Type > () = Type(primitive_type::USIZE, yystack_[0].location); }
+#line 2058 "yaccfile.tab.cc"
+    break;
+
+  case 46: // type: BOOL
+#line 240 "src/parser/yaccfile.yy"
+           { yylhs.value.as < Type > () = Type(primitive_type::BOOL, yystack_[0].location); }
+#line 2064 "yaccfile.tab.cc"
+    break;
+
+  case 47: // type: LPAREN type_list RPAREN
+#line 241 "src/parser/yaccfile.yy"
+                              { yylhs.value.as < Type > () = Type(std::move(yystack_[1].value.as < std::vector<Type> > ()), yystack_[2].location + yystack_[0].location);}
+#line 2070 "yaccfile.tab.cc"
+    break;
+
+  case 48: // type: LPAREN RPAREN
+#line 242 "src/parser/yaccfile.yy"
+                    { yylhs.value.as < Type > () = Type(yystack_[1].location + yystack_[0].location); }
+#line 2076 "yaccfile.tab.cc"
+    break;
+
+  case 49: // block_expr: LBRACE stmt_list RBRACE
 #line 247 "src/parser/yaccfile.yy"
-            { yylhs.value.as < Type > () = Type(primitive_type::ISIZE); }
-#line 2041 "yaccfile.tab.cc"
+                              { yylhs.value.as < U<BlockExpr> > () = m_u<BlockExpr>(std::move(yystack_[1].value.as < std::vector<U<Stmt>> > ()), m_u<Unit>(yystack_[0].location), yystack_[2].location + yystack_[0].location); }
+#line 2082 "yaccfile.tab.cc"
     break;
 
-  case 47: // type: U8
+  case 50: // block_expr: LBRACE stmt_list expr RBRACE
 #line 248 "src/parser/yaccfile.yy"
-         { yylhs.value.as < Type > () = Type(primitive_type::U8); }
-#line 2047 "yaccfile.tab.cc"
+                                    { yylhs.value.as < U<BlockExpr> > () = m_u<BlockExpr>(std::move(yystack_[2].value.as < std::vector<U<Stmt>> > ()), std::move(yystack_[1].value.as < U<Expr> > ()), yystack_[3].location + yystack_[0].location); }
+#line 2088 "yaccfile.tab.cc"
     break;
 
-  case 48: // type: U16
+  case 51: // block_expr: LBRACE expr RBRACE
 #line 249 "src/parser/yaccfile.yy"
-          { yylhs.value.as < Type > () = Type(primitive_type::U16); }
-#line 2053 "yaccfile.tab.cc"
+                          { yylhs.value.as < U<BlockExpr> > () = m_u<BlockExpr>(std::vector<U<Stmt>>{}, std::move(yystack_[1].value.as < U<Expr> > ()), yystack_[2].location + yystack_[0].location); }
+#line 2094 "yaccfile.tab.cc"
     break;
 
-  case 49: // type: U32
+  case 52: // block_expr: LBRACE RBRACE
 #line 250 "src/parser/yaccfile.yy"
-         { yylhs.value.as < Type > () = Type(primitive_type::U32); }
-#line 2059 "yaccfile.tab.cc"
+                     { yylhs.value.as < U<BlockExpr> > () = m_u<BlockExpr>(std::vector<U<Stmt>>{}, m_u<Unit>(yystack_[1].location + yystack_[0].location), yystack_[1].location + yystack_[0].location); }
+#line 2100 "yaccfile.tab.cc"
     break;
 
-  case 50: // type: U64
-#line 251 "src/parser/yaccfile.yy"
-          { yylhs.value.as < Type > () = Type(primitive_type::U64); }
-#line 2065 "yaccfile.tab.cc"
-    break;
-
-  case 51: // type: USIZE
-#line 252 "src/parser/yaccfile.yy"
-            { yylhs.value.as < Type > () = Type(primitive_type::USIZE); }
-#line 2071 "yaccfile.tab.cc"
-    break;
-
-  case 52: // type: BOOL
-#line 253 "src/parser/yaccfile.yy"
-           { yylhs.value.as < Type > () = Type(primitive_type::BOOL); }
-#line 2077 "yaccfile.tab.cc"
-    break;
-
-  case 53: // type: LPAREN type_list RPAREN
+  case 53: // unary_op_expr: MINUS expr
 #line 254 "src/parser/yaccfile.yy"
-                              { yylhs.value.as < Type > () = Type(std::move(yystack_[1].value.as < std::vector<Type> > ()));}
-#line 2083 "yaccfile.tab.cc"
+                              { yylhs.value.as < U<UnaryOpExpr> > () = m_u<UnaryOpExpr>(UnaryOp::Negate, yystack_[1].location, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2106 "yaccfile.tab.cc"
     break;
 
-  case 54: // type: LPAREN RPAREN
+  case 54: // unary_op_expr: STAR expr
 #line 255 "src/parser/yaccfile.yy"
-                     { yylhs.value.as < Type > () = Type(); }
-#line 2089 "yaccfile.tab.cc"
+                            { yylhs.value.as < U<UnaryOpExpr> > () = m_u<UnaryOpExpr>(UnaryOp::Deref, yystack_[1].location, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2112 "yaccfile.tab.cc"
     break;
 
-  case 55: // block_expr: LBRACE stmt_list RBRACE
-#line 261 "src/parser/yaccfile.yy"
-                              { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::move(yystack_[1].value.as < std::vector<U<Stmt>> > ()), std::make_unique<Unit>()); }
-#line 2095 "yaccfile.tab.cc"
+  case 55: // unary_op_expr: BANG expr
+#line 256 "src/parser/yaccfile.yy"
+                          { yylhs.value.as < U<UnaryOpExpr> > () = m_u<UnaryOpExpr>(UnaryOp::Not, yystack_[1].location, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2118 "yaccfile.tab.cc"
     break;
 
-  case 56: // block_expr: LBRACE stmt_list expr RBRACE
+  case 56: // unary_op_expr: AMPERSAND expr
+#line 257 "src/parser/yaccfile.yy"
+                               { yylhs.value.as < U<UnaryOpExpr> > () = m_u<UnaryOpExpr>(UnaryOp::Borrow, yystack_[1].location, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2124 "yaccfile.tab.cc"
+    break;
+
+  case 57: // unary_op_expr: AMPERSAND_MUT expr
+#line 258 "src/parser/yaccfile.yy"
+                                       { yylhs.value.as < U<UnaryOpExpr> > () = m_u<UnaryOpExpr>(UnaryOp::MutBorrow, yystack_[1].location, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2130 "yaccfile.tab.cc"
+    break;
+
+  case 58: // bin_op_expr: expr PLUS expr
 #line 262 "src/parser/yaccfile.yy"
-                                    { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::move(yystack_[2].value.as < std::vector<U<Stmt>> > ()), std::move(yystack_[1].value.as < U<Expr> > ())); }
-#line 2101 "yaccfile.tab.cc"
+                     { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Plus, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2136 "yaccfile.tab.cc"
     break;
 
-  case 57: // block_expr: LBRACE expr RBRACE
+  case 59: // bin_op_expr: expr MINUS expr
 #line 263 "src/parser/yaccfile.yy"
-                          { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::move(yystack_[1].value.as < U<Expr> > ())); }
-#line 2107 "yaccfile.tab.cc"
+                      { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Min, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2142 "yaccfile.tab.cc"
     break;
 
-  case 58: // block_expr: LBRACE RBRACE
+  case 60: // bin_op_expr: expr STAR expr
 #line 264 "src/parser/yaccfile.yy"
-                     { yylhs.value.as < U<BlockExpr> > () = std::make_unique<BlockExpr>(std::vector<U<Stmt>>{}, std::make_unique<Unit>()); }
-#line 2113 "yaccfile.tab.cc"
+                     { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Mul, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2148 "yaccfile.tab.cc"
     break;
 
-  case 59: // unary_op_expr: MINUS expr
+  case 61: // bin_op_expr: expr SLASH expr
+#line 265 "src/parser/yaccfile.yy"
+                      { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Div, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2154 "yaccfile.tab.cc"
+    break;
+
+  case 62: // bin_op_expr: expr L_AND expr
+#line 266 "src/parser/yaccfile.yy"
+                      { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_AND, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2160 "yaccfile.tab.cc"
+    break;
+
+  case 63: // bin_op_expr: expr L_OR expr
+#line 267 "src/parser/yaccfile.yy"
+                     { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_OR, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2166 "yaccfile.tab.cc"
+    break;
+
+  case 64: // bin_op_expr: expr EQEQ expr
 #line 268 "src/parser/yaccfile.yy"
-                              { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Negate, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2119 "yaccfile.tab.cc"
+                     { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2172 "yaccfile.tab.cc"
     break;
 
-  case 60: // unary_op_expr: STAR expr
+  case 65: // bin_op_expr: expr NE expr
 #line 269 "src/parser/yaccfile.yy"
-                            { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Deref, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2125 "yaccfile.tab.cc"
+                   { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::NEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2178 "yaccfile.tab.cc"
     break;
 
-  case 61: // unary_op_expr: BANG expr
+  case 66: // bin_op_expr: expr LT expr
 #line 270 "src/parser/yaccfile.yy"
-                          { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Not, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2131 "yaccfile.tab.cc"
+                   { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Lt, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2184 "yaccfile.tab.cc"
     break;
 
-  case 62: // unary_op_expr: AMPERSAND expr
+  case 67: // bin_op_expr: expr GT expr
 #line 271 "src/parser/yaccfile.yy"
-                               { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::Borrow, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2137 "yaccfile.tab.cc"
+                   { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Gt, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2190 "yaccfile.tab.cc"
     break;
 
-  case 63: // unary_op_expr: AMPERSAND_MUT expr
+  case 68: // bin_op_expr: expr GE expr
 #line 272 "src/parser/yaccfile.yy"
-                                       { yylhs.value.as < U<UnaryOpExpr> > () = std::make_unique<UnaryOpExpr>(UnaryOp::MutBorrow, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2143 "yaccfile.tab.cc"
+                   { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::GtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2196 "yaccfile.tab.cc"
     break;
 
-  case 64: // bin_op_expr: expr PLUS expr
+  case 69: // bin_op_expr: expr LE expr
+#line 273 "src/parser/yaccfile.yy"
+                   { yylhs.value.as < U<Expr> > () = m_u<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::LtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2202 "yaccfile.tab.cc"
+    break;
+
+  case 70: // bin_op_expr: expr EQ expr
+#line 275 "src/parser/yaccfile.yy"
+                        { yylhs.value.as < U<Expr> > () = m_u<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2208 "yaccfile.tab.cc"
+    break;
+
+  case 71: // bin_op_expr: expr PLUS_EQ expr
 #line 276 "src/parser/yaccfile.yy"
-                     { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Plus, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2149 "yaccfile.tab.cc"
+                        { yylhs.value.as < U<Expr> > () = m_u<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::PlusEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2214 "yaccfile.tab.cc"
     break;
 
-  case 65: // bin_op_expr: expr MINUS expr
+  case 72: // bin_op_expr: expr MIN_EQ expr
 #line 277 "src/parser/yaccfile.yy"
-                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Min, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2155 "yaccfile.tab.cc"
+                        { yylhs.value.as < U<Expr> > () = m_u<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MinEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2220 "yaccfile.tab.cc"
     break;
 
-  case 66: // bin_op_expr: expr STAR expr
+  case 73: // bin_op_expr: expr DIV_EQ expr
 #line 278 "src/parser/yaccfile.yy"
-                     { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Mul, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2161 "yaccfile.tab.cc"
+                        { yylhs.value.as < U<Expr> > () = m_u<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::DivEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2226 "yaccfile.tab.cc"
     break;
 
-  case 67: // bin_op_expr: expr SLASH expr
+  case 74: // bin_op_expr: expr MUL_EQ expr
 #line 279 "src/parser/yaccfile.yy"
-                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Div, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2167 "yaccfile.tab.cc"
+                        { yylhs.value.as < U<Expr> > () = m_u<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MulEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
+#line 2232 "yaccfile.tab.cc"
     break;
 
-  case 68: // bin_op_expr: expr L_AND expr
-#line 280 "src/parser/yaccfile.yy"
-                      { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_AND, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2173 "yaccfile.tab.cc"
-    break;
-
-  case 69: // bin_op_expr: expr L_OR expr
-#line 281 "src/parser/yaccfile.yy"
-                     { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::L_OR, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2179 "yaccfile.tab.cc"
-    break;
-
-  case 70: // bin_op_expr: expr EQEQ expr
-#line 282 "src/parser/yaccfile.yy"
-                     { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2185 "yaccfile.tab.cc"
-    break;
-
-  case 71: // bin_op_expr: expr NE expr
+  case 75: // literal: DEC_LITERAL
 #line 283 "src/parser/yaccfile.yy"
-                   { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::NEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2191 "yaccfile.tab.cc"
+                  { yylhs.value.as < U<Literal> > () = Literal::make_int_lit(yystack_[0].value.as < Token > ().symbol, yystack_[0].location);}
+#line 2238 "yaccfile.tab.cc"
     break;
 
-  case 72: // bin_op_expr: expr LT expr
+  case 76: // literal: STR_LITERAL
 #line 284 "src/parser/yaccfile.yy"
-                   { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Lt, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2197 "yaccfile.tab.cc"
+                  { yylhs.value.as < U<Literal> > () = Literal::make_str_lit(yystack_[0].value.as < Token > ().symbol, yystack_[0].location); }
+#line 2244 "yaccfile.tab.cc"
     break;
 
-  case 73: // bin_op_expr: expr GT expr
+  case 77: // literal: FLOAT_LITERAL
 #line 285 "src/parser/yaccfile.yy"
-                   { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::Gt, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2203 "yaccfile.tab.cc"
-    break;
-
-  case 74: // bin_op_expr: expr GE expr
-#line 286 "src/parser/yaccfile.yy"
-                   { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::GtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2209 "yaccfile.tab.cc"
-    break;
-
-  case 75: // bin_op_expr: expr LE expr
-#line 287 "src/parser/yaccfile.yy"
-                   { yylhs.value.as < U<Expr> > () = std::make_unique<BinOpExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), BinOp::LtEq, std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2215 "yaccfile.tab.cc"
-    break;
-
-  case 76: // bin_op_expr: expr EQ expr
-#line 289 "src/parser/yaccfile.yy"
-                        { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::Eq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2221 "yaccfile.tab.cc"
-    break;
-
-  case 77: // bin_op_expr: expr PLUS_EQ expr
-#line 290 "src/parser/yaccfile.yy"
-                        { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::PlusEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2227 "yaccfile.tab.cc"
-    break;
-
-  case 78: // bin_op_expr: expr MIN_EQ expr
-#line 291 "src/parser/yaccfile.yy"
-                        { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MinEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2233 "yaccfile.tab.cc"
-    break;
-
-  case 79: // bin_op_expr: expr DIV_EQ expr
-#line 292 "src/parser/yaccfile.yy"
-                        { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::DivEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2239 "yaccfile.tab.cc"
-    break;
-
-  case 80: // bin_op_expr: expr MUL_EQ expr
-#line 293 "src/parser/yaccfile.yy"
-                        { yylhs.value.as < U<Expr> > () = std::make_unique<AssignExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), AssignOp::MulEq, std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2245 "yaccfile.tab.cc"
-    break;
-
-  case 81: // literal: DEC_LITERAL
-#line 297 "src/parser/yaccfile.yy"
-                  { yylhs.value.as < U<Literal> > () = Literal::make_int_lit(yystack_[0].value.as < Token > ().symbol);}
-#line 2251 "yaccfile.tab.cc"
-    break;
-
-  case 82: // literal: STR_LITERAL
-#line 298 "src/parser/yaccfile.yy"
-                  { yylhs.value.as < U<Literal> > () = Literal::make_str_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2257 "yaccfile.tab.cc"
-    break;
-
-  case 83: // literal: FLOAT_LITERAL
-#line 299 "src/parser/yaccfile.yy"
                     { assert(1 && "How did we get here"); }
-#line 2263 "yaccfile.tab.cc"
+#line 2250 "yaccfile.tab.cc"
     break;
 
-  case 84: // literal: TRUE
-#line 300 "src/parser/yaccfile.yy"
-           { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2269 "yaccfile.tab.cc"
+  case 78: // literal: TRUE
+#line 286 "src/parser/yaccfile.yy"
+           { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol, yystack_[0].location); }
+#line 2256 "yaccfile.tab.cc"
     break;
 
-  case 85: // literal: FALSE
-#line 301 "src/parser/yaccfile.yy"
-            { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol); }
-#line 2275 "yaccfile.tab.cc"
+  case 79: // literal: FALSE
+#line 287 "src/parser/yaccfile.yy"
+            { yylhs.value.as < U<Literal> > () = Literal::make_bool_lit(yystack_[0].value.as < Token > ().symbol, yystack_[0].location); }
+#line 2262 "yaccfile.tab.cc"
     break;
 
-  case 86: // call_expr_args: call_expr_args COMMA expr
-#line 306 "src/parser/yaccfile.yy"
+  case 80: // call_expr_args: call_expr_args COMMA expr
+#line 292 "src/parser/yaccfile.yy"
                                 { yystack_[2].value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ())); DEFAULT_ACTION(yylhs.value.as < std::vector<U<Expr>> > (), yystack_[2].value.as < std::vector<U<Expr>> > ()); }
-#line 2281 "yaccfile.tab.cc"
+#line 2268 "yaccfile.tab.cc"
     break;
 
-  case 87: // call_expr_args: expr
-#line 307 "src/parser/yaccfile.yy"
+  case 81: // call_expr_args: expr
+#line 293 "src/parser/yaccfile.yy"
            { 
         auto vec = std::vector<U<Expr>>();
         vec.push_back(std::move(yystack_[0].value.as < U<Expr> > ()));
         yylhs.value.as < std::vector<U<Expr>> > () = std::move(vec);
         }
-#line 2291 "yaccfile.tab.cc"
+#line 2278 "yaccfile.tab.cc"
     break;
 
-  case 88: // call_expr: IDENTIFIER LPAREN call_expr_args RPAREN
-#line 315 "src/parser/yaccfile.yy"
-                                              { yylhs.value.as < U<CallExpr> > () = std::make_unique<CallExpr>(yystack_[3].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::vector<U<Expr>> > ())); }
-#line 2297 "yaccfile.tab.cc"
+  case 82: // call_expr: IDENTIFIER LPAREN call_expr_args RPAREN
+#line 301 "src/parser/yaccfile.yy"
+                                              { yylhs.value.as < U<CallExpr> > () = m_u<CallExpr>(yystack_[3].location + yystack_[0].location, yystack_[3].value.as < Token > ().string_value(), std::move(yystack_[1].value.as < std::vector<U<Expr>> > ())); }
+#line 2284 "yaccfile.tab.cc"
     break;
 
-  case 89: // call_expr: IDENTIFIER LPAREN RPAREN
-#line 316 "src/parser/yaccfile.yy"
-                               { yylhs.value.as < U<CallExpr> > () = std::make_unique<CallExpr>(yystack_[2].value.as < Token > ().string_value(), std::vector<U<Expr>>{}); }
-#line 2303 "yaccfile.tab.cc"
+  case 83: // call_expr: IDENTIFIER LPAREN RPAREN
+#line 302 "src/parser/yaccfile.yy"
+                               { yylhs.value.as < U<CallExpr> > () = m_u<CallExpr>(yystack_[2].location + yystack_[0].location, yystack_[2].value.as < Token > ().string_value(), std::vector<U<Expr>>{}); }
+#line 2290 "yaccfile.tab.cc"
     break;
 
-  case 90: // while_expr: WHILE expr block_expr
-#line 319 "src/parser/yaccfile.yy"
-                            {yylhs.value.as < U<WhileLoop> > () = std::make_unique<WhileLoop>(std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
-#line 2309 "yaccfile.tab.cc"
+  case 84: // while_expr: WHILE expr block_expr
+#line 305 "src/parser/yaccfile.yy"
+                            {yylhs.value.as < U<WhileLoop> > () = m_u<WhileLoop>(yystack_[2].location, std::move(yystack_[1].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<BlockExpr> > ())); }
+#line 2296 "yaccfile.tab.cc"
     break;
 
-  case 91: // tuple_index_expr: expr DOT literal
-#line 323 "src/parser/yaccfile.yy"
-                       { yylhs.value.as < U<TupleIndexExpr> > () = std::make_unique<TupleIndexExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), std::move(yystack_[0].value.as < U<Literal> > ()));}
-#line 2315 "yaccfile.tab.cc"
+  case 85: // tuple_index_expr: expr DOT DEC_LITERAL
+#line 309 "src/parser/yaccfile.yy"
+                           { yylhs.value.as < U<TupleIndexExpr> > () = m_u<TupleIndexExpr>(std::move(yystack_[2].value.as < U<Expr> > ()), Literal::make_int_lit(yystack_[0].value.as < Token > ().symbol, yystack_[0].location));}
+#line 2302 "yaccfile.tab.cc"
     break;
 
-  case 92: // expr: expr_w_block
-#line 328 "src/parser/yaccfile.yy"
+  case 86: // expr: expr_w_block
+#line 314 "src/parser/yaccfile.yy"
                    { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2321 "yaccfile.tab.cc"
+#line 2308 "yaccfile.tab.cc"
     break;
 
-  case 93: // expr: expr_wo_block
-#line 329 "src/parser/yaccfile.yy"
+  case 87: // expr: expr_wo_block
+#line 315 "src/parser/yaccfile.yy"
                     { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2327 "yaccfile.tab.cc"
+#line 2314 "yaccfile.tab.cc"
     break;
 
-  case 94: // expr_list: expr_list COMMA expr
-#line 333 "src/parser/yaccfile.yy"
+  case 88: // expr_list: expr_list COMMA expr
+#line 319 "src/parser/yaccfile.yy"
                            { yystack_[2].value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ())); yylhs.value.as < std::vector<U<Expr>> > () = std::move(yystack_[2].value.as < std::vector<U<Expr>> > ());}
-#line 2333 "yaccfile.tab.cc"
+#line 2320 "yaccfile.tab.cc"
     break;
 
-  case 95: // expr_list: expr
-#line 334 "src/parser/yaccfile.yy"
+  case 89: // expr_list: expr
+#line 320 "src/parser/yaccfile.yy"
            {yylhs.value.as < std::vector<U<Expr>> > () = std::vector<U<Expr>>(); yylhs.value.as < std::vector<U<Expr>> > ().push_back(std::move(yystack_[0].value.as < U<Expr> > ()));}
-#line 2339 "yaccfile.tab.cc"
+#line 2326 "yaccfile.tab.cc"
     break;
 
-  case 96: // expr_stmt: expr_w_block
-#line 338 "src/parser/yaccfile.yy"
+  case 90: // expr_stmt: expr_w_block
+#line 324 "src/parser/yaccfile.yy"
                     { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ());}
-#line 2345 "yaccfile.tab.cc"
+#line 2332 "yaccfile.tab.cc"
     break;
 
-  case 97: // expr_stmt: expr_wo_block SEMICOLON
-#line 339 "src/parser/yaccfile.yy"
-                              { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[1].value.as < U<Expr> > ()); }
-#line 2351 "yaccfile.tab.cc"
+  case 91: // expr_stmt: expr_wo_block
+#line 325 "src/parser/yaccfile.yy"
+                    { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ()); }
+#line 2338 "yaccfile.tab.cc"
     break;
 
-  case 98: // expr_w_block: while_expr
-#line 343 "src/parser/yaccfile.yy"
+  case 92: // expr_w_block: while_expr
+#line 329 "src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<WhileLoop> > ()); }
-#line 2357 "yaccfile.tab.cc"
+#line 2344 "yaccfile.tab.cc"
     break;
 
-  case 99: // expr_w_block: if_expr
-#line 344 "src/parser/yaccfile.yy"
+  case 93: // expr_w_block: if_expr
+#line 330 "src/parser/yaccfile.yy"
               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<IfElse> > ()); }
-#line 2363 "yaccfile.tab.cc"
+#line 2350 "yaccfile.tab.cc"
     break;
 
-  case 100: // expr_w_block: block_expr
-#line 345 "src/parser/yaccfile.yy"
+  case 94: // expr_w_block: block_expr
+#line 331 "src/parser/yaccfile.yy"
                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<BlockExpr> > ()); }
-#line 2369 "yaccfile.tab.cc"
+#line 2356 "yaccfile.tab.cc"
     break;
 
-  case 101: // expr_wo_block: LPAREN expr RPAREN
-#line 348 "src/parser/yaccfile.yy"
-                         { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[1].value.as < U<Expr> > ()); }
-#line 2375 "yaccfile.tab.cc"
+  case 95: // expr_wo_block: LPAREN expr RPAREN
+#line 334 "src/parser/yaccfile.yy"
+                         { yystack_[1].value.as < U<Expr> > ()->loc = yystack_[2].location + yystack_[0].location; DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[1].value.as < U<Expr> > ()); }
+#line 2362 "yaccfile.tab.cc"
     break;
 
-  case 102: // expr_wo_block: bin_op_expr
-#line 349 "src/parser/yaccfile.yy"
+  case 96: // expr_wo_block: bin_op_expr
+#line 335 "src/parser/yaccfile.yy"
                               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Expr> > ()); }
-#line 2381 "yaccfile.tab.cc"
+#line 2368 "yaccfile.tab.cc"
     break;
 
-  case 103: // expr_wo_block: tuple_index_expr
-#line 350 "src/parser/yaccfile.yy"
+  case 97: // expr_wo_block: tuple_index_expr
+#line 336 "src/parser/yaccfile.yy"
                                           { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<TupleIndexExpr> > ()); }
-#line 2387 "yaccfile.tab.cc"
+#line 2374 "yaccfile.tab.cc"
     break;
 
-  case 104: // expr_wo_block: IDENTIFIER
-#line 351 "src/parser/yaccfile.yy"
-                            { yylhs.value.as < U<Expr> > () = std::make_unique<Identifier>(yystack_[0].value.as < Token > ().string_value()); }
-#line 2393 "yaccfile.tab.cc"
+  case 98: // expr_wo_block: IDENTIFIER
+#line 337 "src/parser/yaccfile.yy"
+                            { yylhs.value.as < U<Expr> > () = m_u<Identifier>(yystack_[0].value.as < Token > ().string_value(), yystack_[0].location); }
+#line 2380 "yaccfile.tab.cc"
     break;
 
-  case 105: // expr_wo_block: unary_op_expr
-#line 352 "src/parser/yaccfile.yy"
+  case 99: // expr_wo_block: unary_op_expr
+#line 338 "src/parser/yaccfile.yy"
                                 {DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<UnaryOpExpr> > ()); }
-#line 2399 "yaccfile.tab.cc"
+#line 2386 "yaccfile.tab.cc"
     break;
 
-  case 106: // expr_wo_block: LPAREN RPAREN
-#line 353 "src/parser/yaccfile.yy"
-                               { yylhs.value.as < U<Expr> > () = std::make_unique<Unit>(); }
-#line 2405 "yaccfile.tab.cc"
+  case 100: // expr_wo_block: LPAREN RPAREN
+#line 339 "src/parser/yaccfile.yy"
+                               { yylhs.value.as < U<Expr> > () = m_u<Unit>(yystack_[1].location + yystack_[0].location); }
+#line 2392 "yaccfile.tab.cc"
     break;
 
-  case 107: // expr_wo_block: call_expr
-#line 354 "src/parser/yaccfile.yy"
+  case 101: // expr_wo_block: call_expr
+#line 340 "src/parser/yaccfile.yy"
                                  { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<CallExpr> > ()); }
-#line 2411 "yaccfile.tab.cc"
+#line 2398 "yaccfile.tab.cc"
     break;
 
-  case 108: // expr_wo_block: RETURN expr
-#line 355 "src/parser/yaccfile.yy"
-                                     { yylhs.value.as < U<Expr> > () = std::make_unique<Return>(std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2417 "yaccfile.tab.cc"
+  case 102: // expr_wo_block: RETURN expr
+#line 341 "src/parser/yaccfile.yy"
+                                     { yylhs.value.as < U<Expr> > () = m_u<Return>(yystack_[1].location, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2404 "yaccfile.tab.cc"
     break;
 
-  case 109: // expr_wo_block: BREAK expr
-#line 356 "src/parser/yaccfile.yy"
-                                    { yylhs.value.as < U<Expr> > () = std::make_unique<Break>(std::move(yystack_[0].value.as < U<Expr> > ())); }
-#line 2423 "yaccfile.tab.cc"
+  case 103: // expr_wo_block: BREAK expr
+#line 342 "src/parser/yaccfile.yy"
+                                    { yylhs.value.as < U<Expr> > () = m_u<Break>(yystack_[1].location, std::move(yystack_[0].value.as < U<Expr> > ())); }
+#line 2410 "yaccfile.tab.cc"
     break;
 
-  case 110: // expr_wo_block: CONTINUE
-#line 357 "src/parser/yaccfile.yy"
-                                  { yylhs.value.as < U<Expr> > () = std::make_unique<Continue>(); }
-#line 2429 "yaccfile.tab.cc"
+  case 104: // expr_wo_block: CONTINUE
+#line 343 "src/parser/yaccfile.yy"
+                                  { yylhs.value.as < U<Expr> > () = m_u<Continue>(yystack_[0].location); }
+#line 2416 "yaccfile.tab.cc"
     break;
 
-  case 111: // expr_wo_block: LPAREN expr_list opt_comma RPAREN
-#line 358 "src/parser/yaccfile.yy"
-                                         { yylhs.value.as < U<Expr> > () = std::make_unique<TupleExpr>(std::move(yystack_[2].value.as < std::vector<U<Expr>> > ())); }
-#line 2435 "yaccfile.tab.cc"
+  case 105: // expr_wo_block: LPAREN expr_list opt_comma RPAREN
+#line 344 "src/parser/yaccfile.yy"
+                                         { yylhs.value.as < U<Expr> > () = m_u<TupleExpr>(std::move(yystack_[2].value.as < std::vector<U<Expr>> > ()), yystack_[3].location + yystack_[0].location); }
+#line 2422 "yaccfile.tab.cc"
     break;
 
-  case 112: // expr_wo_block: literal
-#line 359 "src/parser/yaccfile.yy"
+  case 106: // expr_wo_block: literal
+#line 345 "src/parser/yaccfile.yy"
               { DEFAULT_ACTION(yylhs.value.as < U<Expr> > (), yystack_[0].value.as < U<Literal> > ()); }
-#line 2441 "yaccfile.tab.cc"
+#line 2428 "yaccfile.tab.cc"
     break;
 
-  case 113: // opt_comma: COMMA
-#line 364 "src/parser/yaccfile.yy"
+  case 107: // opt_comma: COMMA
+#line 350 "src/parser/yaccfile.yy"
             {}
-#line 2447 "yaccfile.tab.cc"
+#line 2434 "yaccfile.tab.cc"
     break;
 
-  case 114: // opt_comma: %empty
-#line 365 "src/parser/yaccfile.yy"
+  case 108: // opt_comma: %empty
+#line 351 "src/parser/yaccfile.yy"
       {}
-#line 2453 "yaccfile.tab.cc"
+#line 2440 "yaccfile.tab.cc"
     break;
 
 
-#line 2457 "yaccfile.tab.cc"
+#line 2444 "yaccfile.tab.cc"
 
             default:
               break;
@@ -2631,50 +2618,31 @@ namespace mr {
     error (yyexc.location, yyexc.what ());
   }
 
-  /* Return YYSTR after stripping away unnecessary quotes and
-     backslashes, so that it's suitable for yyerror.  The heuristic is
-     that double-quoting is unnecessary unless the string contains an
-     apostrophe, a comma, or backslash (other than backslash-backslash).
-     YYSTR is taken from yytname.  */
-  std::string
-  Parser::yytnamerr_ (const char *yystr)
-  {
-    if (*yystr == '"')
-      {
-        std::string yyr;
-        char const *yyp = yystr;
-
-        for (;;)
-          switch (*++yyp)
-            {
-            case '\'':
-            case ',':
-              goto do_not_strip_quotes;
-
-            case '\\':
-              if (*++yyp != '\\')
-                goto do_not_strip_quotes;
-              else
-                goto append;
-
-            append:
-            default:
-              yyr += *yyp;
-              break;
-
-            case '"':
-              return yyr;
-            }
-      do_not_strip_quotes: ;
-      }
-
-    return yystr;
-  }
-
-  std::string
+  const char *
   Parser::symbol_name (symbol_kind_type yysymbol)
   {
-    return yytnamerr_ (yytname_[yysymbol]);
+    static const char *const yy_sname[] =
+    {
+    "end of file", "error", "invalid token", "DEC_LITERAL", "FLOAT_LITERAL",
+  "STR_LITERAL", "TRUE", "FALSE", "IDENTIFIER", "UNDERSCORE", "I8", "I16",
+  "I32", "I64", "ISIZE", "U8", "U16", "U32", "U64", "USIZE", "LET", "MUT",
+  "BOOL", "FN", "WHILE", "PRINT_LN", "EQ", "EQEQ", "NE", "BANG", "LT",
+  "LE", "GT", "GE", "PLUS", "MINUS", "STAR", "SLASH", "COMMA", "ARROW",
+  "IF", "ELSE", "RETURN", "BREAK", "CONTINUE", "L_AND", "L_OR", "PLUS_EQ",
+  "MIN_EQ", "MUL_EQ", "DIV_EQ", "LBRACE", "RBRACE", "LPAREN", "RPAREN",
+  "SEMICOLON", "COLON", "AMPERSAND", "OR", "AMPERSAND_MUT", "DOT",
+  "CONTROL_FLOW", "MOD_EQ", "BIT_AND_EQ", "BIT_OR_EQ", "BIT_XOR_EQ",
+  "SHL_EQ", "SHR_EQ", "MOD", "BIN_OP", "UMINUS", "DEREF", "NOT", "REF",
+  "REF_MUT", "UNARY", "METHOD_CALL", "FIELD_ACCESS", "FUNC_CALL",
+  "CALL_INDEX", "PATH", "$accept", "program", "item_list", "item",
+  "function_decl", "func_decl_args", "func_arg_list", "func_arg", "stmt",
+  "stmt_list", "print_ln", "type_decl", "opt_mut", "ident", "let",
+  "if_expr", "type_list", "type", "block_expr", "unary_op_expr",
+  "bin_op_expr", "literal", "call_expr_args", "call_expr", "while_expr",
+  "tuple_index_expr", "expr", "expr_list", "expr_stmt", "expr_w_block",
+  "expr_wo_block", "opt_comma", YY_NULLPTR
+    };
+    return yy_sname[yysymbol];
   }
 
 
@@ -2805,224 +2773,198 @@ namespace mr {
   }
 
 
-  const signed char Parser::yypact_ninf_ = -36;
+  const signed char Parser::yypact_ninf_ = -45;
 
-  const signed char Parser::yytable_ninf_ = -93;
+  const signed char Parser::yytable_ninf_ = -92;
 
   const short
   Parser::yypact_[] =
   {
-      25,   -36,    -1,    15,    13,   -36,   -36,     4,   -36,    -6,
-     -36,   -36,   -15,   -12,   -36,   -36,   -36,   -22,   -36,    16,
-     426,    22,    55,   -36,     0,   -36,   -36,   -36,   -36,   -36,
-     -36,   -36,   -36,   -36,   -36,   -36,    50,   -36,   110,   -36,
-     -36,   -36,   426,   -36,    -5,   -36,   -36,   -36,   -36,   -36,
-     -36,    45,    55,   362,    46,   362,   362,   362,   362,   194,
-     236,    47,   -36,   278,   -36,   362,   362,   -36,   -36,   152,
-      54,   -36,   -36,   -36,   -36,   -36,   -36,   -36,   -36,   -36,
-     423,   -36,   454,    57,   -36,   426,   -36,   320,    92,   362,
-     362,   -36,   485,   -36,   -36,   105,    51,    51,    51,   485,
-     -36,    51,   -36,    51,   -36,   -36,   516,    86,    51,    51,
-     -36,   -36,   547,   -36,   362,   362,   362,   362,   362,   362,
-     362,   362,   362,   362,   362,   362,   362,   362,   362,   362,
-     362,   -36,   116,   -36,   -36,   -36,    21,   609,    69,   -36,
-      72,    87,   -36,   362,    73,   -36,   609,   -25,   -25,   -25,
-     -25,   -25,   -25,    17,    17,    51,    51,    10,   640,   609,
-     609,   609,   609,   -36,   362,   -36,   413,     3,   -36,    56,
-     609,   -36,   609,   -36,   -36,   111,   362,   -36,   -36,   -36,
-      76,   578,   -36,   -36
+      17,     4,    41,    17,   -45,   -45,     1,   -45,   -45,   -45,
+     -16,   -38,   -45,   -45,   -23,   -45,    39,   320,   159,   -45,
+      31,   -45,     3,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
+     -45,   -45,   -45,   -45,   307,    12,   -45,   -45,   -45,   -45,
+     -45,    15,    31,   243,    16,   243,   243,   243,   243,   243,
+     243,   -45,   -45,    13,   -45,   243,   243,   -45,   -45,   102,
+      10,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,   -45,
+     318,    18,    19,    20,   -45,   320,   -45,    -4,   -45,   -45,
+     201,    71,   349,   -45,   -45,    75,    21,    21,    21,   349,
+     473,   473,   -45,   380,    63,    21,    21,   -45,   -45,   -45,
+     411,   -45,   243,   243,   243,   243,   243,   243,   243,   243,
+     243,   243,   243,   243,   243,   243,   243,   243,   243,   -45,
+      99,   -45,   -45,   320,   -45,   -45,     8,   473,   -45,    48,
+     -45,    57,    72,   -45,   243,    61,   -45,   473,   -28,   -28,
+     -28,   -28,   -28,   -28,    40,    40,    21,    21,   520,   504,
+     473,   473,   473,   473,   -45,   -45,   243,   -45,   294,   -12,
+     -45,   -29,   473,   -45,   473,   -45,   -45,   243,   -45,   -45,
+     -45,   442,   -45
   };
 
   const signed char
   Parser::yydefact_[] =
   {
-       0,     6,     0,     0,     0,     5,     7,     0,     1,     0,
-       3,    13,    33,    10,     4,    32,    12,     0,    15,     0,
-       0,     0,    33,    11,     0,    42,    43,    44,    45,    46,
-      47,    48,    49,    50,    51,    52,     0,     9,     0,     8,
-      14,    17,     0,    54,     0,    41,    81,    83,    82,    84,
-      85,   104,    33,     0,     0,     0,     0,     0,     0,     0,
-       0,   110,    58,     0,    18,     0,     0,    25,    27,     0,
-       0,    19,    99,   100,   105,   102,   112,   107,    98,   103,
-       0,    23,    96,    93,    16,     0,    53,     0,     0,     0,
-       0,   110,     0,    92,    93,     0,    61,    59,    60,     0,
-      20,   108,    21,   109,    22,   106,    95,   114,    62,    63,
-      55,    26,     0,    24,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    57,     0,    97,    40,    89,     0,    87,    31,    90,
-       0,    37,   101,   113,     0,    56,    76,    70,    71,    72,
-      75,    73,    74,    64,    65,    66,    67,    68,    69,    77,
-      78,    80,    79,    91,     0,    88,     0,     0,    28,     0,
-      94,   111,    86,    30,    29,     0,     0,    36,    38,    39,
-       0,     0,    35,    34
+       0,     0,     0,     2,     4,     5,     0,     1,     3,    10,
+      27,     0,    26,     9,     0,    12,     0,     0,     0,     7,
+      27,     8,     0,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     0,     0,    75,    77,    76,    78,
+      79,    98,    27,     0,     0,     0,     0,     0,     0,     0,
+       0,   104,    52,     0,    14,     0,     0,    18,    21,     0,
+       0,    15,    93,    94,    99,    96,   106,   101,    92,    97,
+       0,     0,    86,    87,    11,     0,    48,     0,    35,     6,
+       0,     0,     0,    86,    87,     0,    55,    53,    54,     0,
+     102,   103,   100,    89,   108,    56,    57,    20,    49,    19,
+       0,    17,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    51,
+       0,    16,    13,     0,    47,    83,     0,    81,    28,    25,
+      84,     0,    31,    95,   107,     0,    50,    70,    64,    65,
+      66,    69,    67,    68,    58,    59,    60,    61,    62,    63,
+      71,    72,    74,    73,    85,    34,     0,    82,     0,     0,
+      22,     0,    88,   105,    80,    24,    23,     0,    30,    32,
+      33,     0,    29
   };
 
   const signed char
   Parser::yypgoto_[] =
   {
-     -36,   -36,   -36,    97,   -36,   -36,   -36,   -36,   114,    71,
-     -36,   -36,   -36,    90,   -36,   -31,   -36,   -34,   -21,   -36,
-     -36,    11,   -36,   -36,   -36,   -36,   -35,   -36,   -36,   -19,
-      36,   -36
+     -45,   -45,   -45,    58,   -45,   -45,   -45,    92,    59,   -45,
+     -45,   -45,    74,   -45,   -45,   -44,   -45,   -24,   -11,   -45,
+     -45,   -45,   -45,   -45,   -45,   -45,   -20,   -45,   -45,   -15,
+     -14,   -45
   };
 
   const unsigned char
   Parser::yydefgoto_[] =
   {
-       0,     3,     4,    67,     6,    21,    13,    17,    18,    68,
-      69,    70,   167,    19,    71,    72,    44,    37,    73,    74,
-      75,    76,   136,    77,    78,    79,   101,   107,    81,    93,
-      94,   144
+       0,     2,     3,    57,     5,    11,    14,    15,    58,    59,
+      60,   159,    16,   129,    61,    62,    77,    35,    63,    64,
+      65,    66,   126,    67,    68,    69,    70,    94,    71,    83,
+      84,   135
   };
 
   const short
   Parser::yytable_[] =
   {
-      39,    41,    45,    80,   175,    11,    15,     7,    84,   121,
-     122,   123,   124,    -2,     9,     8,    22,     2,    92,    82,
-      96,    97,    98,    99,    24,   103,     1,    20,   106,   176,
-     108,   109,    23,    85,   112,   132,     2,   115,   116,    16,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,    86,
-      82,   134,   137,   123,   124,   103,    42,    12,   177,   164,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-     132,   139,    35,    38,    83,   165,    15,   132,   141,   146,
-     147,   148,   149,   150,   151,   152,   153,   154,   155,   156,
-     157,   158,   159,   160,   161,   162,    58,     5,    87,    95,
-     138,    10,   104,    36,    43,    83,    14,    38,   170,   113,
-     140,   132,   133,    46,    47,    48,    49,    50,    51,    46,
-      47,    48,    49,    50,   143,   166,   168,   171,   169,   172,
-      52,   182,   174,     2,    53,    54,    40,   180,   178,    55,
-     111,   181,    88,   163,     0,    56,    57,     0,   179,     0,
-      58,     0,    59,    60,    61,    46,    47,    48,    49,    50,
-      51,    38,    62,    63,     0,    64,     0,    65,     0,    66,
-       0,     0,    52,     0,     0,     2,    53,    54,     0,     0,
-       0,    55,     0,     0,     0,     0,     0,    56,    57,     0,
-       0,     0,    58,     0,    59,    60,    61,    46,    47,    48,
-      49,    50,    51,    38,   110,    63,     0,    64,     0,    65,
-       0,    66,     0,     0,     0,     0,     0,     0,    53,     0,
-       0,     0,     0,    55,     0,     0,     0,     0,     0,    56,
-      57,     0,     0,     0,    58,     0,    89,    90,    91,    46,
-      47,    48,    49,    50,    51,    38,     0,    63,     0,   100,
-       0,    65,     0,    66,     0,     0,     0,     0,     0,     0,
-      53,     0,     0,     0,     0,    55,     0,     0,     0,     0,
-       0,    56,    57,     0,     0,     0,    58,     0,    89,    90,
-      91,    46,    47,    48,    49,    50,    51,    38,     0,    63,
-       0,   102,     0,    65,     0,    66,     0,     0,     0,     0,
-       0,     0,    53,     0,     0,     0,     0,    55,     0,     0,
-       0,     0,     0,    56,    57,     0,     0,     0,    58,     0,
-      89,    90,    91,    46,    47,    48,    49,    50,    51,    38,
-       0,    63,   105,     0,     0,    65,     0,    66,     0,     0,
-       0,     0,     0,     0,    53,     0,     0,     0,     0,    55,
-       0,     0,     0,     0,     0,    56,    57,     0,     0,     0,
-      58,     0,    89,    90,    91,    46,    47,    48,    49,    50,
-      51,    38,     0,    63,   135,     0,     0,    65,     0,    66,
-       0,     0,     0,     0,     0,     0,    53,     0,     0,     0,
-       0,    55,     0,     0,     0,     0,     0,    56,    57,     0,
-       0,     0,    58,     0,    89,    90,    91,     0,     0,     0,
-       0,     0,     0,    38,   173,    63,     0,     0,     0,    65,
-       0,    66,     0,    25,    26,    27,    28,    29,    30,    31,
-      32,    33,    34,     0,     0,    35,    25,    26,    27,    28,
-      29,    30,    31,    32,    33,    34,     0,     0,    35,   114,
-     115,   116,     0,   117,   118,   119,   120,   121,   122,   123,
-     124,     0,     0,     0,     0,     0,    36,     0,   125,   126,
-     127,   128,   129,   130,     0,   131,     0,     0,     0,    36,
-     -92,   -92,   -92,   132,   -92,   -92,   -92,   -92,   -92,   -92,
-     -92,   -92,     0,     0,     0,     0,     0,     0,     0,   -92,
-     -92,   -92,   -92,   -92,   -92,     0,   -92,     0,     0,     0,
-       0,   114,   115,   116,   -92,   117,   118,   119,   120,   121,
-     122,   123,   124,     0,     0,     0,     0,     0,     0,     0,
-     125,   126,   127,   128,   129,   130,    38,     0,     0,     0,
-       0,     0,   114,   115,   116,   132,   117,   118,   119,   120,
-     121,   122,   123,   124,     0,     0,     0,     0,     0,     0,
-       0,   125,   126,   127,   128,   129,   130,     0,     0,     0,
-     142,     0,     0,   114,   115,   116,   132,   117,   118,   119,
-     120,   121,   122,   123,   124,     0,     0,     0,     0,     0,
-       0,     0,   125,   126,   127,   128,   129,   130,     0,   145,
-       0,     0,     0,     0,   114,   115,   116,   132,   117,   118,
-     119,   120,   121,   122,   123,   124,     0,     0,     0,     0,
-       0,     0,     0,   125,   126,   127,   128,   129,   130,     0,
-       0,     0,     0,   183,     0,   114,   115,   116,   132,   117,
-     118,   119,   120,   121,   122,   123,   124,     0,     0,     0,
-       0,     0,     0,     0,   125,   126,   127,   128,   129,   130,
-       0,     0,     0,     0,     0,     0,     0,   115,   116,   132,
-     117,   118,   119,   120,   121,   122,   123,   124,     0,     0,
-       0,     0,     0,     0,     0,   125,     0,     0,     0,     0,
+      19,    17,     9,    72,    73,    12,   109,   110,   111,   112,
+      78,    48,     6,    18,   167,    20,    36,    37,    38,    39,
+      40,    41,    18,    82,    79,    86,    87,    88,    89,    90,
+      91,    21,   120,    93,   123,    95,    96,    43,    13,   100,
+       1,     7,    45,   168,    72,    73,   156,    22,    46,    47,
+     124,   122,    12,    48,    10,    49,    50,    51,     4,    75,
+     127,     8,   157,    18,    18,   101,    53,    92,    80,    85,
+      55,   130,    56,   121,   -90,   -91,   111,   112,   132,   128,
+     131,   120,   137,   138,   139,   140,   141,   142,   143,   144,
+     145,   146,   147,   148,   149,   150,   151,   152,   153,   155,
+     120,   134,   154,    97,   158,    36,    37,    38,    39,    40,
+      41,   160,    74,   161,   162,   163,    81,   169,    99,     0,
+       0,     0,    42,     0,     0,     1,    43,    44,     0,     0,
+       0,    45,     0,     0,   166,     0,   164,    46,    47,     0,
+       0,     0,    48,     0,    49,    50,    51,   171,     0,     0,
+     170,     0,     0,    18,    98,    53,     0,    54,     0,    55,
+       0,    56,    36,    37,    38,    39,    40,    41,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    42,
+       0,     0,     1,    43,    44,     0,     0,     0,    45,     0,
+       0,     0,     0,     0,    46,    47,     0,     0,     0,    48,
+       0,    49,    50,    51,    36,    37,    38,    39,    40,    41,
+      18,    52,    53,     0,    54,     0,    55,     0,    56,     0,
+       0,     0,     0,     0,     0,    43,     0,     0,     0,     0,
+      45,     0,     0,     0,     0,     0,    46,    47,     0,     0,
+       0,    48,     0,    49,    50,    51,    36,    37,    38,    39,
+      40,    41,    18,     0,    53,   125,     0,     0,    55,     0,
+      56,     0,     0,     0,     0,     0,     0,    43,     0,     0,
+       0,     0,    45,     0,     0,     0,     0,     0,    46,    47,
+       0,     0,     0,    48,     0,    49,    50,    51,     0,     0,
+       0,     0,     0,     0,    18,   165,    53,     0,     0,     0,
+      55,     0,    56,     0,    23,    24,    25,    26,    27,    28,
+      29,    30,    31,    32,     0,     0,    33,    23,    24,    25,
+      26,    27,    28,    29,    30,    31,    32,     0,     0,    33,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+       0,     0,    33,     0,   102,   103,   104,    34,   105,   106,
+     107,   108,   109,   110,   111,   112,     0,     0,     0,     0,
+      34,    76,     0,   113,   114,   115,   116,   117,   118,     0,
+     119,     0,     0,    34,     0,   102,   103,   104,   120,   105,
+     106,   107,   108,   109,   110,   111,   112,     0,     0,     0,
+       0,     0,     0,     0,   113,   114,   115,   116,   117,   118,
+      18,     0,     0,     0,     0,     0,   102,   103,   104,   120,
+     105,   106,   107,   108,   109,   110,   111,   112,     0,     0,
+       0,     0,     0,     0,     0,   113,   114,   115,   116,   117,
+     118,     0,     0,     0,   133,     0,     0,   102,   103,   104,
+     120,   105,   106,   107,   108,   109,   110,   111,   112,     0,
+       0,     0,     0,     0,     0,     0,   113,   114,   115,   116,
+     117,   118,     0,   136,     0,     0,     0,     0,   102,   103,
+     104,   120,   105,   106,   107,   108,   109,   110,   111,   112,
+       0,     0,     0,     0,     0,     0,     0,   113,   114,   115,
+     116,   117,   118,     0,     0,     0,     0,   172,     0,   102,
+     103,   104,   120,   105,   106,   107,   108,   109,   110,   111,
+     112,     0,     0,     0,     0,     0,     0,     0,   113,   114,
+     115,   116,   117,   118,     0,     0,     0,     0,     0,     0,
+       0,   103,   104,   120,   105,   106,   107,   108,   109,   110,
+     111,   112,     0,     0,     0,     0,     0,   103,   104,   113,
+     105,   106,   107,   108,   109,   110,   111,   112,     0,     0,
+       0,     0,     0,     0,   120,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     132
+     120
   };
 
   const short
   Parser::yycheck_[] =
   {
-      21,     1,    36,    38,     1,     1,    21,     8,    42,    34,
-      35,    36,    37,     0,     1,     0,    38,    23,    53,    38,
-      55,    56,    57,    58,     8,    60,     1,    39,    63,    26,
-      65,    66,    54,    38,    69,    60,    23,    27,    28,    54,
-      30,    31,    32,    33,    34,    35,    36,    37,    23,    54,
-      69,    85,    87,    36,    37,    90,    56,    53,    55,    38,
-      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-      60,    92,    22,    51,    38,    54,    21,    60,    99,   114,
-     115,   116,   117,   118,   119,   120,   121,   122,   123,   124,
-     125,   126,   127,   128,   129,   130,    40,     0,    53,    53,
-       8,     4,    55,    53,    54,    69,     9,    51,   143,    55,
-       5,    60,    55,     3,     4,     5,     6,     7,     8,     3,
-       4,     5,     6,     7,    38,    56,    54,    54,    41,   164,
-      20,    55,   166,    23,    24,    25,    22,    26,   169,    29,
-      69,   176,    52,   132,    -1,    35,    36,    -1,   169,    -1,
-      40,    -1,    42,    43,    44,     3,     4,     5,     6,     7,
-       8,    51,    52,    53,    -1,    55,    -1,    57,    -1,    59,
+      11,    39,     1,    18,    18,    21,    34,    35,    36,    37,
+      34,    40,     8,    51,    26,    38,     3,     4,     5,     6,
+       7,     8,    51,    43,    35,    45,    46,    47,    48,    49,
+      50,    54,    60,    53,    38,    55,    56,    24,    54,    59,
+      23,     0,    29,    55,    59,    59,    38,     8,    35,    36,
+      54,    75,    21,    40,    53,    42,    43,    44,     0,    56,
+      80,     3,    54,    51,    51,    55,    53,    54,    53,    53,
+      57,    82,    59,    55,    55,    55,    36,    37,    89,     8,
+       5,    60,   102,   103,   104,   105,   106,   107,   108,   109,
+     110,   111,   112,   113,   114,   115,   116,   117,   118,   123,
+      60,    38,     3,     1,    56,     3,     4,     5,     6,     7,
+       8,    54,    20,    41,   134,    54,    42,   161,    59,    -1,
       -1,    -1,    20,    -1,    -1,    23,    24,    25,    -1,    -1,
-      -1,    29,    -1,    -1,    -1,    -1,    -1,    35,    36,    -1,
-      -1,    -1,    40,    -1,    42,    43,    44,     3,     4,     5,
-       6,     7,     8,    51,    52,    53,    -1,    55,    -1,    57,
-      -1,    59,    -1,    -1,    -1,    -1,    -1,    -1,    24,    -1,
-      -1,    -1,    -1,    29,    -1,    -1,    -1,    -1,    -1,    35,
-      36,    -1,    -1,    -1,    40,    -1,    42,    43,    44,     3,
-       4,     5,     6,     7,     8,    51,    -1,    53,    -1,    55,
-      -1,    57,    -1,    59,    -1,    -1,    -1,    -1,    -1,    -1,
-      24,    -1,    -1,    -1,    -1,    29,    -1,    -1,    -1,    -1,
-      -1,    35,    36,    -1,    -1,    -1,    40,    -1,    42,    43,
-      44,     3,     4,     5,     6,     7,     8,    51,    -1,    53,
-      -1,    55,    -1,    57,    -1,    59,    -1,    -1,    -1,    -1,
-      -1,    -1,    24,    -1,    -1,    -1,    -1,    29,    -1,    -1,
-      -1,    -1,    -1,    35,    36,    -1,    -1,    -1,    40,    -1,
-      42,    43,    44,     3,     4,     5,     6,     7,     8,    51,
-      -1,    53,    54,    -1,    -1,    57,    -1,    59,    -1,    -1,
-      -1,    -1,    -1,    -1,    24,    -1,    -1,    -1,    -1,    29,
-      -1,    -1,    -1,    -1,    -1,    35,    36,    -1,    -1,    -1,
-      40,    -1,    42,    43,    44,     3,     4,     5,     6,     7,
-       8,    51,    -1,    53,    54,    -1,    -1,    57,    -1,    59,
-      -1,    -1,    -1,    -1,    -1,    -1,    24,    -1,    -1,    -1,
-      -1,    29,    -1,    -1,    -1,    -1,    -1,    35,    36,    -1,
-      -1,    -1,    40,    -1,    42,    43,    44,    -1,    -1,    -1,
-      -1,    -1,    -1,    51,     1,    53,    -1,    -1,    -1,    57,
-      -1,    59,    -1,    10,    11,    12,    13,    14,    15,    16,
-      17,    18,    19,    -1,    -1,    22,    10,    11,    12,    13,
-      14,    15,    16,    17,    18,    19,    -1,    -1,    22,    26,
-      27,    28,    -1,    30,    31,    32,    33,    34,    35,    36,
-      37,    -1,    -1,    -1,    -1,    -1,    53,    -1,    45,    46,
-      47,    48,    49,    50,    -1,    52,    -1,    -1,    -1,    53,
-      26,    27,    28,    60,    30,    31,    32,    33,    34,    35,
-      36,    37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    45,
-      46,    47,    48,    49,    50,    -1,    52,    -1,    -1,    -1,
-      -1,    26,    27,    28,    60,    30,    31,    32,    33,    34,
-      35,    36,    37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      45,    46,    47,    48,    49,    50,    51,    -1,    -1,    -1,
-      -1,    -1,    26,    27,    28,    60,    30,    31,    32,    33,
-      34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    45,    46,    47,    48,    49,    50,    -1,    -1,    -1,
-      54,    -1,    -1,    26,    27,    28,    60,    30,    31,    32,
-      33,    34,    35,    36,    37,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    45,    46,    47,    48,    49,    50,    -1,    52,
-      -1,    -1,    -1,    -1,    26,    27,    28,    60,    30,    31,
+      -1,    29,    -1,    -1,   158,    -1,   156,    35,    36,    -1,
+      -1,    -1,    40,    -1,    42,    43,    44,   167,    -1,    -1,
+     161,    -1,    -1,    51,    52,    53,    -1,    55,    -1,    57,
+      -1,    59,     3,     4,     5,     6,     7,     8,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    20,
+      -1,    -1,    23,    24,    25,    -1,    -1,    -1,    29,    -1,
+      -1,    -1,    -1,    -1,    35,    36,    -1,    -1,    -1,    40,
+      -1,    42,    43,    44,     3,     4,     5,     6,     7,     8,
+      51,    52,    53,    -1,    55,    -1,    57,    -1,    59,    -1,
+      -1,    -1,    -1,    -1,    -1,    24,    -1,    -1,    -1,    -1,
+      29,    -1,    -1,    -1,    -1,    -1,    35,    36,    -1,    -1,
+      -1,    40,    -1,    42,    43,    44,     3,     4,     5,     6,
+       7,     8,    51,    -1,    53,    54,    -1,    -1,    57,    -1,
+      59,    -1,    -1,    -1,    -1,    -1,    -1,    24,    -1,    -1,
+      -1,    -1,    29,    -1,    -1,    -1,    -1,    -1,    35,    36,
+      -1,    -1,    -1,    40,    -1,    42,    43,    44,    -1,    -1,
+      -1,    -1,    -1,    -1,    51,     1,    53,    -1,    -1,    -1,
+      57,    -1,    59,    -1,    10,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,    -1,    -1,    22,    10,    11,    12,
+      13,    14,    15,    16,    17,    18,    19,    -1,    -1,    22,
+      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
+      -1,    -1,    22,    -1,    26,    27,    28,    53,    30,    31,
       32,    33,    34,    35,    36,    37,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    45,    46,    47,    48,    49,    50,    -1,
-      -1,    -1,    -1,    55,    -1,    26,    27,    28,    60,    30,
+      53,    54,    -1,    45,    46,    47,    48,    49,    50,    -1,
+      52,    -1,    -1,    53,    -1,    26,    27,    28,    60,    30,
       31,    32,    33,    34,    35,    36,    37,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    45,    46,    47,    48,    49,    50,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    27,    28,    60,
+      51,    -1,    -1,    -1,    -1,    -1,    26,    27,    28,    60,
       30,    31,    32,    33,    34,    35,    36,    37,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    45,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    45,    46,    47,    48,    49,
+      50,    -1,    -1,    -1,    54,    -1,    -1,    26,    27,    28,
+      60,    30,    31,    32,    33,    34,    35,    36,    37,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    45,    46,    47,    48,
+      49,    50,    -1,    52,    -1,    -1,    -1,    -1,    26,    27,
+      28,    60,    30,    31,    32,    33,    34,    35,    36,    37,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    45,    46,    47,
+      48,    49,    50,    -1,    -1,    -1,    -1,    55,    -1,    26,
+      27,    28,    60,    30,    31,    32,    33,    34,    35,    36,
+      37,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    45,    46,
+      47,    48,    49,    50,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    27,    28,    60,    30,    31,    32,    33,    34,    35,
+      36,    37,    -1,    -1,    -1,    -1,    -1,    27,    28,    45,
+      30,    31,    32,    33,    34,    35,    36,    37,    -1,    -1,
+      -1,    -1,    -1,    -1,    60,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       60
   };
@@ -3030,106 +2972,76 @@ namespace mr {
   const signed char
   Parser::yystos_[] =
   {
-       0,     1,    23,    82,    83,    84,    85,     8,     0,     1,
-      84,     1,    53,    87,    84,    21,    54,    88,    89,    94,
-      39,    86,    38,    54,     8,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    22,    53,    98,    51,    99,
-      89,     1,    56,    54,    97,    98,     3,     4,     5,     6,
+       0,    23,    82,    83,    84,    85,     8,     0,    84,     1,
+      53,    86,    21,    54,    87,    88,    93,    39,    51,    99,
+      38,    54,     8,    10,    11,    12,    13,    14,    15,    16,
+      17,    18,    19,    22,    53,    98,     3,     4,     5,     6,
        7,     8,    20,    24,    25,    29,    35,    36,    40,    42,
-      43,    44,    52,    53,    55,    57,    59,    84,    90,    91,
-      92,    95,    96,    99,   100,   101,   102,   104,   105,   106,
-     107,   109,   110,   111,    98,    38,    54,    53,    94,    42,
-      43,    44,   107,   110,   111,    53,   107,   107,   107,   107,
-      55,   107,    55,   107,    55,    54,   107,   108,   107,   107,
-      52,    90,   107,    55,    26,    27,    28,    30,    31,    32,
-      33,    34,    35,    36,    37,    45,    46,    47,    48,    49,
-      50,    52,    60,    55,    98,    54,   103,   107,     8,    99,
-       5,    99,    54,    38,   112,    52,   107,   107,   107,   107,
+      43,    44,    52,    53,    55,    57,    59,    84,    89,    90,
+      91,    95,    96,    99,   100,   101,   102,   104,   105,   106,
+     107,   109,   110,   111,    88,    56,    54,    97,    98,    99,
+      53,    93,   107,   110,   111,    53,   107,   107,   107,   107,
+     107,   107,    54,   107,   108,   107,   107,     1,    52,    89,
+     107,    55,    26,    27,    28,    30,    31,    32,    33,    34,
+      35,    36,    37,    45,    46,    47,    48,    49,    50,    52,
+      60,    55,    98,    38,    54,    54,   103,   107,     8,    94,
+      99,     5,    99,    54,    38,   112,    52,   107,   107,   107,
      107,   107,   107,   107,   107,   107,   107,   107,   107,   107,
-     107,   107,   107,   102,    38,    54,    56,    93,    54,    41,
-     107,    54,   107,     1,    98,     1,    26,    55,    96,    99,
-      26,   107,    55,    55
+     107,   107,   107,   107,     3,    98,    38,    54,    56,    92,
+      54,    41,   107,    54,   107,     1,    98,    26,    55,    96,
+      99,   107,    55
   };
 
   const signed char
   Parser::yyr1_[] =
   {
-       0,    81,    82,    83,    83,    83,    83,    84,    85,    86,
-      86,    87,    87,    87,    88,    88,    89,    89,    90,    90,
-      90,    90,    90,    90,    90,    90,    91,    91,    92,    93,
-      93,    93,    94,    94,    95,    95,    95,    96,    96,    96,
-      97,    97,    98,    98,    98,    98,    98,    98,    98,    98,
-      98,    98,    98,    98,    98,    99,    99,    99,    99,   100,
-     100,   100,   100,   100,   101,   101,   101,   101,   101,   101,
+       0,    81,    82,    83,    83,    84,    85,    85,    86,    86,
+      86,    87,    87,    88,    89,    89,    89,    89,    89,    90,
+      90,    90,    91,    92,    92,    92,    93,    93,    94,    95,
+      95,    96,    96,    96,    97,    97,    98,    98,    98,    98,
+      98,    98,    98,    98,    98,    98,    98,    98,    98,    99,
+      99,    99,    99,   100,   100,   100,   100,   100,   101,   101,
      101,   101,   101,   101,   101,   101,   101,   101,   101,   101,
-     101,   102,   102,   102,   102,   102,   103,   103,   104,   104,
-     105,   106,   107,   107,   108,   108,   109,   109,   110,   110,
-     110,   111,   111,   111,   111,   111,   111,   111,   111,   111,
-     111,   111,   111,   112,   112
+     101,   101,   101,   101,   101,   102,   102,   102,   102,   102,
+     103,   103,   104,   104,   105,   106,   107,   107,   108,   108,
+     109,   109,   110,   110,   110,   111,   111,   111,   111,   111,
+     111,   111,   111,   111,   111,   111,   111,   112,   112
   };
 
   const signed char
   Parser::yyr2_[] =
   {
-       0,     2,     1,     2,     3,     1,     1,     1,     5,     2,
-       0,     3,     2,     1,     3,     1,     4,     3,     1,     1,
-       2,     2,     2,     1,     2,     1,     2,     1,     4,     2,
-       2,     0,     1,     0,     7,     7,     5,     3,     5,     5,
-       3,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     3,     2,     3,     4,     3,     2,     2,
-       2,     2,     2,     2,     3,     3,     3,     3,     3,     3,
+       0,     2,     1,     2,     1,     1,     6,     4,     3,     2,
+       1,     3,     1,     4,     1,     1,     2,     2,     1,     2,
+       2,     1,     4,     2,     2,     0,     1,     0,     1,     7,
+       5,     3,     5,     5,     3,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     3,     2,     3,
+       4,     3,     2,     2,     2,     2,     2,     2,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     1,     1,     1,     1,     1,     3,     1,     4,     3,
-       3,     3,     1,     1,     3,     1,     1,     2,     1,     1,
-       1,     3,     1,     1,     1,     1,     2,     1,     2,     2,
-       1,     4,     1,     1,     0
+       3,     3,     3,     3,     3,     1,     1,     1,     1,     1,
+       3,     1,     4,     3,     3,     3,     1,     1,     3,     1,
+       1,     1,     1,     1,     1,     3,     1,     1,     1,     1,
+       2,     1,     2,     2,     1,     4,     1,     1,     0
   };
 
 
-#if YYDEBUG || 1
-  // YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
-  // First, the terminals, then, starting at \a YYNTOKENS, nonterminals.
-  const char*
-  const Parser::yytname_[] =
-  {
-  "\"end of file\"", "error", "\"invalid token\"", "DEC_LITERAL",
-  "FLOAT_LITERAL", "STR_LITERAL", "TRUE", "FALSE", "IDENTIFIER",
-  "UNDERSCORE", "I8", "I16", "I32", "I64", "ISIZE", "U8", "U16", "U32",
-  "U64", "USIZE", "LET", "MUT", "BOOL", "FN", "WHILE", "PRINT_LN", "EQ",
-  "EQEQ", "NE", "BANG", "LT", "LE", "GT", "GE", "PLUS", "MINUS", "STAR",
-  "SLASH", "COMMA", "ARROW", "IF", "ELSE", "RETURN", "BREAK", "CONTINUE",
-  "L_AND", "L_OR", "PLUS_EQ", "MIN_EQ", "MUL_EQ", "DIV_EQ", "LBRACE",
-  "RBRACE", "LPAREN", "RPAREN", "SEMICOLON", "COLON", "AMPERSAND", "OR",
-  "AMPERSAND_MUT", "DOT", "MOD_EQ", "BIT_AND_EQ", "BIT_OR_EQ",
-  "BIT_XOR_EQ", "SHL_EQ", "SHR_EQ", "MOD", "UMINUS", "DEREF", "NOT", "REF",
-  "REF_MUT", "METHOD_CALL", "FIELD_ACCESS", "FUNC_CALL", "PATH",
-  "CALL_INDEX", "UNARY", "BIN_OP", "CONTROL_FLOW", "$accept", "program",
-  "item_list", "item", "function_decl", "func_ret_type", "func_decl_args",
-  "func_arg_list", "func_arg", "stmt", "stmt_list", "print_ln",
-  "type_decl", "opt_mut", "let", "if_expr", "type_list", "type",
-  "block_expr", "unary_op_expr", "bin_op_expr", "literal",
-  "call_expr_args", "call_expr", "while_expr", "tuple_index_expr", "expr",
-  "expr_list", "expr_stmt", "expr_w_block", "expr_wo_block", "opt_comma", YY_NULLPTR
-  };
-#endif
 
 
 #if YYDEBUG
   const short
   Parser::yyrline_[] =
   {
-       0,   130,   130,   134,   136,   137,   141,   145,   150,   157,
-     158,   163,   164,   165,   169,   170,   174,   175,   178,   179,
-     180,   181,   182,   183,   184,   185,   189,   190,   198,   202,
-     203,   204,   208,   209,   213,   215,   219,   225,   226,   227,
-     238,   239,   243,   244,   245,   246,   247,   248,   249,   250,
-     251,   252,   253,   254,   255,   261,   262,   263,   264,   268,
-     269,   270,   271,   272,   276,   277,   278,   279,   280,   281,
-     282,   283,   284,   285,   286,   287,   289,   290,   291,   292,
-     293,   297,   298,   299,   300,   301,   306,   307,   315,   316,
-     319,   323,   328,   329,   333,   334,   338,   339,   343,   344,
-     345,   348,   349,   350,   351,   352,   353,   354,   355,   356,
-     357,   358,   359,   364,   365
+       0,   118,   118,   122,   123,   130,   135,   140,   148,   149,
+     150,   154,   155,   159,   162,   163,   167,   168,   169,   173,
+     175,   176,   185,   189,   190,   191,   195,   196,   200,   204,
+     206,   212,   213,   214,   225,   226,   230,   231,   232,   233,
+     234,   235,   236,   237,   238,   239,   240,   241,   242,   247,
+     248,   249,   250,   254,   255,   256,   257,   258,   262,   263,
+     264,   265,   266,   267,   268,   269,   270,   271,   272,   273,
+     275,   276,   277,   278,   279,   283,   284,   285,   286,   287,
+     292,   293,   301,   302,   305,   309,   314,   315,   319,   320,
+     324,   325,   329,   330,   331,   334,   335,   336,   337,   338,
+     339,   340,   341,   342,   343,   344,   345,   350,   351
   };
 
   void
@@ -3216,9 +3128,9 @@ namespace mr {
 
 #line 5 "src/parser/yaccfile.yy"
 } // mr
-#line 3220 "yaccfile.tab.cc"
+#line 3132 "yaccfile.tab.cc"
 
-#line 367 "src/parser/yaccfile.yy"
+#line 353 "src/parser/yaccfile.yy"
 
 
 namespace mr
@@ -3227,7 +3139,7 @@ namespace mr
     void Parser::error(const Parser::location_type &loc, const std::string &message)
     {
         // i don't care about error's of bison
-        std::cerr << "Error in " << this->input_file_name << ":" << loc.end.line << ":" << loc.end.column
+        std::cerr << "Error in " << this->input_file_name << ":" << loc.begin.line << ":" << loc.begin.column
             <<":\n"
             << message << std::endl;
     }

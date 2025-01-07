@@ -14,6 +14,7 @@
 
 #include "block_id.hpp"
 #include "iterators.hpp"
+#include "location.hh"
 #include "module.hpp"
 #include "mr_util.hpp"
 #include "statement.hpp"
@@ -102,24 +103,27 @@ namespace mr { namespace middle { namespace ir {
             _blocks.at(block.id())._terminator = term;
         }
 
-        void return_(BlockId block) { terminate(block, Terminator{Return{}}); }
+        void return_(BlockId block, location loc) { terminate(block, Terminator{Return{}, loc}); }
 
-        void go_to(BlockId from, BlockId target) {
+        void go_to(BlockId from, BlockId target, location loc) {
             assert(target.id() < _blocks.size());
-            terminate(from, Terminator(GoTo{target}));
+            terminate(from, Terminator(GoTo{target}, loc));
         }
 
         void push_stmt(BlockId bb, Statement stmt) {
             block(bb).statements.push_back(std::move(stmt));
         }
 
-        void push_assign(BlockId block, Place lhs, RValue rhs) {
-            return push_stmt(block, Assign{lhs, rhs});
+        void push_assign(BlockId block, Place lhs, RValue rhs, location loc) {
+            return push_stmt(block, Statement(Assign{lhs, rhs}, loc));
         }
 
-        void push_unit_assign(BlockId block, Place lhs) {
+        void push_unit_assign(BlockId block, Place lhs, location loc) {
             return push_stmt(
-                block, Assign{lhs, RValue(AsIs(Operand::const_(Scalar{0, 0}, types::Ty::unit())))}
+                block,
+                Statement(
+                    Assign{lhs, RValue(AsIs(Operand::const_(Scalar{0, 0}, types::Ty::unit())))}, loc
+                )
             );
         }
     };

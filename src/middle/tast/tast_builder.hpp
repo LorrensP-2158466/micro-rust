@@ -74,10 +74,9 @@ namespace mr { namespace middle {
         explicit BuildCtx(const ast::FunDecl &_ast_fun)
             : ast_fun(&_ast_fun) {}
 
-        // ast decl info
         inline auto name() const noexcept { return ast_fun->name(); }
         inline location return_ty_loc() const noexcept { return ast_fun->return_type().loc; }
-        // loop stuff
+
         inline void enter_loop() noexcept { in_loop += 1; }
         inline void exit_loop() noexcept { in_loop += 1; }
         inline bool is_in_loop() noexcept { return in_loop != 0; }
@@ -147,6 +146,7 @@ namespace mr { namespace middle {
                 args.emplace_back(
                     arg.id,
                     type,
+                    arg.loc,
                     Mutability{
                         arg.mut.node ? MutabilityType::Mutable : MutabilityType::Immutable,
                         arg.mut.loc
@@ -244,7 +244,7 @@ namespace mr { namespace middle {
 
         Stmt visit_empty_statement(const ast::EmptyStmt) override { return Stmt::empty(); }
         Stmt visit_print_stmt(const ast::PrintLn &p) override {
-            auto print_stmt = PrintLn::from_str(p._format_str);
+            auto print_stmt = PrintLn::from_str(p._format_str, p.loc);
             auto error = false;
             auto check_name = [&](const std::string &name) {
                 if (!_scoped_types.look_up(name).has_value()) {
