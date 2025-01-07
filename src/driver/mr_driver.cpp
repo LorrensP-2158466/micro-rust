@@ -2,12 +2,11 @@
 
 #include "mr_driver.hpp"
 
-void print_duration(std::chrono::nanoseconds duration, const std::string& action) {
+void print_duration(std::chrono::nanoseconds duration, const std::string &action) {
     using namespace std::chrono;
     if (duration.count() < 1'000) {
         // Nanoseconds
-        std::cout << action << " took " << duration.count() << " nanoseconds"
-                  << std::endl;
+        std::cout << action << " took " << duration.count() << " nanoseconds" << std::endl;
     } else if (duration.count() < 1'000'000) {
         // Microseconds
         auto dur = duration_cast<microseconds>(duration);
@@ -30,19 +29,17 @@ int mr::driver::MRDriver::start() {
     Lexer lexer(_input_file, false);
 
     Parser parser(*this, lexer, false, file_name);
-    auto   start_compile = clock::now();
+    auto start_compile = clock::now();
 
     middle::ir::Ir ir;
     try {
         if (parser.parse()) {
-            fmt::println(
-                "\nCompilation failed due to `{}` errors", _err_ctx.error_amount()
-            );
+            fmt::println("\nCompilation failed due to `{}` errors", _err_ctx.error_amount());
             return 1;
         }
         _ast->print();
         ir = _middle_phase.run(std::move(_ast));
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         show_errors();
         fmt::println("ICE: {}", e.what());
 
@@ -51,8 +48,7 @@ int mr::driver::MRDriver::start() {
     }
 
     auto end_compile = clock::now();
-    auto dur_compile =
-        std::chrono::duration_cast<std::chrono::nanoseconds>(end_compile - start_compile);
+    auto dur_compile = std::chrono::duration_cast<std::chrono::nanoseconds>(end_compile - start_compile);
 
     if (_err_ctx.has_errors()) {
         show_errors();
@@ -66,8 +62,7 @@ int mr::driver::MRDriver::start() {
     interp.interp();
 
     auto end_interp = clock::now();
-    auto dur_interp =
-        std::chrono::duration_cast<std::chrono::nanoseconds>(end_interp - start_interp);
+    auto dur_interp = std::chrono::duration_cast<std::chrono::nanoseconds>(end_interp - start_interp);
 
     std::cout << "-------------------------\n";
     print_duration(dur_compile, "Compiling");

@@ -2,18 +2,16 @@
 
 #include "location.hh"
 #include "stmt.hpp"
-namespace mr {
-    namespace ast {
-        class Item : public Stmt {
-          private:
-            /* data */
-          public:
-            Item(location l) : Stmt(l) {}
-            virtual ~Item() = default;
+namespace mr { namespace ast {
+    class Item : public Stmt {
+      private:
+        /* data */
+      public:
+        Item(location l)
+            : Stmt(l) {}
+        virtual ~Item() = default;
 
-            virtual void print(const int depth) const = 0;
-        };
+        virtual void print(const int depth) const = 0;
+    };
 
-    } // namespace ast
-
-} // namespace mr
+}} // namespace mr::ast

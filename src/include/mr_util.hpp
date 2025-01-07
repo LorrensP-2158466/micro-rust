@@ -16,99 +16,98 @@
 
 namespace mr {
 
-    template <typename T> struct Locusable {
-        T node;
-        location loc;
-    };
-    template <typename T> using Ref = std::reference_wrapper<T>;
+template <typename T> struct Locusable {
+    T node;
+    location loc;
+};
+template <typename T> using Ref = std::reference_wrapper<T>;
 
-    inline void todo(std::string message = "", const std::source_location location = std::source_location::current()) {
-        std::cerr << "TODO: " << message << " in " << location.file_name() << ':' << location.line() << ':'
-                  << location.column() << std::endl;
-        abort();
-    }
+inline void todo(std::string message = "", const std::source_location location = std::source_location::current()) {
+    std::cerr << "TODO: " << message << " in " << location.file_name() << ':' << location.line() << ':'
+              << location.column() << std::endl;
+    abort();
+}
 
-    inline void ICE(std::string message = "", const std::source_location location = std::source_location::current()) {
-        throw std::runtime_error(fmt::format("{}", message));
-    }
+inline void ICE(std::string message = "", const std::source_location location = std::source_location::current()) {
+    throw std::runtime_error(fmt::format("{}", message));
+}
 
-    inline void unimplemented(const std::source_location location = std::source_location::current()) {
-        std::cerr << "Function: " << location.function_name() << " is not implemented:" << location.file_name() << ':'
-                  << location.line() << ':' << location.column() << std::endl;
-        abort();
-    }
+inline void unimplemented(const std::source_location location = std::source_location::current()) {
+    std::cerr << "Function: " << location.function_name() << " is not implemented:" << location.file_name() << ':'
+              << location.line() << ':' << location.column() << std::endl;
+    abort();
+}
 
-    template <typename T>
-    inline T debug_print(std::string expr, T t, const std::source_location location = std::source_location::current()) {
-        std::cerr << "DEBUG:  in " << location.file_name() << ':' << location.line() << ':' << location.column() << ": "
-                  << expr << " = " << t << std::endl;
-        return t;
-    }
-    template <typename T = void> [[noreturn]] inline T unreachable() {
+template <typename T>
+inline T debug_print(std::string expr, T t, const std::source_location location = std::source_location::current()) {
+    std::cerr << "DEBUG:  in " << location.file_name() << ':' << location.line() << ':' << location.column() << ": "
+              << expr << " = " << t << std::endl;
+    return t;
+}
+template <typename T = void> [[noreturn]] inline T unreachable() {
 // Uses compiler specific extensions if possible.
 // Even if no extension is used, undefined behavior is still raised by
 // an empty function body and the noreturn attribute.
 #if defined(_MSC_VER) && !defined(__clang__) // MSVC
-        __assume(false);
+    __assume(false);
 #else // GCC, Clang
-        __builtin_unreachable();
+    __builtin_unreachable();
 #endif
-    }
+}
 
-    template <typename Variant, typename... Variants> bool has_variant(const std::variant<Variants...> &v) {
-        return std::holds_alternative<Variant>(v);
-    }
+template <typename Variant, typename... Variants> bool has_variant(const std::variant<Variants...> &v) {
+    return std::holds_alternative<Variant>(v);
+}
 
-    // convenience to check if variants of the same type hold some combination of variants
-    template <typename V1, typename V2, typename VariantT>
-    bool both_hold_variant(const VariantT &vt1, const VariantT &vt2) {
-        return has_variant<V1>(vt1) && has_variant<V2>(vt2);
-    }
+// convenience to check if variants of the same type hold some combination of variants
+template <typename V1, typename V2, typename VariantT>
+bool both_hold_variant(const VariantT &vt1, const VariantT &vt2) {
+    return has_variant<V1>(vt1) && has_variant<V2>(vt2);
+}
 
-    // thanks:
-    // https://stackoverflow.com/questions/46893056/how-do-i-write-operator-for-stdvariant
-    template <typename T, typename... Ts> std::ostream &operator<<(std::ostream &os, const std::variant<T, Ts...> &v) {
-        std::visit([&os](const auto &arg) { os << arg; }, v);
-        return os;
-    }
+// thanks:
+// https://stackoverflow.com/questions/46893056/how-do-i-write-operator-for-stdvariant
+template <typename T, typename... Ts> std::ostream &operator<<(std::ostream &os, const std::variant<T, Ts...> &v) {
+    std::visit([&os](const auto &arg) { os << arg; }, v);
+    return os;
+}
 
-    // i hate typing "std::unique_ptr" constantly
-    template <typename T> using U = std::unique_ptr<T>;
+// i hate typing "std::unique_ptr" constantly
+template <typename T> using U = std::unique_ptr<T>;
 
-    template <typename T> using OptUnique = std::optional<U<T>>;
+template <typename T> using OptUnique = std::optional<U<T>>;
 
-    template <class T, class... Args> U<T> m_u(Args &&...args) {
-        return std::make_unique<T>(std::forward<Args>(args)...);
-    }
+template <class T, class... Args> U<T> m_u(Args &&...args) { return std::make_unique<T>(std::forward<Args>(args)...); }
 
-    inline const char *bool_to_str(const bool b) { return b ? "true" : "false"; }
+inline const char *bool_to_str(const bool b) { return b ? "true" : "false"; }
 
-    // this is very unsafe, this just checks if str == "true" else it returns false
-    // only use this when you are absolutely certain str can only have "true" or "false"
-    inline bool str_to_bool(const char *str) { return std::strcmp(str, "true") == 0; }
+// this is very unsafe, this just checks if str == "true" else it returns false
+// only use this when you are absolutely certain str can only have "true" or "false"
+inline bool str_to_bool(const char *str) { return std::strcmp(str, "true") == 0; }
 
-    // to create multiple lambdas for std::visit
-    template <class... Ts> struct overloaded : Ts... {
-        using Ts::operator()...;
-    };
+// to create multiple lambdas for std::visit
+template <class... Ts> struct overloaded : Ts... {
+    using Ts::operator()...;
+};
 
-    // dont know if this will work
-    template <typename U, typename... Ts>
-    auto variant_apply(std::variant<Ts...> &var, std::function<U(std::variant<Ts...> &)> f) {
-        std::visit([&](const Ts var) { return f(var); }..., var);
-    }
-    // dynamic_pointer_cast overload for std::unique_ptr
-    template <class T, class U> std::unique_ptr<T> dynamic_unique_cast(std::unique_ptr<U> &&r) noexcept {
-        (void)dynamic_cast<T *>(static_cast<U *>(0));
+// dont know if this will work
+template <typename U, typename... Ts>
+auto variant_apply(std::variant<Ts...> &var, std::function<U(std::variant<Ts...> &)> f) {
+    std::visit([&](const Ts var) { return f(var); }..., var);
+}
+// dynamic_pointer_cast overload for std::unique_ptr
+template <class T, class U> std::unique_ptr<T> dynamic_unique_cast(std::unique_ptr<U> &&r) noexcept {
+    (void)dynamic_cast<T *>(static_cast<U *>(0));
 
-        static_assert(std::has_virtual_destructor_v<T>,
-                      "The target of dynamic_pointer_cast must have a virtual destructor.");
+    static_assert(
+        std::has_virtual_destructor_v<T>, "The target of dynamic_pointer_cast must have a virtual destructor."
+    );
 
-        T *p = dynamic_cast<T *>(r.get());
-        if (p)
-            r.release();
-        return std::unique_ptr<T>(p);
-    }
+    T *p = dynamic_cast<T *>(r.get());
+    if (p)
+        r.release();
+    return std::unique_ptr<T>(p);
+}
 
 } // namespace mr
 
