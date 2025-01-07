@@ -45,7 +45,8 @@ namespace mr { namespace middle { namespace build {
 
         Function build_function(const tast::TAst fn) {
             spdlog::info("BEGINNING IR BUILD OF FUNCTION {}", fn.name);
-            return_local = create_local("0_RETURN", _inferer.resolve(fn.ret_type), MutabilityType::Mutable);
+            return_local =
+                create_local("0_RETURN", _inferer.resolve(fn.ret_type), MutabilityType::Mutable);
             for (const auto &param : fn.params) {
                 const auto ty = _inferer.resolve(param.type);
                 create_local(param.id, ty, param.mut.node);
@@ -63,7 +64,9 @@ namespace mr { namespace middle { namespace build {
         }
 
       private:
-        Scalar from_tast_literal(const tast::Literal lit) { return Scalar{lit.raw_value(), lit.size()}; }
+        Scalar from_tast_literal(const tast::Literal lit) {
+            return Scalar{lit.raw_value(), lit.size()};
+        }
         LocalId create_local(const std::string name, Ty ty, MutabilityType mut) {
             spdlog::info("CREATING LOCAL `{}`", name);
             const auto id = LocalId{_locals.size()};
@@ -74,15 +77,17 @@ namespace mr { namespace middle { namespace build {
 
         // helper which assures that going in a scope will always push a scope
         // and exitting will always pop a scope.
-        template <typename R> BlockWith<R> build_in_scope(std::function<BlockWith<R>(IrBuilder &builder)> f) {
+        template <typename R>
+        BlockWith<R> build_in_scope(std::function<BlockWith<R>(IrBuilder &builder)> f) {
             _locals_table.push_scope();
             const auto result = f(*this);
             _locals_table.pop_scope();
             return result;
         }
 
-        BlockWith<void> build_in_breakable_scope(BlockId loop_block, Place break_place,
-                                                 std::function<void(IrBuilder &builder)> f) {
+        BlockWith<void> build_in_breakable_scope(
+            BlockId loop_block, Place break_place, std::function<void(IrBuilder &builder)> f
+        ) {
             spdlog::info("BUILDING IN A BREAKABLE SCOPE");
             _break_places.push_back(break_place);
             _locals_table.push_scope();
@@ -105,25 +110,34 @@ namespace mr { namespace middle { namespace build {
             return exit_block.empty();
         }
 
-        BlockWith<void> build_block_statements(const Place place, const BlockExpr &tast_block, BlockId basic_block) {
+        BlockWith<void> build_block_statements(
+            const Place place, const BlockExpr &tast_block, BlockId basic_block
+        ) {
             unpack(basic_block, build_in_scope<void>([&](IrBuilder &builder) -> BlockWith<void> {
                        for (const auto &stmt : tast_block._statements) {
                            unpack(basic_block, builder.build_statement(*stmt, basic_block));
                        }
                        // check for tail expression
                        if (tast_block._tail)
-                           unpack(basic_block, builder.expr_into_place(place, *tast_block._tail, basic_block));
+                           unpack(
+                               basic_block,
+                               builder.expr_into_place(place, *tast_block._tail, basic_block)
+                           );
                        return basic_block.empty();
                    }));
             return basic_block.empty();
         }
 
         BlockWith<void> build_statement(const tast::Stmt &stmt, BlockId block) {
-            return std::visit(overloaded{[&](const ExprStmt &e) { return build_expr_stmt(e.expr, block); },
-                                         [&](const LetStmt &e) { return build_let_stmt(e, block); },
-                                         [&](const PrintLn &e) { return build_print_stmt(e, block); },
-                                         [&](const EmptyStmt &e) { return block.empty(); }},
-                              stmt.inner);
+            return std::visit(
+                overloaded{
+                    [&](const ExprStmt &e) { return build_expr_stmt(e.expr, block); },
+                    [&](const LetStmt &e) { return build_let_stmt(e, block); },
+                    [&](const PrintLn &e) { return build_print_stmt(e, block); },
+                    [&](const EmptyStmt &e) { return block.empty(); }
+                },
+                stmt.inner
+            );
         }
 
         BlockWith<void> build_let_stmt(const LetStmt &let, BlockId block) {
@@ -139,54 +153,58 @@ namespace mr { namespace middle { namespace build {
             return expr_into_place(Place(local), *let.initializer, block);
         }
         BlockWith<void> build_expr_stmt(const Expr &expr, BlockId block) {
-            return std::visit(overloaded{
-                                  [&](const AssignExpr &assign) {
-                                      const auto rhs = unpack(block, expr_as_rvalue(*assign.rhs, block));
-                                      const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
-                                      _blocks.push_assign(block, std::move(lhs), std::move(rhs));
-                                      return block.empty();
-                                  },
-                                  [&](const AssignOpExpr &assign) {
-                                      const auto rhs = unpack(block, expr_as_operand(*assign.rhs, block));
-                                      const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
-                                      const auto result = RValue(BinaryOp{assign.op, Operand::copy(Place(lhs)), rhs});
-                                      _blocks.push_assign(block, std::move(lhs), std::move(result));
-                                      return block.empty();
-                                  },
-                                  [&](const Break &br) {
-                                      // set placeholder so that build_in_breakable_scope can
-                                      // fill this in when it's done building the breakable
-                                      // scope
+            return std::visit(
+                overloaded{
+                    [&](const AssignExpr &assign) {
+                        const auto rhs = unpack(block, expr_as_rvalue(*assign.rhs, block));
+                        const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
+                        _blocks.push_assign(block, std::move(lhs), std::move(rhs));
+                        return block.empty();
+                    },
+                    [&](const AssignOpExpr &assign) {
+                        const auto rhs = unpack(block, expr_as_operand(*assign.rhs, block));
+                        const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
+                        const auto result =
+                            RValue(BinaryOp{assign.op, Operand::copy(Place(lhs)), rhs});
+                        _blocks.push_assign(block, std::move(lhs), std::move(result));
+                        return block.empty();
+                    },
+                    [&](const Break &br) {
+                        // set placeholder so that build_in_breakable_scope can
+                        // fill this in when it's done building the breakable
+                        // scope
 
-                                      // assign to break_place
-                                      block = expr_into_place(_break_places.back(), *br.val, block).into_block();
-                                      // this block needs a `go to` to the exit of the breakable
-                                      // scope
-                                      _need_go_tos.back().push_back(block);
-                                      return _blocks.create_new_block().empty();
-                                  },
-                                  [&](const tast::Return &ret) {
-                                      // we terminate the block and then we return a new block,
-                                      // but this one gets deleted
-                                      auto return_place = Place(LocalId{0});
-                                      block = expr_into_place(return_place, *ret.val, block).into_block();
-                                      _blocks.return_(block);
-                                      // terminate block, but we need a new block for the
-                                      // following statements these will be deleted because they
-                                      // are unreachable
-                                      return _blocks.create_new_block().empty();
-                                  },
-                                  [&](const Continue &) {
-                                      // this needs a goto to the loop block
-                                      _need_continues.back().push_back(block);
-                                      return _blocks.create_new_block().empty();
-                                  },
-                                  [&](const auto &) {
-                                      const auto tmp = Place(create_local("", expr.type, MutabilityType::Immutable));
-                                      return expr_into_place(tmp, expr, block);
-                                  },
-                              },
-                              expr.kind);
+                        // assign to break_place
+                        block = expr_into_place(_break_places.back(), *br.val, block).into_block();
+                        // this block needs a `go to` to the exit of the breakable
+                        // scope
+                        _need_go_tos.back().push_back(block);
+                        return _blocks.create_new_block().empty();
+                    },
+                    [&](const tast::Return &ret) {
+                        // we terminate the block and then we return a new block,
+                        // but this one gets deleted
+                        auto return_place = Place(LocalId{0});
+                        block = expr_into_place(return_place, *ret.val, block).into_block();
+                        _blocks.return_(block);
+                        // terminate block, but we need a new block for the
+                        // following statements these will be deleted because they
+                        // are unreachable
+                        return _blocks.create_new_block().empty();
+                    },
+                    [&](const Continue &) {
+                        // this needs a goto to the loop block
+                        _need_continues.back().push_back(block);
+                        return _blocks.create_new_block().empty();
+                    },
+                    [&](const auto &) {
+                        const auto tmp =
+                            Place(create_local("", expr.type, MutabilityType::Immutable));
+                        return expr_into_place(tmp, expr, block);
+                    },
+                },
+                expr.kind
+            );
         }
         BlockWith<void> build_print_stmt(const PrintLn &print, BlockId block) {
             auto end_str = print._end_str.value_or("");
@@ -194,15 +212,20 @@ namespace mr { namespace middle { namespace build {
                 _blocks.push_stmt(block, Statement{SPrintLn{std::move(end_str)}});
                 return block.empty();
             }
-            auto first_operand =
-                map_optional(print._start_fmt, [&](const std::string &s) { return Operand::copy(local_by_name(s)); });
+            auto first_operand = map_optional(print._start_fmt, [&](const std::string &s) {
+                return Operand::copy(local_by_name(s));
+            });
             std::vector<std::pair<std::string, Operand>> format_structure;
             format_structure.reserve(print._fmt_structure.size());
             for (const auto &[str, name] : print._fmt_structure) {
                 format_structure.emplace_back(str, Operand::copy(local_by_name(name)));
             }
             _blocks.push_stmt(
-                block, Statement{FPrintLn{std::move(first_operand), std::move(format_structure), std::move(end_str)}});
+                block,
+                Statement{FPrintLn{
+                    std::move(first_operand), std::move(format_structure), std::move(end_str)
+                }}
+            );
             // we already checked the names inside the format, just take them
             // out
             return block.empty();
@@ -217,70 +240,78 @@ namespace mr { namespace middle { namespace build {
                 if (!resolved_type.is_known()) {
                     ecx.report_diag(errors::unknown_type(expr.loc));
                 }
-                const auto temp_place = Place(create_local("temp", std::move(resolved_type), MutabilityType::Mutable));
+                const auto temp_place =
+                    Place(create_local("temp", std::move(resolved_type), MutabilityType::Mutable));
                 unpack(block, expr_into_place(Place(temp_place), expr, block));
                 return block.with(Operand::move(Place(temp_place)));
             };
-            return std::visit(overloaded{
-                                  [&](const Literal &lit) {
-                                      auto resolved_type = _inferer.resolve(expr.type);
-                                      if (!resolved_type.is_known()) {
-                                          ecx.report_diag(errors::unknown_type(expr.loc));
-                                      }
-                                      return block.with(
-                                          Operand::const_(from_tast_literal(lit), _inferer.resolve(expr.type)));
-                                  },
-                                  [&](const Identifier &) {
-                                      auto place = unpack(block, expr_as_place(expr, block));
-                                      return block.with(Operand::copy(std::move(place)));
-                                  },
-                                  [&](const FieldExpr &) {
-                                      auto place = unpack(block, expr_as_place(expr, block));
-                                      return block.with(Operand::copy(std::move(place)));
-                                  },
-                                  [&](const auto &) { return handle_temp_move(); },
-                              },
-                              expr.kind);
+            return std::visit(
+                overloaded{
+                    [&](const Literal &lit) {
+                        auto resolved_type = _inferer.resolve(expr.type);
+                        if (!resolved_type.is_known()) {
+                            ecx.report_diag(errors::unknown_type(expr.loc));
+                        }
+                        return block.with(
+                            Operand::const_(from_tast_literal(lit), _inferer.resolve(expr.type))
+                        );
+                    },
+                    [&](const Identifier &) {
+                        auto place = unpack(block, expr_as_place(expr, block));
+                        return block.with(Operand::copy(std::move(place)));
+                    },
+                    [&](const FieldExpr &) {
+                        auto place = unpack(block, expr_as_place(expr, block));
+                        return block.with(Operand::copy(std::move(place)));
+                    },
+                    [&](const auto &) { return handle_temp_move(); },
+                },
+                expr.kind
+            );
         } // namespace build
 
         BlockWith<RValue> expr_as_rvalue(const Expr &expr, BlockId block) {
-            return std::visit(overloaded{[&](const BinOpExpr &bin_op) {
-                                             const auto lhs = unpack(block, expr_as_operand(*bin_op.left, block));
-                                             const auto rhs = unpack(block, expr_as_operand(*bin_op.right, block));
-                                             return block.with(RValue(BinaryOp{bin_op.op, lhs, rhs}));
-                                         },
-                                         [&](const UnaryOpExpr &un_op) {
-                                             const auto operand = unpack(block, expr_as_operand(*un_op.expr, block));
-                                             return block.with(RValue(ir::UnaryOp{un_op.op, operand}));
-                                         },
-                                         [&](const Identifier &id) {
-                                             const auto local = local_by_name(id.symbol);
-                                             return block.with(RValue(AsIs{Operand::move(Place(local))}));
-                                         },
-                                         [&](const TupleExpr &tup) {
-                                             std::vector<Operand> operands;
-                                             operands.reserve(tup.exprs.size());
-                                             for (const auto &expr : tup.exprs) {
-                                                 operands.push_back(unpack(block, expr_as_operand(expr, block)));
-                                             }
-                                             return block.with(RValue(Aggregate{AggrKind::Tuple, std::move(operands)}));
-                                         },
-                                         [&](const Literal &lit) {
-                                             auto resolved_type = _inferer.resolve(expr.type);
-                                             if (!resolved_type.is_known()) {
-                                                 ecx.report_diag(errors::unknown_type(expr.loc));
-                                             }
-                                             const auto operand =
-                                                 Operand::const_(from_tast_literal(lit), std::move(resolved_type));
-                                             return block.with(RValue(AsIs{std::move(operand)}));
-                                         },
-                                         [&](const auto &) {
-                                             // these are not rvalues, rustc creates an operand and
-                                             // returns that as is guess that's the simplest way
-                                             const auto operand = unpack(block, expr_as_operand(expr, block));
-                                             return block.with(RValue(AsIs{std::move(operand)}));
-                                         }},
-                              expr.kind);
+            return std::visit(
+                overloaded{
+                    [&](const BinOpExpr &bin_op) {
+                        const auto lhs = unpack(block, expr_as_operand(*bin_op.left, block));
+                        const auto rhs = unpack(block, expr_as_operand(*bin_op.right, block));
+                        return block.with(RValue(BinaryOp{bin_op.op, lhs, rhs}));
+                    },
+                    [&](const UnaryOpExpr &un_op) {
+                        const auto operand = unpack(block, expr_as_operand(*un_op.expr, block));
+                        return block.with(RValue(ir::UnaryOp{un_op.op, operand}));
+                    },
+                    [&](const Identifier &id) {
+                        const auto local = local_by_name(id.symbol);
+                        return block.with(RValue(AsIs{Operand::move(Place(local))}));
+                    },
+                    [&](const TupleExpr &tup) {
+                        std::vector<Operand> operands;
+                        operands.reserve(tup.exprs.size());
+                        for (const auto &expr : tup.exprs) {
+                            operands.push_back(unpack(block, expr_as_operand(expr, block)));
+                        }
+                        return block.with(RValue(Aggregate{AggrKind::Tuple, std::move(operands)}));
+                    },
+                    [&](const Literal &lit) {
+                        auto resolved_type = _inferer.resolve(expr.type);
+                        if (!resolved_type.is_known()) {
+                            ecx.report_diag(errors::unknown_type(expr.loc));
+                        }
+                        const auto operand =
+                            Operand::const_(from_tast_literal(lit), std::move(resolved_type));
+                        return block.with(RValue(AsIs{std::move(operand)}));
+                    },
+                    [&](const auto &) {
+                        // these are not rvalues, rustc creates an operand and
+                        // returns that as is guess that's the simplest way
+                        const auto operand = unpack(block, expr_as_operand(expr, block));
+                        return block.with(RValue(AsIs{std::move(operand)}));
+                    }
+                },
+                expr.kind
+            );
         }
 
         BlockWith<void> expr_into_place(Place place, const Expr &expr, BlockId block) {
@@ -295,7 +326,9 @@ namespace mr { namespace middle { namespace build {
                         const auto then_blk = _blocks.create_new_block();
                         const auto else_blk = _blocks.create_new_block();
                         // goto then/else from conditinonal
-                        _blocks.terminate(block, Terminator(CondGoTo{cond_op, {else_blk, then_blk}}));
+                        _blocks.terminate(
+                            block, Terminator(CondGoTo{cond_op, {else_blk, then_blk}})
+                        );
 
                         // we have to create the short-circuit structure:
                         // - if op is && and lhs fails, we short-circuit and
@@ -318,9 +351,13 @@ namespace mr { namespace middle { namespace build {
                         };
                         // in short circuit, do the assignment and go to join
                         // block
-                        _blocks.push_assign(short_circuit, place,
-                                            AsIs(Operand::const_(Scalar::from_bool(const_bool), _inferer.bool_t())));
-                        const auto rhs = expr_into_place(place, *log_op.right, continue_block).into_block();
+                        _blocks.push_assign(
+                            short_circuit,
+                            place,
+                            AsIs(Operand::const_(Scalar::from_bool(const_bool), _inferer.bool_t()))
+                        );
+                        const auto rhs =
+                            expr_into_place(place, *log_op.right, continue_block).into_block();
                         const auto join = _blocks.create_new_block();
                         _blocks.go_to(short_circuit, join);
                         _blocks.go_to(rhs, join);
@@ -330,10 +367,19 @@ namespace mr { namespace middle { namespace build {
                         // Using std::transform
                         std::vector<Operand> call_operands{};
                         call_operands.reserve(call.args.size());
-                        std::transform(call.args.cbegin(), call.args.cend(), std::back_inserter(call_operands),
-                                       [&](const auto &expr) { return unpack(block, expr_as_operand(*expr, block)); });
+                        std::transform(
+                            call.args.cbegin(),
+                            call.args.cend(),
+                            std::back_inserter(call_operands),
+                            [&](const auto &expr) {
+                                return unpack(block, expr_as_operand(*expr, block));
+                            }
+                        );
                         auto new_block = _blocks.create_new_block();
-                        _blocks.terminate(block, Terminator{Call{call.id, std::move(call_operands), place, new_block}});
+                        _blocks.terminate(
+                            block,
+                            Terminator{Call{call.id, std::move(call_operands), place, new_block}}
+                        );
                         return new_block.empty();
                     },
                     [&](const BlockExpr &bl) { return build_block_statements(place, bl, block); },
@@ -375,19 +421,25 @@ namespace mr { namespace middle { namespace build {
                         blocks. These end blocks should go to the join block. In
                         Code:
                         */
-                        const auto cond_op = unpack(block, expr_as_operand(*if_el.conditional_expr, block));
+                        const auto cond_op =
+                            unpack(block, expr_as_operand(*if_el.conditional_expr, block));
                         // build the then branch
                         auto begin_then_blk = _blocks.create_new_block();
                         auto end_then_blk =
-                            build_block_statements(place, if_el.then_block, begin_then_blk).into_block();
+                            build_block_statements(place, if_el.then_block, begin_then_blk)
+                                .into_block();
                         // build the else branch
                         auto begin_else_blk = _blocks.create_new_block();
                         auto end_else_blk =
-                            if_el.else_block ? expr_into_place(place, *(*if_el.else_block), begin_else_blk).into_block()
-                                             : begin_else_blk;
+                            if_el.else_block
+                                ? expr_into_place(place, *(*if_el.else_block), begin_else_blk)
+                                      .into_block()
+                                : begin_else_blk;
 
                         // goto then/else from conditinonal
-                        _blocks.terminate(block, Terminator(CondGoTo{cond_op, {begin_else_blk, begin_then_blk}}));
+                        _blocks.terminate(
+                            block, Terminator(CondGoTo{cond_op, {begin_else_blk, begin_then_blk}})
+                        );
 
                         // we have build both branches, we now join them into a
                         // new block
@@ -422,7 +474,8 @@ namespace mr { namespace middle { namespace build {
                             // return value of loop BODY should be unit
                             const auto body_tmp = builder.unit_temp();
                             const auto body_end =
-                                builder.expr_into_place(body_tmp, *loop.body, body_block).into_block();
+                                builder.expr_into_place(body_tmp, *loop.body, body_block)
+                                    .into_block();
                             builder._blocks.go_to(body_end, loop_block);
                         });
                     },
@@ -449,24 +502,30 @@ namespace mr { namespace middle { namespace build {
                         return block.empty();
                     },
                 },
-                expr.kind);
+                expr.kind
+            );
         }
 
         BlockWith<Place> expr_as_place(const Expr &expr, BlockId block) {
             // currently onlly FieldExpr
             return std::visit(
-                overloaded{[&](const FieldExpr &fe) {
-                               auto place = unpack(block, expr_as_place(*fe.expr, block));
-                               place.field(fe.idx);
-                               return block.with(place);
-                           },
-                           [&](const Identifier &ident) { return block.with(Place(local_by_name(ident.symbol))); },
+                overloaded{
+                    [&](const FieldExpr &fe) {
+                        auto place = unpack(block, expr_as_place(*fe.expr, block));
+                        place.field(fe.idx);
+                        return block.with(place);
+                    },
+                    [&](const Identifier &ident) {
+                        return block.with(Place(local_by_name(ident.symbol)));
+                    },
 
-                           [&](const auto &e) {
-                               fmt::println("OTHER EXPR: {} AS PLACE", e);
-                               return unreachable<BlockWith<Place>>();
-                           }},
-                expr.kind);
+                    [&](const auto &e) {
+                        fmt::println("OTHER EXPR: {} AS PLACE", e);
+                        return unreachable<BlockWith<Place>>();
+                    }
+                },
+                expr.kind
+            );
         }
 
         LocalId local_by_name(const std::string &name) const {
@@ -482,7 +541,8 @@ namespace mr { namespace middle { namespace build {
             if (_unit_temp)
                 return *_unit_temp;
             else {
-                const auto unit_temp = Place(create_local("UNIT_TEMP", _inferer.unit(), MutabilityType::Mutable));
+                const auto unit_temp =
+                    Place(create_local("UNIT_TEMP", _inferer.unit(), MutabilityType::Mutable));
                 _unit_temp = unit_temp;
                 return unit_temp;
             }

@@ -16,8 +16,10 @@ namespace mr { namespace middle { namespace ir { namespace traversal {
         explicit PreOrder(const ir::BasicBlocks &blocks)
             : blocks(blocks)
             , visited{std::vector<bool>(blocks.size())}
-            , to_visit(blocks.block(ir::BlockId{0}).terminator().successors().begin(),
-                       blocks.block(ir::BlockId{0}).terminator().successors().end()) {
+            , to_visit(
+                  blocks.block(ir::BlockId{0}).terminator().successors().begin(),
+                  blocks.block(ir::BlockId{0}).terminator().successors().end()
+              ) {
             // current is the start block, so we already visited it
             visited[0] = true;
         }

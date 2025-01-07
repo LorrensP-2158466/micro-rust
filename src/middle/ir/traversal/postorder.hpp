@@ -94,7 +94,9 @@ namespace mr { namespace middle { namespace ir { namespace traversal {
         };
 
         // Iterator accessors
-        iterator begin() { return !blocks.empty() ? iterator(this, to_visit.back().first) : iterator(); }
+        iterator begin() {
+            return !blocks.empty() ? iterator(this, to_visit.back().first) : iterator();
+        }
 
         iterator end() { return iterator(); }
     };

@@ -51,17 +51,21 @@ namespace mr { namespace middle { namespace ir { namespace analysis {
                     apply_statement(state, statement);
                 }
 
-                std::visit(overloaded{[&](const Call &r) {
-                                          apply_call(state, r.dest_place);
-                                          const auto target = r.successors()[0].id();
-                                          propogate(target, state);
-                                      },
-                                      [&](const auto &t) {
-                                          for (const auto bb : t.successors()) {
-                                              propogate(bb, state);
-                                          }
-                                      }},
-                           bb.terminator());
+                std::visit(
+                    overloaded{
+                        [&](const Call &r) {
+                            apply_call(state, r.dest_place);
+                            const auto target = r.successors()[0].id();
+                            propogate(target, state);
+                        },
+                        [&](const auto &t) {
+                            for (const auto bb : t.successors()) {
+                                propogate(bb, state);
+                            }
+                        }
+                    },
+                    bb.terminator()
+                );
             }
             return result_states;
         }

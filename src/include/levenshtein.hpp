@@ -5,12 +5,13 @@
 
 namespace mr { namespace middle {
     // Returns the Levenshtein distance between word1 and word2.
-    static inline size_t levenshtein_dist_bounded(const std::string &word1, const std::string &word2, size_t k = 7) {
+    static inline size_t
+    levenshtein_dist_bounded(const std::string &word1, const std::string &word2, size_t k = 7) {
         size_t size1 = word1.size();
         size_t size2 = word2.size();
 
         // If the difference in lengths is greater than k, we can return early
-        if (std::abs((int)size1 - (int)size2) > k) {
+        if (std::max(size1, size2) - std::min(size1, size2) > k) {
             return k + 1;
         }
 
@@ -71,7 +72,8 @@ namespace mr { namespace middle {
         return std::min(verif[size1][size2], k + 1);
     }
 
-    static inline std::optional<size_t> relative_similar(const std::string &word1, const std::string &word2) {
+    static inline std::optional<size_t>
+    relative_similar(const std::string &word1, const std::string &word2) {
         size_t maxLength = std::max(word1.length(), word2.length());
         size_t distance = levenshtein_dist_bounded(word1, word2);
 

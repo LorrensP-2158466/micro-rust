@@ -29,22 +29,32 @@ namespace mr { namespace middle_interpreter {
         // crashes on non aggregate
         Value &project(const ir::Projection &proj) {
             auto &aggr = std::get<Aggregate>(*this);
-            return std::visit(overloaded{[&](ir::Field f) -> Value & { return aggr.vals[f.field]; }}, proj);
+            return std::visit(
+                overloaded{[&](ir::Field f) -> Value & { return aggr.vals[f.field]; }}, proj
+            );
         }
         // crashes on non aggregate
         const Value &project(const ir::Projection &proj) const {
             const auto &aggr = std::get<Aggregate>(*this);
-            return std::visit(overloaded{[&](ir::Field f) -> const Value & { return aggr.vals[f.field]; }}, proj);
+            return std::visit(
+                overloaded{[&](ir::Field f) -> const Value & { return aggr.vals[f.field]; }}, proj
+            );
         }
 
         // for output of the program
         std::string as_program_str() const {
             return std::visit(
                 overloaded{
-                    [&](const Scalar self, const types::BoolTy &) { return std::string(bool_to_str(self.to_bool())); },
-                    [&](const Scalar self, const types::IntTy &) { return fmt::format("{}", self.to_isize()); },
-                    [&](const Scalar self, const types::UIntTy &) { return fmt::format("{}", self.to_usize()); },
-                    [&](const Scalar self, const types::UnitTy &) { return std::string("()"); },
+                    [&](const Scalar self, const types::BoolTy &) {
+                        return std::string(bool_to_str(self.to_bool()));
+                    },
+                    [&](const Scalar self, const types::IntTy &) {
+                        return fmt::format("{}", self.to_isize());
+                    },
+                    [&](const Scalar self, const types::UIntTy &) {
+                        return fmt::format("{}", self.to_usize());
+                    },
+                    [&](const Scalar, const types::UnitTy &) { return std::string("()"); },
                     [&](const Scalar self, const types::FloatTy &t) {
                         switch (t) {
                         case types::FloatTy::F32:

@@ -1,5 +1,4 @@
 ---
-triple:          'arm64-apple-darwin'
-binary-path:     main
-relocations:     []
-...
+triple: "arm64-apple-darwin"
+binary-path: main
+relocations: []

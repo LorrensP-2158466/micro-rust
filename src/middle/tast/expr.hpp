@@ -14,8 +14,8 @@
 
 namespace mr { namespace middle { namespace tast {
 
-#define MAKE_EXPR_VARIANT_CONSTR(type)                                                                                 \
-    ExprKind(type value)                                                                                               \
+#define MAKE_EXPR_VARIANT_CONSTR(type)                                                             \
+    ExprKind(type value)                                                                           \
         : expr_variant_t(std::move(value)) {}
     struct Expr;
     std::ostream &operator<<(std::ostream &o, const Expr &e);
@@ -181,13 +181,14 @@ namespace mr { namespace middle { namespace tast {
 
         size_t size() const noexcept { return 8; }
 
-#define CREATE_LITERAL_VALUES(val, r_type, c_type)                                                                     \
-    do {                                                                                                               \
-        check_fits<c_type>(ival);                                                                                      \
-        return {val, inf.r_type(), LitIntType::r_type};                                                                \
+#define CREATE_LITERAL_VALUES(val, r_type, c_type)                                                 \
+    do {                                                                                           \
+        check_fits<c_type>(ival);                                                                  \
+        return {val, inf.r_type(), LitIntType::r_type};                                            \
     } while (false);
 
-        static std::pair<Literal, types::Ty> from_ast_lit(const expr::Literal &lit, inference::TyInferer &inf) {
+        static std::pair<Literal, types::Ty>
+        from_ast_lit(const expr::Literal &lit, inference::TyInferer &inf) {
             switch (lit.kind) {
             case expr::LiteralKind::Bool:
                 return {Literal(LiteralKind{Bool{str_to_bool(lit.symbol.c_str())}}), inf.bool_t()};
@@ -195,9 +196,12 @@ namespace mr { namespace middle { namespace tast {
                 throw std::runtime_error("Char literal not supported");
             case expr::LiteralKind::Integer: {
                 // check suffix
-                const auto [v, t, s] = !lit.suffix
-                                           ? std::make_tuple(std::stoul(lit.symbol), inf.create_int_var(), std::nullopt)
-                                           : [&]() -> std::tuple<uint64_t, types::Ty, std::optional<LitIntType>> {
+                const auto [v, t, s] =
+                    !lit.suffix
+                        ? std::make_tuple(
+                              std::stoul(lit.symbol), inf.create_int_var(), std::nullopt
+                          )
+                        : [&]() -> std::tuple<uint64_t, types::Ty, std::optional<LitIntType>> {
                     const auto uval = std::stoul(lit.symbol);
                     const auto ival = std::stol(lit.symbol);
                     switch (*lit.suffix) {
@@ -222,7 +226,8 @@ namespace mr { namespace middle { namespace tast {
                     case expr::Suffix::usize:
                         CREATE_LITERAL_VALUES(uval, usize, uintmax_t)
                     default: {
-                        return unreachable<std::tuple<uint64_t, types::Ty, std::optional<LitIntType>>>();
+                        return unreachable<
+                            std::tuple<uint64_t, types::Ty, std::optional<LitIntType>>>();
                     }
                     };
                 }();
@@ -230,8 +235,9 @@ namespace mr { namespace middle { namespace tast {
             }
             case expr::LiteralKind::Float: {
                 // check suffix
-                const auto [t, s] = !lit.suffix ? std::make_pair(inf.create_float_var(), std::nullopt)
-                                                : [&]() -> std::pair<types::Ty, std::optional<LitFloatType>> {
+                const auto [t, s] =
+                    !lit.suffix ? std::make_pair(inf.create_float_var(), std::nullopt)
+                                : [&]() -> std::pair<types::Ty, std::optional<LitFloatType>> {
                     switch (*lit.suffix) {
                     case expr::Suffix::f32:
                         return {inf.f32(), LitFloatType::f32};
@@ -246,8 +252,11 @@ namespace mr { namespace middle { namespace tast {
                 throw std::runtime_error("Str literal not supported");
             }
         }
-        template <std::integral IntegerT> static void check_fits(auto i) {
-            assert(std::numeric_limits<IntegerT>::min() <= i && i <= std::numeric_limits<IntegerT>::max());
+        template <std::integral IntegerT> static void check_fits(IntegerT i) {
+            assert(
+                std::numeric_limits<IntegerT>::min() <= i &&
+                i <= std::numeric_limits<IntegerT>::max()
+            );
         }
     };
 
@@ -390,8 +399,8 @@ namespace mr { namespace middle { namespace tast {
     };
 
     using ExprKind = std::variant<
-        AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier, IfElse, Literal, UnaryOpExpr, Unit, Loop,
-        Break, Return, Continue, LogicalOpExpr, TupleExpr, FieldExpr>;
+        AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier, IfElse, Literal,
+        UnaryOpExpr, Unit, Loop, Break, Return, Continue, LogicalOpExpr, TupleExpr, FieldExpr>;
     struct Expr {
         ExprKind kind;
         types::Ty type;
@@ -413,5 +422,5 @@ namespace mr { namespace middle { namespace tast {
 #define FORMAT_TAST_TYPE(ty) OSTREAM_FORMATTER(mr::middle::tast::ty)
 
 MAP(FORMAT_TAST_TYPE, Return, Continue, Break, TupleExpr, FieldExpr)
-MAP(FORMAT_TAST_TYPE, AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier, IfElse, Literal,
-    UnaryOpExpr, Unit, Loop, LogicalOpExpr, ExprKind, Expr)
+MAP(FORMAT_TAST_TYPE, AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier, IfElse,
+    Literal, UnaryOpExpr, Unit, Loop, LogicalOpExpr, ExprKind, Expr)

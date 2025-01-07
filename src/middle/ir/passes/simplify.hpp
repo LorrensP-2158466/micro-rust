@@ -100,10 +100,14 @@ namespace mr { namespace middle { namespace ir { namespace passes {
                         changed |= inner_changed;
                     }
 
-                    const auto stmts_to_merge =
-                        std::accumulate(merged_blocks.begin(), merged_blocks.end(), 0, [&](size_t sum, BlockId bb) {
+                    const auto stmts_to_merge = std::accumulate(
+                        merged_blocks.begin(),
+                        merged_blocks.end(),
+                        0,
+                        [&](size_t sum, BlockId bb) {
                             return sum + blocks.block(bb).statements.size();
-                        });
+                        }
+                    );
 
                     if (stmts_to_merge > 0) {
                         std::vector<Statement> statements = std::move(blocks.block(bb).statements);
@@ -112,8 +116,11 @@ namespace mr { namespace middle { namespace ir { namespace passes {
 
                         for (BlockId from : merged_blocks) {
                             auto &from_statements = blocks.block(from).statements;
-                            statements.insert(statements.end(), std::make_move_iterator(from_statements.begin()),
-                                              std::make_move_iterator(from_statements.end()));
+                            statements.insert(
+                                statements.end(),
+                                std::make_move_iterator(from_statements.begin()),
+                                std::make_move_iterator(from_statements.end())
+                            );
                             from_statements.clear();
                         }
 
@@ -139,19 +146,24 @@ namespace mr { namespace middle { namespace ir { namespace passes {
             for (const auto bb_idx : blocks.indices()) {
                 fmt::println("doing: {}", bb_idx);
 
-                if (blocks[bb_idx].statements.empty() && has_variant<ir::Return>(blocks[bb_idx].terminator())) {
+                if (blocks[bb_idx].statements.empty() &&
+                    has_variant<ir::Return>(blocks[bb_idx].terminator())) {
                     simple_returns[bb_idx.id()] = true;
                 }
             }
             fmt::println("here");
             for (auto &bb : blocks) {
-                std::visit(overloaded{[&](const GoTo &go) {
-                                          if (simple_returns[go.target.id()]) {
-                                              bb.terminator() = Terminator(ir::Return{});
-                                          }
-                                      },
-                                      [](const auto &) {}},
-                           bb.terminator());
+                std::visit(
+                    overloaded{
+                        [&](const GoTo &go) {
+                            if (simple_returns[go.target.id()]) {
+                                bb.terminator() = Terminator(ir::Return{});
+                            }
+                        },
+                        [](const auto &) {}
+                    },
+                    bb.terminator()
+                );
             }
         }
 

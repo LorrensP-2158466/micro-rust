@@ -15,14 +15,16 @@ namespace mr { namespace expr {
         OptUnique<Expr> else_block;
 
         IfElse(
-            location if_loc, U<Expr> cond_expr, U<BlockExpr> then, location el_loc, OptUnique<Expr> els = std::nullopt
+            location if_loc, U<Expr> cond_expr, U<BlockExpr> then, location el_loc,
+            OptUnique<Expr> els = std::nullopt
         )
             : Expr(if_loc + (els ? (*els)->loc : then->loc))
+            , if_loc(if_loc)
             , conditional_expr(std::move(cond_expr))
             , then_block(std::move(then))
-            , else_block(std::move(els))
-            , if_loc(if_loc)
-            , else_loc(el_loc) {};
+            , else_loc(el_loc)
+            , else_block(std::move(els)) {};
+
         ~IfElse() = default;
 
         void print(const int depth) const override {

@@ -2,14 +2,14 @@
 
 #include "consts/checked_int_ops.hpp"
 #include "consts/scalar.hpp"
-#include "ir/pass.hpp"
 #include "ir/traversal/preorder.hpp"
 #include "middle/ir/module.hpp"
 #include "mr_util.hpp"
+#include "pass.hpp"
 
 #include <optional>
 
-namespace mr { namespace middle { namespace ir { namespace pass {
+namespace mr { namespace middle { namespace ir { namespace passes {
 
     // doesnt do real constant folding with dataflow analysis
     // just keeps track of any immutable locals with constant initalizers and
@@ -35,23 +35,33 @@ namespace mr { namespace middle { namespace ir { namespace pass {
 
       private:
         void visit_stmt(ir::Statement &stmt) {
-            std::visit(overloaded{[&](ir::Assign &assign) { interp_rvalue_into_place(assign.place, assign.value); },
-                                  [&](ir::FPrintLn &formatted) { visit_format(formatted); },
-                                  [&](ir::SPrintLn &print) { fmt::println("{}", print._string); }},
-                       stmt);
+            std::visit(
+                overloaded{
+                    [&](ir::Assign &assign) {
+                        interp_rvalue_into_place(assign.place, assign.value);
+                    },
+                    [&](ir::FPrintLn &formatted) { visit_format(formatted); },
+                    [&](ir::SPrintLn &print) { fmt::println("{}", print._string); }
+                },
+                stmt
+            );
         }
 
         void visit_format(const ir::FPrintLn &) const {}
 
         void visit_terminator(const ir::Terminator term) {
-            std::visit(overloaded{[&](const ir::CondGoTo &) {
+            std::visit(
+                overloaded{
+                    [&](const ir::CondGoTo &) {
 
-                                  },
-                                  [&](const ir::Call &) {
+                    },
+                    [&](const ir::Call &) {
 
-                                  },
-                                  [&](const auto &) {}},
-                       term);
+                    },
+                    [&](const auto &) {}
+                },
+                term
+            );
         }
 
         void interp_rvalue_into_place(const ir::Place &place, const ir::RValue &value) {
@@ -90,4 +100,4 @@ namespace mr { namespace middle { namespace ir { namespace pass {
             folder.eval();
         }
     };
-}}}} // namespace mr::middle::ir::pass
+}}}} // namespace mr::middle::ir::passes

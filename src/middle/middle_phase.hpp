@@ -122,7 +122,9 @@ namespace mr { namespace middle {
             for (const auto &[fn_name, function] : _functions.get_current_scope()) {
                 auto [outer_tast, inners] = tast_builder.build_everything(*function);
                 if (!outer_tast.structure_invalid)
-                    generated_ir.register_function(fn_name, ir_builder.build_function(std::move(outer_tast.tast)));
+                    generated_ir.register_function(
+                        fn_name, ir_builder.build_function(std::move(outer_tast.tast))
+                    );
 
                 std::vector<std::pair<std::string, ir::Function>> ir_functions{};
                 ir_functions.reserve(inners.size());
@@ -131,7 +133,9 @@ namespace mr { namespace middle {
                     // building this, bcs it will not be executed
                     if (structure_failure)
                         continue;
-                    ir_functions.emplace_back(std::move(name), ir_builder.build_function(std::move(tast)));
+                    ir_functions.emplace_back(
+                        std::move(name), ir_builder.build_function(std::move(tast))
+                    );
                 }
 
                 generated_ir.register_functions(std::move(ir_functions));
@@ -169,7 +173,8 @@ namespace mr { namespace middle {
             auto typ = _inferer.create_function_type(*fn_item);
             _scoped_types.insert(fn_item->name(), Ty{typ});
             if (_functions.get_current_scope().contains(fn_item->name())) {
-                std::cerr << "function definition for name: " << fn_item->name() << " already exits\n";
+                std::cerr << "function definition for name: " << fn_item->name()
+                          << " already exits\n";
                 throw std::runtime_error("");
             }
             _functions.insert(fn_item->name(), fn_item);

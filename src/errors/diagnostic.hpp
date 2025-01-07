@@ -28,7 +28,8 @@ namespace mr { namespace error {
         location source_loc;
         std::vector<DiagnosticLabel> info_labels;
 
-        void emit_to_user(const char *file_name, const std::vector<std::string> &source_in_lines) const {
+        void
+        emit_to_user(const char *file_name, const std::vector<std::string> &source_in_lines) const {
             // DiagnosticWindow window{};
             const int line_width = std::to_string(source_loc.begin.line).length();
 
@@ -92,6 +93,8 @@ namespace mr { namespace error {
                         continue;
                     };
                 } break;
+                default:
+                    break;
                 }
                 print_border(0, line_width);
                 fmt::print(
@@ -108,9 +111,13 @@ namespace mr { namespace error {
 
         void print_border(size_t line_nr, size_t line_width) const {
             if (line_nr)
-                fmt::print(fg(fmt::color::sky_blue) | fmt::emphasis::bold, "{:>{}}  |", line_nr, line_width);
+                fmt::print(
+                    fg(fmt::color::sky_blue) | fmt::emphasis::bold, "{:>{}}  |", line_nr, line_width
+                );
             else
-                fmt::print(fg(fmt::color::sky_blue) | fmt::emphasis::bold, "{:>{}}  |", "", line_width);
+                fmt::print(
+                    fg(fmt::color::sky_blue) | fmt::emphasis::bold, "{:>{}}  |", "", line_width
+                );
         }
     };
 }} // namespace mr::error

@@ -11,7 +11,9 @@ namespace mr { namespace middle { namespace ir { namespace checker {
     // 0 => uninit
     class MaybeInit : public ForwardAnalysis<BitSet<LocalId>> {
 
-        ForwardAnalysis::Domain bottom_value(const Function &f) override { return BitSet<LocalId>(f.locals.size()); }
+        ForwardAnalysis::Domain bottom_value(const Function &f) override {
+            return BitSet<LocalId>(f.locals.size());
+        }
         void init_start_bb(const Function &f, ForwardAnalysis::Domain &state) override {
             // args are surely init
             for (const auto l : f.args_indices()) {

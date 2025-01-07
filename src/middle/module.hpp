@@ -8,8 +8,6 @@
 
 #include "middle_phase.hpp"
 
-
-#include "build/module.hpp"
 #include "ir/module.hpp"
 #include "symbol_table.hpp"
 #include "tast/module.hpp"

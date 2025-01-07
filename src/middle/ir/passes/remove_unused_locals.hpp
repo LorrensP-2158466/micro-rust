@@ -6,7 +6,6 @@
 
 namespace mr { namespace middle { namespace ir { namespace passes {
 
-
     // keeps track of amount of uses of a local
     class UnUsedMap {};
 

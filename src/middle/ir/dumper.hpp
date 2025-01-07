@@ -7,11 +7,7 @@
 #include "terminator.hpp"
 #include "visitor.hpp"
 
-namespace mr {
-    namespace middle {
-        namespace ir {
+namespace mr { namespace middle { namespace ir {
 
-            class IrDumper : public Visitor {};
-        } // namespace ir
-    } // namespace middle
-} // namespace mr
+    class IrDumper : public Visitor {};
+}}} // namespace mr::middle::ir

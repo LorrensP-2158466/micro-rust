@@ -16,29 +16,36 @@ namespace mr { namespace middle { namespace tast { namespace errors {
             found_loc,
             std::vector{
                 error::DiagnosticLabel{
-                    expected_loc, fmt::format("Expected `{}` because of return type", expected), error::Style::Primary
+                    expected_loc,
+                    fmt::format("Expected `{}` because of return type", expected),
+                    error::Style::Primary
                 },
                 error::DiagnosticLabel{
-                    found_loc, fmt::format("Expected `{}` but found `{}`", expected, found), error::Style::Primary
+                    found_loc,
+                    fmt::format("Expected `{}` but found `{}`", expected, found),
+                    error::Style::Primary
                 },
             },
         };
     }
 
-    static inline error::Diagnostic mismatched_types(const types::Ty &found, const types::Ty &expected, location loc) {
+    static inline error::Diagnostic
+    mismatched_types(const types::Ty &found, const types::Ty &expected, location loc) {
         return error::Diagnostic{
             error::Level::Error,
             std::string("Type mismatch"),
             loc,
             std::vector{error::DiagnosticLabel{
-                loc, fmt::format("Expected `{}` but found `{}`", expected, found), error::Style::Primary
+                loc,
+                fmt::format("Expected `{}` but found `{}`", expected, found),
+                error::Style::Primary
             }},
         };
     }
 
     static inline error::Diagnostic mismatched_if_else_types(
-        const types::Ty &found, location else_t_loc, const types::Ty &expected, location if_t_loc, location if_loc,
-        location else_loc
+        const types::Ty &found, location else_t_loc, const types::Ty &expected, location if_t_loc,
+        location if_loc, location else_loc
     ) {
         return error::Diagnostic{
             error::Level::Error,
@@ -48,7 +55,9 @@ namespace mr { namespace middle { namespace tast { namespace errors {
              error::DiagnosticLabel{if_t_loc, "expected because of this", error::Style::Secondary},
              error::DiagnosticLabel{else_loc, "", error::Style::NoStyle},
              error::DiagnosticLabel{
-                 else_t_loc, fmt::format("Expected `{}` but found `{}`", expected, found), error::Style::Primary
+                 else_t_loc,
+                 fmt::format("Expected `{}` but found `{}`", expected, found),
+                 error::Style::Primary
              }
 
             },
@@ -56,7 +65,8 @@ namespace mr { namespace middle { namespace tast { namespace errors {
     }
     class MisMatchedCallArgs {};
 
-    static inline error::Diagnostic unknown_field(std::string field, const types::Ty &actual_type, location loc) {
+    static inline error::Diagnostic
+    unknown_field(std::string field, const types::Ty &actual_type, location loc) {
         return error::Diagnostic{
             error::Level::Error,
             fmt::format("no field `{}` on type `{}`", field, actual_type),
@@ -80,7 +90,9 @@ namespace mr { namespace middle { namespace tast { namespace errors {
             error::Level::Error,
             "invalid left-hand side of assignment",
             loc,
-            std::vector{error::DiagnosticLabel{loc, "cannot assign to this expression", error::Style::Primary}},
+            std::vector{error::DiagnosticLabel{
+                loc, "cannot assign to this expression", error::Style::Primary
+            }},
         };
     }
 
@@ -92,7 +104,8 @@ namespace mr { namespace middle { namespace tast { namespace errors {
             loc,
             std::vector{error::DiagnosticLabel{
                 loc,
-                possible_help.empty() ? "not found in this scope" : fmt::format("help: {}", possible_help),
+                possible_help.empty() ? "not found in this scope"
+                                      : fmt::format("help: {}", possible_help),
                 error::Style::Primary
             }},
         };
@@ -104,7 +117,9 @@ namespace mr { namespace middle { namespace tast { namespace errors {
             error::Level::Error,
             "`continue` outside of a loop",
             loc,
-            std::vector{error::DiagnosticLabel{loc, "cannot `continue` outside of a loop", error::Style::Primary}},
+            std::vector{error::DiagnosticLabel{
+                loc, "cannot `continue` outside of a loop", error::Style::Primary
+            }},
         };
     }
     static inline error::Diagnostic break_outside_loop(location loc) {
@@ -112,7 +127,9 @@ namespace mr { namespace middle { namespace tast { namespace errors {
             error::Level::Error,
             "`break` outside of a loop",
             loc,
-            std::vector{error::DiagnosticLabel{loc, "cannot `break` outside of a loop", error::Style::Primary}},
+            std::vector{error::DiagnosticLabel{
+                loc, "cannot `break` outside of a loop", error::Style::Primary
+            }},
         };
     }
 

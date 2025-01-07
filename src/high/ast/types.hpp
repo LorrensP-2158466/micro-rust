@@ -35,7 +35,9 @@
 namespace mr { namespace ast {
     // forward declare Type so we can use it in tuple, array, slice, ref, ...
 
-    ENUM_DEFINE(primitive_type, Unit, I8, I16, I32, I64, ISIZE, U8, U16, U32, U64, USIZE, Char, BOOL)
+    ENUM_DEFINE(
+        primitive_type, Unit, I8, I16, I32, I64, ISIZE, U8, U16, U32, U64, USIZE, Char, BOOL
+    )
 
     // we don't know the exact type when were parsing a specific typename
     // we only know the NAME itself;
@@ -56,7 +58,7 @@ namespace mr { namespace ast {
 
         Type(location l = location())
             : kind(primitive_type::Unit)
-            , loc() {}
+            , loc(l) {}
         Type(TypeKind k, location l)
             : kind(std::move(k))
             , loc(l) {}
@@ -68,7 +70,9 @@ namespace mr { namespace ast {
         std::string to_string() const {
             return std::visit(
                 overloaded{
-                    [](const primitive_type &pt) -> std::string { return primitive_type_to_string(pt); },
+                    [](const primitive_type &pt) -> std::string {
+                        return primitive_type_to_string(pt);
+                    },
                     [](const Str &) { return std::string("&str"); },
                     [](const Tuple &t) {
                         std::string s = "(";
@@ -80,7 +84,7 @@ namespace mr { namespace ast {
                     },
 
                     [](const Array &t) { return fmt::format("[{}; N]", t.first->to_string()); },
-                    [](const Infer t) { return std::string("`_`"); },
+                    [](const Infer) { return std::string("`_`"); },
                     [](const auto &) -> std::string {
                         TODO("USER DEFINED TYPES NOT SUPPORTED");
                         return "";
