@@ -52,4 +52,10 @@ fn type_error(){
     let y: bool = x.1;
 }
 
+fn suggestion_for_init(){
+    let x: (i32, bool, u64);
+
+    let b = x;
+}
+
 fn main(){}

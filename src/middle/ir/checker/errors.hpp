@@ -23,9 +23,9 @@ namespace mr { namespace middle { namespace ir { namespace checker { namespace e
                     Style::Primary
                 }
             },
-            Suggestion{
-                fmt::format("consider assigning a value: `{}`", types::default_value_for_ty(ty))
-            }
+            Suggestion{fmt::format(
+                "consider assigning a value: `let {} = {}`", name, types::default_value_for_ty(ty)
+            )}
         };
     }
 
@@ -52,4 +52,4 @@ namespace mr { namespace middle { namespace ir { namespace checker { namespace e
         };
     }
 
-}}}}} // namespace mr::middle::ir::checker::error
+}}}}} // namespace mr::middle::ir::checker::errors
