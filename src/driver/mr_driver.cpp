@@ -41,14 +41,15 @@ int mr::driver::MRDriver::start() {
         ir = _middle_phase.run(std::move(_ast));
     } catch (const std::exception &e) {
         show_errors();
-        fmt::println("ICE: {}", e.what());
+        fmt::println("{}", e.what());
 
         fmt::println("\nCompilation failed due to `{}` errors", _err_ctx.error_amount());
         return 1;
     }
 
     auto end_compile = clock::now();
-    auto dur_compile = std::chrono::duration_cast<std::chrono::nanoseconds>(end_compile - start_compile);
+    auto dur_compile =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(end_compile - start_compile);
 
     if (_err_ctx.has_errors()) {
         show_errors();
@@ -62,7 +63,8 @@ int mr::driver::MRDriver::start() {
     interp.interp();
 
     auto end_interp = clock::now();
-    auto dur_interp = std::chrono::duration_cast<std::chrono::nanoseconds>(end_interp - start_interp);
+    auto dur_interp =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(end_interp - start_interp);
 
     std::cout << "-------------------------\n";
     print_duration(dur_compile, "Compiling");

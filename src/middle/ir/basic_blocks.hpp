@@ -126,5 +126,9 @@ namespace mr { namespace middle { namespace ir {
                 )
             );
         }
+
+        void dead_local(BlockId block, LocalId local) {
+            return push_stmt(block, Statement(Dead{local}));
+        }
     };
 }}} // namespace mr::middle::ir

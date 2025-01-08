@@ -36,6 +36,8 @@ namespace mr { namespace middle { namespace build {
         // only do the top level of course
         std::vector<std::vector<BlockId>> _need_go_tos;
         std::vector<std::vector<BlockId>> _need_continues;
+        std::vector<std::vector<LocalId>> _decl_in_loop;
+        size_t in_loop = 0;
 
         BasicBlocks _blocks;
 
@@ -81,6 +83,10 @@ namespace mr { namespace middle { namespace build {
             const auto id = LocalId{_locals.size()};
             _locals_table.insert(name, id);
             _locals.emplace_back(std::move(name), std::move(ty), mut, type, loc);
+            if (in_loop) {
+                DBG(in_loop);
+                _decl_in_loop.back().push_back(id);
+            }
             return id;
         }
 
@@ -94,27 +100,48 @@ namespace mr { namespace middle { namespace build {
             return result;
         }
 
+        void enter_loop() {
+            _need_go_tos.emplace_back();
+            _need_continues.emplace_back();
+            _decl_in_loop.emplace_back();
+            in_loop += 1; // ughhh
+        }
+
+        void exit_loop() {
+            _need_go_tos.pop_back();
+            _need_continues.pop_back();
+            _decl_in_loop.pop_back();
+            in_loop -= 1;
+        }
+
+        void build_dead_locals(BlockId block) {
+            for (const auto local : _decl_in_loop.back()) {
+                _blocks.dead_local(block, local);
+            }
+        }
+
         BlockWith<void> build_in_breakable_scope(
             BlockId loop_block, Place break_place, std::function<void(IrBuilder &builder)> f
         ) {
             spdlog::info("BUILDING IN A BREAKABLE SCOPE");
             _break_places.push_back(break_place);
             _locals_table.push_scope();
-            _need_go_tos.emplace_back();
-            _need_continues.emplace_back();
+            enter_loop();
             f(*this);
             _locals_table.pop_scope();
             _break_places.pop_back();
 
             const auto exit_block = _blocks.create_new_block();
             for (const auto block : _need_go_tos.back()) {
+                build_dead_locals(block);
                 _blocks.go_to(block, exit_block, location());
             }
             for (const auto block : _need_continues.back()) {
+                build_dead_locals(block);
                 _blocks.go_to(block, loop_block, location());
             }
-            _need_go_tos.pop_back();
-            _need_continues.pop_back();
+            exit_loop();
+
             spdlog::info("DONE BUILDING IN BREAKABLE SCOPE");
             return exit_block.empty();
         }
@@ -143,7 +170,7 @@ namespace mr { namespace middle { namespace build {
                     [&](const ExprStmt &e) { return build_expr_stmt(e.expr, block); },
                     [&](const LetStmt &e) { return build_let_stmt(e, block); },
                     [&](const PrintLn &e) { return build_print_stmt(e, block); },
-                    [&](const EmptyStmt &e) { return block.empty(); }
+                    [&](const EmptyStmt &) { return block.empty(); }
                 },
                 stmt.inner
             );
@@ -155,12 +182,22 @@ namespace mr { namespace middle { namespace build {
             if (!resolved_ty.is_known()) {
                 ecx.report_diag(errors::unknown_type(let.id.loc));
             }
+            if (!let.initializer) {
+                create_local(let.id._id, resolved_ty, let.mut.node, LocalType::UserDef, let.id.loc);
+                return block.empty();
+            }
+            // because of shadowing in rust, we'll first build the assigment and than create the new
+            // local, this is to prevent this:
+            /*
+                let bananas = 5;
+                let bananas = bananas + 3; // if we build after local is created, bananas will point
+               to the new uninit local and this is wrong
+            */
+            const auto rvalue = unpack(block, expr_as_rvalue(*let.initializer, block));
             const auto local =
                 create_local(let.id._id, resolved_ty, let.mut.node, LocalType::UserDef, let.id.loc);
-            // no initalizer nothing to do
-            if (!let.initializer)
-                return block.empty();
-            return expr_into_place(Place(local), *let.initializer, block);
+            _blocks.push_assign(block, Place(local), std::move(rvalue), let.initializer->loc);
+            return block.empty();
         }
         BlockWith<void> build_expr_stmt(const Expr &expr, BlockId block) {
             return std::visit(
@@ -262,7 +299,6 @@ namespace mr { namespace middle { namespace build {
                     LocalType::Temp,
                     expr.loc
                 ));
-                spdlog::info("Building expr: {} into temp", expr);
                 unpack(block, expr_into_place(Place(temp_place), expr, block));
                 return block.with(Operand::move(Place(temp_place)));
             };
@@ -504,6 +540,7 @@ namespace mr { namespace middle { namespace build {
                             const auto body_end =
                                 builder.expr_into_place(body_tmp, *loop.body, body_block)
                                     .into_block();
+                            build_dead_locals(body_end);
                             builder._blocks.go_to(body_end, loop_block, expr.loc);
                         });
                     },
@@ -524,12 +561,12 @@ namespace mr { namespace middle { namespace build {
                         //_blocks.push_unit_assign(block, unit_temp());
                         return block.empty();
                     },
-                    [&](const AssignExpr &assign) {
+                    [&](const AssignExpr &) {
                         block = build_expr_stmt(expr, block).into_block();
                         _blocks.push_unit_assign(block, place, expr.loc);
                         return block.empty();
                     },
-                    [&](const AssignOpExpr &assign) {
+                    [&](const AssignOpExpr &) {
                         block = build_expr_stmt(expr, block).into_block();
                         _blocks.push_unit_assign(block, place, expr.loc);
                         return block.empty();

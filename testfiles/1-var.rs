@@ -12,16 +12,16 @@ fn main(){
         }
     } else {
         result = x * 2;
-    }
+    };
 
     let mut i = 0;
     while i < y && result < 50 {
         result += 1;
         i += 1;
-    }
+    };
     
     if result > 100 {
         result = 100;
-    }
+    };
     println!("{result}");
 }

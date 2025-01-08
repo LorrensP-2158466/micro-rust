@@ -46,9 +46,16 @@ namespace mr { namespace middle { namespace ir {
         std::string _string;
     };
 
-    using statement_variant_t = std::variant<Assign, FPrintLn, SPrintLn>;
+    struct Dead {
+        LocalId local;
+    };
+
+    using statement_variant_t = std::variant<Assign, Dead, FPrintLn, SPrintLn>;
     struct Statement : statement_variant_t {
         location loc;
+        Statement(Dead d)
+            : statement_variant_t(d)
+            , loc(location()) {} // don't care about location of this
         Statement(Assign as, location l)
             : statement_variant_t(as)
             , loc(l) {}
@@ -80,11 +87,12 @@ namespace mr { namespace middle { namespace ir {
                     [&](const SPrintLn &print) {
                         o << "PRINT(\"" << print._string << "\")" << std::endl;
                     },
+                    [&](const Dead d) { o << fmt::format("LocalDead(_{})\n", d.local.id()); },
                     [&](const auto &) { o << "UNKNOWN STATEMENT" << std::endl; }
                 },
                 s
             );
             return o;
-        } // namespace ir
-    }; // namespace middle
+        }
+    };
 }}} // namespace mr::middle::ir

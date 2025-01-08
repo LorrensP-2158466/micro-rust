@@ -13,5 +13,5 @@ fn main() {
         let result = fib(x);
         println!("fib({x}) = {result}");
         x += 1;
-    }
+    };
 }

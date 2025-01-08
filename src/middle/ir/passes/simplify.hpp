@@ -74,6 +74,7 @@ namespace mr { namespace middle { namespace ir { namespace passes {
         }
 
         void simplify() {
+            strip_nops();
             std::vector<ir::BlockId> merged_blocks{};
             bool changed;
             do {
@@ -139,8 +140,6 @@ namespace mr { namespace middle { namespace ir { namespace passes {
         }
 
         void remove_simple_returns() {
-            fmt::println("simple returns");
-            fmt::println("{}", predecessor_count);
 
             std::vector<bool> simple_returns(blocks.size());
             for (const auto bb_idx : blocks.indices()) {
@@ -157,7 +156,7 @@ namespace mr { namespace middle { namespace ir { namespace passes {
                     overloaded{
                         [&](const GoTo &go) {
                             if (simple_returns[go.target.id()]) {
-                                bb.terminator() = Terminator(ir::Return{});
+                                bb.terminator() = Terminator(ir::Return{}, location());
                             }
                         },
                         [](const auto &) {}
@@ -238,6 +237,12 @@ namespace mr { namespace middle { namespace ir { namespace passes {
                 return true;
             }
             return false;
+        }
+
+        void strip_nops() {
+            for (auto &bb : blocks) {
+                std::erase_if(bb.statements, [&](auto &stmt) { return has_variant<Dead>(stmt); });
+            }
         }
     };
 

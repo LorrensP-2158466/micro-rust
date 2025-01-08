@@ -56,9 +56,14 @@ namespace mr { namespace middle_interpreter {
             : _code(std::move(code)) {}
 
         int interp() {
-            Value dest{Scalar{0, 0}, types::Ty{types::UnitTy{}}}; // unit ofcourse, never write to it, but it exists
+            Value dest{
+                Scalar{0, 0}, types::Ty{types::UnitTy{}}
+            }; // unit ofcourse, never write to it, but it exists
             init_function_call(
-                ir::Call{"main", std::vector<ir::Operand>(), ir::Place{ir::LocalId{0}}, ir::BlockId{0}}, dest
+                ir::Call{
+                    "main", std::vector<ir::Operand>(), ir::Place{ir::LocalId{0}}, ir::BlockId{0}
+                },
+                dest
             );
             // as long as we have to do work, we work
             while (interp_curr_block()) {
@@ -86,8 +91,10 @@ namespace mr { namespace middle_interpreter {
         /*
         Pushes a frame on to the stack and initalizing arguments
         */
-        void
-        init_function_call(const ir::Call &call, Value &dest, std::optional<ir::BlockId> caller_target = std::nullopt) {
+        void init_function_call(
+            const ir::Call &call, Value &dest,
+            std::optional<ir::BlockId> caller_target = std::nullopt
+        ) {
             auto &fn = _code.get_function_by_name(call.fun);
             std::vector<Value> values{};
             values.reserve(fn.locals.size());
@@ -124,9 +131,12 @@ namespace mr { namespace middle_interpreter {
         void interp_stmt(const ir::Statement &stmt) {
             std::visit(
                 overloaded{
-                    [&](const ir::Assign &assign) { interp_rvalue_into_place(assign.place, assign.value); },
+                    [&](const ir::Assign &assign) {
+                        interp_rvalue_into_place(assign.place, assign.value);
+                    },
                     [&](const ir::FPrintLn &formatted) { interp_format(formatted); },
-                    [&](const ir::SPrintLn &print) { fmt::println("{}", print._string); }
+                    [&](const ir::SPrintLn &print) { fmt::println("{}", print._string); },
+                    [&](const auto) {}
                 },
                 stmt
             );
@@ -136,7 +146,9 @@ namespace mr { namespace middle_interpreter {
             std::string output;
             output.reserve(16);
             output += map_optional_or(
-                format.start, [&](const ir::Operand &op) { return interp_operand(op).as_program_str(); }, std::string()
+                format.start,
+                [&](const ir::Operand &op) { return interp_operand(op).as_program_str(); },
+                std::string()
             );
 
             for (const auto &[str, op] : format._format_structure) {
@@ -160,7 +172,9 @@ namespace mr { namespace middle_interpreter {
                         const auto target = cgt.targets[cond];
                         go_to_block(target);
                     },
-                    [&](const ir::Call &call) { init_function_call(call, interp_place(call.dest_place), call.target); },
+                    [&](const ir::Call &call) {
+                        init_function_call(call, interp_place(call.dest_place), call.target);
+                    },
                     [&](const auto &) {}
                 },
                 term
@@ -173,7 +187,9 @@ namespace mr { namespace middle_interpreter {
                 overloaded{
                     [&](const ir::AsIs &as_is) { return interp_operand(as_is.op); },
                     [&](const ir::BinaryOp &bin_op) { return interp_bin_op(bin_op); },
-                    [&](const ir::UnaryOp &un_op) { return interp_un_op(un_op.op, interp_operand(un_op.operand)); },
+                    [&](const ir::UnaryOp &un_op) {
+                        return interp_un_op(un_op.op, interp_operand(un_op.operand));
+                    },
                     [&](const ir::Aggregate &aggr) {
                         std::vector<Value> vals;
                         vals.reserve(aggr.values.size());
@@ -209,7 +225,9 @@ namespace mr { namespace middle_interpreter {
                     [&](const types::IntTy &) { return binary_int_op(bin_op.op, left, right); },
                     [&](const types::UIntTy &) { return binary_int_op(bin_op.op, left, right); },
                     [&](const types::BoolTy &) { return binary_bool_op(bin_op.op, left, right); },
-                    [](const auto &) -> Value { throw std::runtime_error("Unsupported type for binop"); }
+                    [](const auto &) -> Value {
+                        throw std::runtime_error("Unsupported type for binop");
+                    }
                 },
                 result_type
             );
@@ -365,7 +383,9 @@ namespace mr { namespace middle_interpreter {
                             throw std::runtime_error("Invalid UnOp on integer");
                         }
                     },
-                    [&](const auto &) -> Value { throw std::runtime_error("Invalid type for unary op"); }
+                    [&](const auto &) -> Value {
+                        throw std::runtime_error("Invalid type for unary op");
+                    }
                 },
                 val.type
             );

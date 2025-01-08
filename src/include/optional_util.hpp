@@ -32,21 +32,3 @@ template <typename T> std::optional<T> take(std::optional<T> &o) {
     return t;
 }
 } // namespace mr
-
-template <typename T> struct fmt::formatter<std::optional<T>> : fmt::formatter<T> {
-    // Parse function, optional custom formatting
-    constexpr auto parse(fmt::format_parse_context &ctx) {
-        auto it = fmt::formatter<T>::parse(ctx);
-        return it;
-    }
-
-    // Format function
-    template <typename FormatContext>
-    auto format(const std::optional<T> &opt, FormatContext &ctx) const {
-        if (opt) {
-            return fmt::format_to(ctx.out(), "Some({})", opt.value());
-        } else {
-            return fmt::format_to(ctx.out(), "None"); // Print "None" if the optional is empty
-        }
-    }
-};

@@ -161,9 +161,9 @@ func_arg
 
 stmt: SEMICOLON {$$ = m_u<EmptyStmt>(@1);}
     | let { DEFAULT_ACTION($$, $1); }
-    /* | RETURN SEMICOLON {  $$ = m_u<Return>(@1 + @2, m_u<Unit>(@2) ); }
+    | RETURN SEMICOLON {  $$ = m_u<Return>(@1 + @2, m_u<Unit>(@2) ); }
     | BREAK SEMICOLON {  $$ = m_u<Break>(@1 + @2, m_u<Unit>(@2)); }
-    | CONTINUE SEMICOLON {  $$ = m_u<Continue>(@1 + @2); } */
+    | CONTINUE SEMICOLON {  $$ = m_u<Continue>(@1 + @2); }
     | expr_stmt SEMICOLON { DEFAULT_ACTION($$, $1);}
     // | expr_stmt SEMICOLON { DEFAULT_ACTION($$, $1);} // the reduce/reduce conflicts, which work
     | print_ln SEMICOLON { DEFAULT_ACTION($$, $1);}
@@ -227,6 +227,7 @@ type_list
     | type {$$ = std::vector<Type>(); $$.push_back(std::move($1));}
     ;
 
+
 type
     : I8 { $$ = Type(primitive_type::I8, @1); }
     | I16 { $$ = Type(primitive_type::I16, @1); }
@@ -239,10 +240,14 @@ type
     | U64 { $$ = Type(primitive_type::U64, @1); }
     | USIZE { $$ = Type(primitive_type::USIZE, @1); }
     | BOOL { $$ = Type(primitive_type::BOOL, @1); }
+    | UNDERSCORE { $$ = Type(Type::Infer{}, @1); }
     | LPAREN type_list RPAREN { $$ = Type(std::move($2), @1 + @3);}
     | LPAREN RPAREN { $$ = Type(@1 + @2); }
+    | FN LPAREN type_list RPAREN ARROW type { 
+        auto ret_loc = $6.loc;
+        $$ = Type{Type::FnPointer{std::move($3), m_u<Type>(std::move($6))}, @1 + ret_loc};
+    }
     ;
-
 
 block_expr
     : LBRACE stmt_list RBRACE { $$ = m_u<BlockExpr>(std::move($2), m_u<Unit>(@3), @1 + @3); }

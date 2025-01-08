@@ -50,8 +50,12 @@ namespace mr { namespace ast {
         using Str = std::string; // no utf-8 bull
         // for now a placeholder for errors when declaring type so we can still go
         // through with compiling and catch more errors
+        struct FnPointer {
+            std::vector<Type> arg_types;
+            U<Type> ret_type;
+        };
         struct Infer {};
-        using TypeKind = std::variant<Infer, primitive_type, Str, Tuple, Array>;
+        using TypeKind = std::variant<Infer, primitive_type, Str, Tuple, FnPointer, Array>;
 
         TypeKind kind;
         location loc;
@@ -85,6 +89,14 @@ namespace mr { namespace ast {
 
                     [](const Array &t) { return fmt::format("[{}; N]", t.first->to_string()); },
                     [](const Infer) { return std::string("`_`"); },
+                    [](const FnPointer &fp) {
+                        std::string s = "fn(";
+                        for (const auto &ty : fp.arg_types) {
+                            s += ty.to_string() + ", ";
+                        }
+                        s += ") -> " + fp.ret_type->to_string();
+                        return s;
+                    },
                     [](const auto &) -> std::string {
                         TODO("USER DEFINED TYPES NOT SUPPORTED");
                         return "";

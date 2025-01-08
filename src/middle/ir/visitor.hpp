@@ -49,7 +49,8 @@ namespace mr { namespace middle { namespace ir {
                 overloaded{
                     [&](const Assign &a) { visit_assign(a, l); },
                     [&](const FPrintLn &fp) { visit_format_print(fp, l); },
-                    [&](const SPrintLn &p) { visit_print(p, l); }
+                    [&](const SPrintLn &p) { visit_print(p, l); },
+                    [&](const auto) {}
                 },
                 f
             );
@@ -73,10 +74,10 @@ namespace mr { namespace middle { namespace ir {
                 overloaded{
                     [&](const GoTo &) {},
                     // we have to visit the return local, because we "use" it
-                    [&](const Return &c) {
+                    [&](const Return &) {
                         visit_local(RETURN_LOCAL, PlaceCtx(NonMutUseCtx::Move), l);
                     },
-                    [&](const Assert &c) {},
+                    [&](const Assert &) {},
                     [&](const CondGoTo &cgt) { visit_operand(cgt.op, l); },
                     [&](const Call &c) {
                         for (const auto &op : c.args) {

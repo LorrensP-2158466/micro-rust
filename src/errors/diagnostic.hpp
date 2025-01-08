@@ -86,8 +86,6 @@ namespace mr { namespace error {
                 first_info = false;
                 print_border(curr_line, line_width);
                 fmt::println(" {}", source_in_lines[curr_line - 1]);
-                const auto offset = loc.begin.column;
-                const auto length = loc.end.column - loc.begin.column;
                 print_diagnostic_label(loc, label, style, line_width);
                 prev_line = curr_line;
             }

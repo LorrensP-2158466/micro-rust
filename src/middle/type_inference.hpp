@@ -23,6 +23,7 @@ namespace mr { namespace middle { namespace inference {
         UnificationTable<IntVar, IntVarValue> _int_vars;
         UnificationTable<FloatVar, FloatVarValue> _float_vars;
         SymbolTable<Ty> _types;
+        std::vector<U<Ty>> _held_types;
 
       public:
         void push_scope() { _types.push_scope(); }
@@ -148,34 +149,29 @@ namespace mr { namespace middle { namespace inference {
                 overloaded{
                     [&](const TypeVar &tv) {
                         const auto t = _type_vars.get(tv);
-                        if (!t)
-                            throw std::runtime_error("TypeVariable does not exist");
                         // can't recursively call, because then we return Unknown
                         // instead of {unknown}
                         return std::visit(
                             overloaded{
-                                [&](const InferTy &) { return shallow_resolve(*t); }, [&](const auto &) { return ty; }
+                                [&](const InferTy &) { return shallow_resolve(*t); },
+                                [&](const auto &) { return ty; }
                             },
                             *t
                         );
                     },
                     [&](const IntVar &tv) {
-                        const auto t = _int_vars.get(tv);
-                        if (!t)
-                            throw std::runtime_error("IntVar does not exist");
-                        if (auto i = std::get_if<IntTy>(&*t)) {
-                            return Ty{*i};
-                        }
-                        if (auto u = std::get_if<UIntTy>(&*t)) {
-                            return Ty{*u};
-                        }
-                        return ty;
+                        return std::visit(
+                            overloaded{
+                                [&](const IntTy &i) { return Ty{i}; },
+                                [&](const UIntTy &u) { return Ty{u}; },
+                                [&](const auto &) { return ty; }
+                            },
+                            *_int_vars.get(tv)
+                        );
                     },
                     [&](const FloatVar &tv) {
-                        const auto t = _float_vars.get(tv);
-                        if (!t)
-                            throw std::runtime_error("FloatVar does not exist");
-                        if (auto ft = std::get_if<FloatTy>(&*t)) {
+                        const auto t = *_float_vars.get(tv);
+                        if (auto ft = std::get_if<FloatTy>(&t)) {
                             return Ty{*ft};
                         }
                         return ty;
@@ -250,10 +246,27 @@ namespace mr { namespace middle { namespace inference {
                     [&](const ast::Type::Tuple &tup) {
                         std::vector<Ty> tys;
                         tys.reserve(tup.size());
-                        std::transform(tup.cbegin(), tup.cend(), std::back_inserter(tys), [&](const auto &t) {
-                            return from_ast_type(t);
-                        });
+                        std::transform(
+                            tup.cbegin(),
+                            tup.cend(),
+                            std::back_inserter(tys),
+                            [&](const auto &t) { return from_ast_type(t); }
+                        );
                         return Ty{TupleTy{std::move(tys)}};
+                    },
+                    [&](const ast::Type::FnPointer &fp) {
+                        std::vector<Ty> arg_tys;
+                        arg_tys.reserve(fp.arg_types.size());
+                        std::transform(
+                            fp.arg_types.cbegin(),
+                            fp.arg_types.cend(),
+                            std::back_inserter(arg_tys),
+                            [&](const auto &t) { return from_ast_type(t); }
+                        );
+                        auto ret_ty_held = m_u<Ty>(from_ast_type(*fp.ret_type));
+                        auto ret_ty_p = ret_ty_held.get();
+                        _held_types.emplace_back(std::move(ret_ty_held));
+                        return Ty{FnPointerTy{std::move(arg_tys), ret_ty_p}};
                     },
                     [&](const auto &) -> Ty {
                         TODO("UNSUPPORTED TYPE");
@@ -262,7 +275,7 @@ namespace mr { namespace middle { namespace inference {
                 },
                 ast_type.kind
             );
-        }
+        } // namespace inference
 
         /**
          * sets a type `t` to be equal to a type `u`, if this can't
@@ -292,15 +305,25 @@ namespace mr { namespace middle { namespace inference {
                                     _type_vars.unionize(tt, ut);
                                     return some(t);
                                 },
-                                [&](const TypeVar &ttv, const IntVar &uiv) { return eq_intvar_type_var(uiv, ttv); },
-                                [&](const IntVar &tiv, const TypeVar &utv) { return eq_intvar_type_var(tiv, utv); },
-                                [&](const FloatVar &tfv, const TypeVar &utv) { return eq_floatvar_type_var(tfv, utv); },
-                                [&](const TypeVar &tfv, const FloatVar &ufv) { return eq_floatvar_type_var(ufv, tfv); },
+                                [&](const TypeVar &ttv, const IntVar &uiv) {
+                                    return eq_intvar_type_var(uiv, ttv);
+                                },
+                                [&](const IntVar &tiv, const TypeVar &utv) {
+                                    return eq_intvar_type_var(tiv, utv);
+                                },
+                                [&](const FloatVar &tfv, const TypeVar &utv) {
+                                    return eq_floatvar_type_var(tfv, utv);
+                                },
+                                [&](const TypeVar &tfv, const FloatVar &ufv) {
+                                    return eq_floatvar_type_var(ufv, tfv);
+                                },
                                 [&](const IntVar &tiv, const IntVar &uiv) {
                                     _int_vars.unionize(tiv, uiv);
                                     return some(t); // one of the two
                                 },
-                                [&](const FloatVar &tfv, const FloatVar &utf) { return eq_float_vars(tfv, utf); },
+                                [&](const FloatVar &tfv, const FloatVar &utf) {
+                                    return eq_float_vars(tfv, utf);
+                                },
                                 [](const auto &, const auto &) { return no_type(); }
                             },
                             ti,
@@ -308,60 +331,80 @@ namespace mr { namespace middle { namespace inference {
                         );
                     },
                     [&](const InferTy &it, const IntTy &iu) {
-                        if (auto intvar = std::get_if<IntVar>(&it)) {
-                            _int_vars.assign(*intvar, IntVarValue{iu});
-                            return some(u); // return the correct type
-                        }
-                        if (auto var = std::get_if<TypeVar>(&it)) {
-                            _type_vars.assign(*var, u);
-                            return some(u);
-                        }
-                        return no_type();
+                        return std::visit(
+                            overloaded{
+                                [&](const IntVar iv) {
+                                    return _int_vars.unify_var_value(iv, IntVarValue{iu})
+                                               ? some(u)
+                                               : no_type();
+                                },
+                                [&](const TypeVar iv) {
+                                    return _type_vars.unify_var_value(iv, u) ? some(u) : no_type();
+                                },
+                                [&](const auto iv) { return no_type(); },
+                            },
+                            it
+                        );
                     },
                     [&](const IntTy &it, const InferTy &iu) {
-                        if (auto intvar = std::get_if<IntVar>(&iu)) {
-                            _int_vars.assign(*intvar, IntVarValue{it});
-                            return some(t); // return the correct type
-                        }
-                        if (auto var = std::get_if<TypeVar>(&iu)) {
-                            _type_vars.assign(*var, t);
-                            return some(t);
-                        }
-                        return no_type();
+                        return std::visit(
+                            overloaded{
+                                [&](const IntVar iv) {
+                                    return _int_vars.unify_var_value(iv, IntVarValue{it})
+                                               ? some(t)
+                                               : no_type();
+                                },
+                                [&](const TypeVar iv) {
+                                    return _type_vars.unify_var_value(iv, t) ? some(t) : no_type();
+                                },
+                                [&](const auto iv) { return no_type(); },
+                            },
+                            iu
+                        );
                     },
                     [&](const InferTy &it, const UIntTy &uiu) {
-                        if (auto uintvar = std::get_if<IntVar>(&it)) {
-                            _int_vars.assign(*uintvar, IntVarValue{uiu});
-                            return some(u); // return the correct type
-                        }
-                        if (auto var = std::get_if<TypeVar>(&it)) {
-                            _type_vars.assign(*var, u);
-                            return some(u);
-                        }
-                        return no_type();
+                        return std::visit(
+                            overloaded{
+                                [&](const IntVar iv) {
+                                    return _int_vars.unify_var_value(iv, IntVarValue{uiu})
+                                               ? some(u)
+                                               : no_type();
+                                },
+                                [&](const TypeVar iv) {
+                                    return _type_vars.unify_var_value(iv, u) ? some(u) : no_type();
+                                },
+                                [&](const auto iv) { return no_type(); },
+                            },
+                            it
+                        );
                     },
                     [&](const UIntTy &uit, const InferTy &itu) {
-                        if (auto uintvar = std::get_if<IntVar>(&itu)) {
-                            _int_vars.assign(*uintvar, IntVarValue{uit});
-                            return some(t); // return the correct type
-                        }
-                        if (auto var = std::get_if<TypeVar>(&itu)) {
-                            _type_vars.assign(*var, t);
-                            return some(t);
-                        }
-                        return no_type();
+                        return std::visit(
+                            overloaded{
+                                [&](const IntVar iv) {
+                                    return _int_vars.unify_var_value(iv, IntVarValue{uit})
+                                               ? some(t)
+                                               : no_type();
+                                },
+                                [&](const TypeVar iv) {
+                                    return _type_vars.unify_var_value(iv, t) ? some(t) : no_type();
+                                },
+                                [&](const auto iv) { return no_type(); },
+                            },
+                            itu
+                        );
                     },
                     [&](const InferTy &it, const FloatTy &) {
                         if (!it.is_float_var())
                             return no_type();
                         return eq_infer_and_ty(it, u);
                     },
-                    [&](const InferTy &it, const BoolTy &) { return handle_infer(it, u); },
-                    [&](const BoolTy &, const InferTy &ut) { return handle_infer(ut, t); },
-                    [&](const InferTy &it, const UnitTy &) { return handle_infer(it, u); },
-                    [&](const UnitTy &, const InferTy &iu) { return handle_infer(iu, t); },
-                    [&](const InferTy &it, const TupleTy) { return handle_infer(it, u); },
-                    [&](const TupleTy &, const InferTy iu) { return handle_infer(iu, t); },
+                    // [&](const InferTy &it, const BoolTy &) { return handle_infer(it, u); },
+                    // [&](const BoolTy &, const InferTy &ut) { return handle_infer(ut, t); },
+                    // [&](const InferTy &it, const UnitTy &) { return handle_infer(it, u); },
+                    // [&](const UnitTy &, const InferTy &iu) { return handle_infer(iu, t); },
+                    // [&](const InferTy &it, const TupleTy) { return handle_infer(it, u); },
+                    // [&](const TupleTy &, const InferTy iu) { return handle_infer(iu, t); },
                     // it is possible that tuple need to be inferred recursively
                     // ({integer}, {float}) eq {i32, f32}
                     // ({var}, {var}) = ({integer}, {var})
@@ -370,6 +413,7 @@ namespace mr { namespace middle { namespace inference {
                             return no_type();
                         std::vector<Ty> tys;
                         tys.reserve(tt.tys.size());
+                        // find a way to tell where everything went wrong
                         for (const auto &[sub_t, sub_u] : iterators::zip(tt.tys, ut.tys)) {
                             const auto eq_ty = eq(sub_t, sub_u);
                             if (!eq_ty)
@@ -377,6 +421,36 @@ namespace mr { namespace middle { namespace inference {
                             tys.push_back(std::move(*eq_ty));
                         }
                         return some(Ty{TupleTy{std::move(tys)}});
+                    },
+                    [&](const FnPointerTy &fp, const FunctionType *&fi) {
+                        if (fp.arg_tys.size() != fi->arg_types.size())
+                            return no_type();
+                        if (*fp.ret_ty != fi->ret_ty) {
+                            return no_type();
+                        }
+                        // find a way to tell where everything went wrong
+                        for (const auto &[sub_t, sub_u] :
+                             iterators::zip(fp.arg_tys, fi->arg_types)) {
+                            const auto eq_ty = eq(sub_t, sub_u);
+                            if (!eq_ty)
+                                return no_type();
+                        }
+                        return some(t);
+                    },
+                    [&](const FunctionType *&fi, const FnPointerTy &fp) {
+                        if (fp.arg_tys.size() != fi->arg_types.size())
+                            return no_type();
+                        if (*fp.ret_ty != fi->ret_ty) {
+                            return no_type();
+                        }
+                        // find a way to tell where everything went wrong
+                        for (const auto &[sub_t, sub_u] :
+                             iterators::zip(fp.arg_tys, fi->arg_types)) {
+                            const auto eq_ty = eq(sub_t, sub_u);
+                            if (!eq_ty)
+                                return no_type();
+                        }
+                        return some(u);
                     },
                     [&](const NeverTy &, const InferTy &iu) {
                         if (auto type_var = std::get_if<TypeVar>(&iu)) {
@@ -390,6 +464,8 @@ namespace mr { namespace middle { namespace inference {
                         }
                         return some(t);
                     },
+                    [&](const InferTy &it, const auto &) { return handle_infer(it, u); },
+                    [&](const auto &, const InferTy &ut) { return handle_infer(ut, t); },
                     [&](const NeverTy &, const auto &) { return some(u); },
                     [&](const auto &, const NeverTy &) { return some(t); },
                     [&](const auto &, const auto &) { return no_type(); }
@@ -438,16 +514,22 @@ namespace mr { namespace middle { namespace inference {
             );
             // we can iterate over this map and collect every arg
             // but we don't care about that right now.
-            if (const auto val =
-                    std::find_if(seen_args.cbegin(), seen_args.cend(), [](const auto &v) { return v.second > 1; });
+            if (const auto val = std::find_if(
+                    seen_args.cbegin(), seen_args.cend(), [](const auto &v) { return v.second > 1; }
+                );
                 val != seen_args.cend()) {
-                spdlog::critical("Argument `{}` in function `{}`, is declared more than once", val->first, decl.name());
+                spdlog::critical(
+                    "Argument `{}` in function `{}`, is declared more than once",
+                    val->first,
+                    decl.name()
+                );
                 TODO("COLLECT `ARGUMENT DECLARED MORE THAN ONCE` ERROR");
             }
 
             Ty ret_ty = from_ast_type(decl.return_type());
 
-            const auto ty = new FunctionType{std::string(decl.name()), std::move(arg_types), std::move(ret_ty)};
+            const auto ty =
+                new FunctionType{std::string(decl.name()), std::move(arg_types), std::move(ret_ty)};
             _types.insert(decl.name(), Ty{ty});
             return ty;
         }
@@ -474,5 +556,5 @@ namespace mr { namespace middle { namespace inference {
         }
 
         static inline std::optional<Ty> no_type() { return none<Ty>(); }
-    }; // namespace middle
+    };
 }}} // namespace mr::middle::inference

@@ -10,10 +10,11 @@ fn main() {
 
     let mut mix = (10, true, (3, 4));
     mix.0 += 5;
+
 }
 
 fn add_tuple(pair: (i32, i32)) -> i32 {
-    pair.0 + pair.1
+    if true { 10 } else { 20 } + 20
 }
 
 

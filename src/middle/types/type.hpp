@@ -1,12 +1,16 @@
 #pragma once
 
+#include "datastructures.hpp"
 #include "high/ast/module.hpp"
 #include "mr_util.hpp"
 #include <algorithm>
 #include <assert.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
+#include <fmt/std.h>
 #include <numeric>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -114,6 +118,24 @@ namespace mr { namespace middle { namespace types {
             );
             return o;
         }
+
+        static inline IntVarValue unify_values(const IntVarValue &val1, const IntVarValue &val2) {
+            return std::visit(
+                overloaded{
+                    [](const UnknownTy &, const UnknownTy &) { return IntVarValue(UnknownTy{}); },
+                    [&](const IntTy &, const UnknownTy &) { return val1; },
+                    [&](const UIntTy &, const UnknownTy &) { return val1; },
+                    [&](const UnknownTy &, const IntTy &) { return val2; },
+                    [&](const UnknownTy &, const UIntTy &) { return val2; },
+                    [](const auto &, const auto &) {
+                        ICE("CANT unify differing integer, we should have resolved them");
+                        return unreachable<IntVarValue>();
+                    },
+                },
+                val1,
+                val2
+            );
+        }
     };
     struct FloatVarValue : public std::variant<UnknownTy, FloatTy> {
         friend std::ostream &operator<<(std::ostream &o, const FloatVarValue &t) {
@@ -125,6 +147,22 @@ namespace mr { namespace middle { namespace types {
                 t
             );
             return o;
+        }
+        static inline FloatVarValue
+        unify_values(const FloatVarValue &val1, const FloatVarValue &val2) {
+            return std::visit(
+                overloaded{
+                    [](const UnknownTy &, const UnknownTy &) { return FloatVarValue(UnknownTy{}); },
+                    [&](const FloatTy &, const UnknownTy &) { return val1; },
+                    [&](const UnknownTy &, const FloatTy &) { return val2; },
+                    [](const auto &, const auto &) {
+                        ICE("CANT unify differing floats, we should have resolved them");
+                        return unreachable<FloatVarValue>();
+                    },
+                },
+                val1,
+                val2
+            );
         }
     };
 
@@ -162,12 +200,20 @@ namespace mr { namespace middle { namespace types {
         friend bool operator!=(const TupleTy &l, const TupleTy &r) = default;
     };
 
+    struct FnPointerTy {
+        std::vector<Ty> arg_tys;
+        const Ty *ret_ty;
+
+        bool operator==(const FnPointerTy &other) const;
+        bool operator!=(const FnPointerTy &other) const = default;
+    };
+
     struct FunctionType;
     static std::string function_type_to_string(const FunctionType *ft);
 
     using type_variant_t = std::variant<
         UnknownTy, NeverTy, InferTy, BoolTy, IntTy, UIntTy, UnitTy, FloatTy, TupleTy,
-        const FunctionType *>;
+        const FunctionType *, FnPointerTy>;
     struct Ty : public type_variant_t {
 
         bool is_known() const noexcept {
@@ -215,9 +261,24 @@ namespace mr { namespace middle { namespace types {
         }
 
         friend std::ostream &operator<<(std::ostream &o, const Ty &ft) {
-            o << std::visit(
+            return (o << ft.to_string());
+        }
+        std::string to_string() const noexcept {
+            return std::visit(
                 overloaded{
                     [](const FunctionType *const &t) { return function_type_to_string(t); },
+                    [](const FnPointerTy &fp) {
+                        return fmt::format(
+                            "fn({}) -> {}",
+                            fmt::join(
+                                fp.arg_tys | std::views::transform([&](const auto &t) {
+                                    return t.to_string();
+                                }),
+                                ", "
+                            ),
+                            fp.ret_ty->to_string()
+                        );
+                    },
                     [](const NeverTy &) { return "!"s; },
                     [](const UnitTy &) { return "()"s; },
                     [](const BoolTy &) { return "bool"s; },
@@ -227,21 +288,38 @@ namespace mr { namespace middle { namespace types {
                     [](const UIntTy &t) -> std::string { return UIntTy_to_string(t); },
                     [](const FloatTy &t) -> std::string { return FloatTy_to_string(t); },
                     [](const TupleTy &t) -> std::string {
-                        std::stringstream s;
-                        s << "(";
-                        for (const auto &ty : t.tys) {
-                            s << ty << ", ";
-                        }
-                        s << ')';
-                        return s.str();
+                        return fmt::format(
+                            "({})",
+                            fmt::join(
+                                t.tys | std::views::transform([&](const auto &t) {
+                                    return t.to_string();
+                                }),
+                                ", "
+                            )
+                        );
                     },
-                    [](const auto &) { return "buhhhhh"; }
+                    [](const auto &) { return "buhhhhh"s; }
                 },
-                ft
+                *this
             );
-            return o;
         }
-    };
+
+        static inline Ty unify_values(const Ty &val1, const Ty &val2) {
+            return std::visit(
+                overloaded{
+                    [](const UnknownTy &, const UnknownTy &) { return Ty(UnknownTy{}); },
+                    [&](const auto &, const UnknownTy &) { return val1; },
+                    [&](const UnknownTy &, const auto &) { return val2; },
+                    [](const auto &, const auto &) {
+                        ICE("CANT unify differing tys, we should have resolved them");
+                        return unreachable<Ty>();
+                    },
+                },
+                val1,
+                val2
+            );
+        }
+    }; // namespace middle::types
 
     struct FunctionType {
         std::string id; // function types are also based on their name:
@@ -268,9 +346,6 @@ namespace mr { namespace middle { namespace types {
     };
 
     static std::string function_type_to_string(const FunctionType *ft) { return ft->to_string(); }
-
-
-
 }}} // namespace mr::middle::types
 
 template <> struct fmt::formatter<mr::middle::types::Ty> : fmt::ostream_formatter {};

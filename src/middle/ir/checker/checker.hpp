@@ -14,8 +14,9 @@ namespace mr { namespace middle { namespace ir { namespace checker {
     class Checker : public Visitor {
         const Function &fn;
         error::ErrorCtx &ecx;
-        MaybeUninit::Results uninit_entry_states;
+        MaybeUninit::Results uninit_entry_states; // vector<BitSet> bit_set[var_id] == uninit
         MaybeInit::Results init_entry_states;
+        EverInit::Results ever_entry_states;
 
         // if we report an error on a particular error, we don't report any more errors on that
         // local because we can't be sure that that error occured because of the first one. this is
@@ -38,8 +39,8 @@ namespace mr { namespace middle { namespace ir { namespace checker {
         bool is_assignable(LocalId local, Location loc) const {
             // we don't have drops so we can use the maybe init state to know that a
             // variable is initalized somewhere before this location
-            const auto &init_state = init_entry_states[loc.basic_block.id()];
-            return init_state.contains(local) && !fn.all_locals()[local.id()].is_mutable();
+            const auto &ever_state = ever_entry_states[loc.basic_block.id()];
+            return !ever_state.contains(local) || fn.all_locals()[local.id()].is_mutable();
         }
 
         bool is_uninitialized(LocalId local, Location loc) const {
@@ -62,14 +63,13 @@ namespace mr { namespace middle { namespace ir { namespace checker {
                                                            : block.statements[loc.stmt_idx].loc;
         }
 
-        inline location first_init_loc(LocalId local) const { return *first_init_locs[local.id()]; }
-
       public:
         Checker(const Function &fn, error::ErrorCtx &ecx)
             : fn(fn)
             , ecx(ecx)
             , uninit_entry_states(MaybeUninit().iterate_till_fixpoint(fn))
             , init_entry_states(MaybeInit().iterate_till_fixpoint(fn))
+            , ever_entry_states(EverInit().iterate_till_fixpoint(fn))
             , tainter_by_error(fn.all_locals().size())
             , first_init_locs(fn.all_locals().size()) {}
 
@@ -92,11 +92,11 @@ namespace mr { namespace middle { namespace ir { namespace checker {
             std::visit(
                 overloaded{
                     [&](const MutUseCtx) {
-                        if (is_assignable(local, loc) && tainter_by_error.insert(local)) {
+                        if (!is_assignable(local, loc) && tainter_by_error.insert(local)) {
                             DBG("ASSIGN ALREADY ASSIGNED");
                             const auto &[id, ty, mutablity, local_type, l] = fn.local(local);
                             ecx.report_diag(errors::assign_immutable(
-                                DBG(first_init_loc(local)), source_loc(loc), id, ty
+                                first_init_locs[local.id()], source_loc(loc), id, ty
                             ));
                             return;
                         }
