@@ -5,17 +5,16 @@ fn random_bool() -> bool{
     true
 }
 
+
 fn unintialized(){
-                // { }
-    let mut x; // {  }
+    let mut x;
     if random_bool(){
-        x = 10; // { x } | { }
-    }else{}; // {} | { x }
-    let b = x; // { x? } | { } = x != 
-    println!("hello world")
+        x = 10; 
+    }else{}; 
+    let b = x;
 }
 
-fn assign_to_immutable(){
+fn assign_to_immutable<'a>(){
                 // {}
     let x = 10; // {x }
     if random_bool(){
@@ -66,4 +65,6 @@ fn suggestion_for_init(){
     let b = x;
 }
 
-fn main(){}
+fn main(
+    suggestion_for_init()
+){}

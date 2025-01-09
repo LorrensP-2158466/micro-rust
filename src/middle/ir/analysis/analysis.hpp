@@ -9,16 +9,16 @@
 #include <fmt/ranges.h>
 
 namespace mr { namespace middle { namespace ir { namespace analysis {
-    // only analyze on locals fuck that
     template <typename DomainT> class ForwardAnalysis {
       public:
         using Domain = DomainT;
         using Results = std::vector<Domain>;
         virtual Domain bottom_value(const Function &f) = 0;
-        // Transfer functions
         virtual void init_start_bb(const Function &f, Domain &state) = 0;
-        virtual void apply_statement(Domain &state, const Statement &stmt) = 0;
-        virtual void apply_call(Domain &state, const Place &) = 0;
+        
+        // Transfer functions
+        virtual void stmt_transfer(Domain &state, const Statement &stmt) = 0;
+        virtual void call_transfer(Domain &state, const Place &) = 0;
         // TODO: when we need terminator transfer, i will add it
 
         // returns state for every block
@@ -48,13 +48,13 @@ namespace mr { namespace middle { namespace ir { namespace analysis {
 
                 auto &bb = f._blocks[*bb_idx];
                 for (const auto &statement : bb.statements) {
-                    apply_statement(state, statement);
+                    stmt_transfer(state, statement);
                 }
 
                 std::visit(
                     overloaded{
                         [&](const Call &r) {
-                            apply_call(state, r.dest_place);
+                            call_transfer(state, r.dest_place);
                             const auto target = r.successors()[0].id();
                             propogate(target, state);
                         },

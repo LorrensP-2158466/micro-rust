@@ -6,13 +6,15 @@
 namespace mr { namespace middle { namespace ir { namespace checker {
     using namespace analysis;
 
+    using LocalState = BitSet<LocalId>;
+
     // tracks for every block, the locals that are potentially initiliazed
     // 1 => init
     // 0 => uninit
-    class MaybeInit : public ForwardAnalysis<BitSet<LocalId>> {
+    class MaybeInit : public ForwardAnalysis<LocalState> {
 
         ForwardAnalysis::Domain bottom_value(const Function &f) override {
-            return BitSet<LocalId>(f.locals.size());
+            return LocalState(f.locals.size());
         }
         void init_start_bb(const Function &f, ForwardAnalysis::Domain &state) override {
             // args are surely init
@@ -20,7 +22,7 @@ namespace mr { namespace middle { namespace ir { namespace checker {
                 state.insert(l);
             }
         }
-        void apply_statement(ForwardAnalysis::Domain &state, const Statement &stmt) override {
+        void stmt_transfer(ForwardAnalysis::Domain &state, const Statement &stmt) override {
             if (!has_variant<Assign>(stmt))
                 return;
             const auto &assign = std::get<Assign>(stmt);
@@ -29,7 +31,7 @@ namespace mr { namespace middle { namespace ir { namespace checker {
                 return;
             state.insert(assign.place.local);
         }
-        void apply_call(ForwardAnalysis::Domain &state, const Place &p) override {
+        void call_transfer(ForwardAnalysis::Domain &state, const Place &p) override {
             if (!p.projections.empty())
                 return;
             state.insert(p.local);
@@ -39,10 +41,10 @@ namespace mr { namespace middle { namespace ir { namespace checker {
     // tracks for every block, the locals that are potentially uninitialized
     // 0 => init
     // 1 => uninit
-    class MaybeUninit : public ForwardAnalysis<BitSet<LocalId>> {
+    class MaybeUninit : public ForwardAnalysis<LocalState> {
         ForwardAnalysis::Domain bottom_value(const Function &f) override {
             // everything is uninit, check for counter evidence
-            return BitSet<LocalId>(f.locals.size());
+            return LocalState(f.locals.size());
         }
         void init_start_bb(const Function &f, ForwardAnalysis::Domain &state) override {
             // args are surely init
@@ -51,7 +53,7 @@ namespace mr { namespace middle { namespace ir { namespace checker {
                 state.remove(l);
             }
         }
-        void apply_statement(ForwardAnalysis::Domain &state, const Statement &stmt) override {
+        void stmt_transfer(ForwardAnalysis::Domain &state, const Statement &stmt) override {
             if (!has_variant<Assign>(stmt))
                 return;
             const auto &assign = std::get<Assign>(stmt);
@@ -61,7 +63,7 @@ namespace mr { namespace middle { namespace ir { namespace checker {
             // this is not uninit
             state.remove(assign.place.local);
         }
-        void apply_call(ForwardAnalysis::Domain &state, const Place &p) override {
+        void call_transfer(ForwardAnalysis::Domain &state, const Place &p) override {
             if (!p.projections.empty())
                 return;
             state.remove(p.local);
@@ -70,17 +72,17 @@ namespace mr { namespace middle { namespace ir { namespace checker {
 
     // tracks for every block, the locals that are were potentially  initialized before the current
     // block can be used for checking if a immutable can be assigned to 1 => init 0 => uninit
-    class EverInit : public ForwardAnalysis<BitSet<LocalId>> {
+    class EverInit : public ForwardAnalysis<LocalState> {
         ForwardAnalysis::Domain bottom_value(const Function &f) override {
             // everything is uninit, check for counter evidence
-            return BitSet<LocalId>(f.locals.size());
+            return LocalState(f.locals.size());
         }
         void init_start_bb(const Function &f, ForwardAnalysis::Domain &state) override {
             for (const auto l : f.args_indices()) {
                 state.insert(l);
             }
         }
-        void apply_statement(ForwardAnalysis::Domain &state, const Statement &stmt) override {
+        void stmt_transfer(ForwardAnalysis::Domain &state, const Statement &stmt) override {
             std::visit(
                 overloaded{
                     [&](const Assign &assign) {
@@ -98,7 +100,7 @@ namespace mr { namespace middle { namespace ir { namespace checker {
                 stmt
             );
         }
-        void apply_call(ForwardAnalysis::Domain &state, const Place &p) override {
+        void call_transfer(ForwardAnalysis::Domain &state, const Place &p) override {
             if (!p.projections.empty())
                 return;
             state.remove(p.local);

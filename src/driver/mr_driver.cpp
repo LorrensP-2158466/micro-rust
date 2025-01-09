@@ -43,7 +43,7 @@ int mr::driver::MRDriver::start() {
         show_errors();
         fmt::println("{}", e.what());
 
-        fmt::println("\nCompilation failed due to `{}` errors", _err_ctx.error_amount());
+        fmt::println("\nCompilation failed due to `{}` errors", 1 + _err_ctx.error_amount());
         return 1;
     }
 
