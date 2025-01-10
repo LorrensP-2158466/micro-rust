@@ -2,7 +2,8 @@ fn factorial(n:i32) -> i32
 {
   // if-expressions
   if n <= 0  { 1 }
-  else { n * factorial(n-1) }
+  else { n * factorial(n-1) };
+  
   // return van een functie is de laatste expressie in de body
 }
 

@@ -113,13 +113,14 @@ namespace mr { namespace middle { namespace ir {
                         for (const auto &op : aggr.values) {
                             visit_operand(op, l);
                         }
-                    }
+                    },
+                    [&](const Cast &cast) { visit_operand(cast.op, l); }
                 },
                 rv
             );
-        }
+        } // namespace ir
         virtual void visit_place(const Place &p, PlaceCtx ctx, Location l) {
             visit_local(p.local, ctx, l);
         }
-    }; // namespace middle
+    };
 }}} // namespace mr::middle::ir

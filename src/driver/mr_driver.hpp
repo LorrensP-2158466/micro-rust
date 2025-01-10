@@ -5,6 +5,7 @@
 #include "interpreter/interpreter.hpp"
 #include "lexer/lexer.hpp"
 #include "middle/middle_phase.hpp"
+// #include "middle/types/ctx.hpp"
 #include "mr_util.hpp"
 #include "parser/parser.tab.hpp"
 #include <fmt/format.h>
@@ -14,8 +15,11 @@ namespace mr { namespace driver {
         // file stuff
         const char *file_name;
         std::ifstream _input_file;
+        // compiler stuff
+
         U<ast::Ast> _ast;
         error::ErrorCtx _err_ctx{};
+        // middle::types::TyCtx ty_ctx{};
         middle::MiddlePhase _middle_phase{_err_ctx};
 
         std::ifstream create_input(int argc, char **argv) {

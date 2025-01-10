@@ -8,7 +8,8 @@
 #include "println.hpp"
 
 namespace mr { namespace ast {
-    template <typename StmtT = void, typename ExprT = void, typename ItemT = void> class AstVisitor {
+    template <typename StmtT = void, typename ExprT = void, typename ItemT = void>
+    class AstVisitor {
       public:
         using Stmt_T = StmtT;
         using Expr_T = ExprT;
@@ -29,7 +30,9 @@ namespace mr { namespace ast {
             }
         }
 
-        virtual ItemT visit_fun_decl_item(const ast::FunDecl &) { TODO("Implement visit_fun_decl_item"); };
+        virtual ItemT visit_fun_decl_item(const ast::FunDecl &) {
+            TODO("Implement visit_fun_decl_item");
+        };
 
         StmtT visit_statement(const ast::Stmt &s) {
             if (auto print = dynamic_cast<const ast::PrintLn *>(&s))

@@ -1,7 +1,7 @@
 
 #include "errors/diagnostic.hpp"
 
-namespace mr { namespace middle { namespace build { namespace errors {
+namespace mr { namespace middle { namespace errors {
 
     static inline error::Diagnostic unknown_type(location init_loc) {
         return error::Diagnostic{
@@ -11,4 +11,4 @@ namespace mr { namespace middle { namespace build { namespace errors {
             std::vector{error::DiagnosticLabel{init_loc, ": TYPE", error::Style::Error}}
         };
     }
-}}}} // namespace mr::middle::build::errors
+}}} // namespace mr::middle::errors

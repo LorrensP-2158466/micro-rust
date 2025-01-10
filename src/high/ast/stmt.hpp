@@ -12,7 +12,6 @@ namespace mr { namespace ast {
         Stmt(location l)
             : loc(l) {};
         virtual ~Stmt() = default;
-
         virtual void print(const int depth) const = 0;
     };
 

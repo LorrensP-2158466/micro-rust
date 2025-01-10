@@ -135,12 +135,28 @@ function_decl
     : FN IDENTIFIER func_decl_args ARROW type block_expr 
     { 
         const auto loc = @1 + $6->loc;
-        $$ = FunDecl::make_unique($2.string_value(), std::move($3), std::move($5), std::move($6),loc);
+        const auto decl_loc = @1 + @5;
+        $$ = FunDecl::make_unique(
+            $2.string_value(),
+            std::move($3),
+            std::move($5),
+            std::move($6),
+            loc,
+            decl_loc
+        );
     }
     | FN IDENTIFIER func_decl_args block_expr 
     { 
         const auto loc = @1 + $4->loc;
-        $$ = FunDecl::make_unique($2.string_value(), std::move($3), Type(location($4->loc.begin, $4->loc.begin + 1)), std::move($4), loc);
+        const auto decl_loc = @1 + @3;
+        $$ = FunDecl::make_unique(
+            $2.string_value(),
+            std::move($3),
+            Type(location($4->loc.begin, $4->loc.begin + 1)),
+            std::move($4), 
+            loc, 
+            decl_loc
+        );
     }
     ;
 
@@ -247,6 +263,16 @@ type
         auto ret_loc = $6.loc;
         $$ = Type{Type::FnPointer{std::move($3), m_u<Type>(std::move($6))}, @1 + ret_loc};
     }
+    | FN LPAREN type_list RPAREN  { 
+        $$ = Type{Type::FnPointer{std::move($3), m_u<Type>(Type(@4))}, @1 + @4};
+    }
+    | FN LPAREN RPAREN ARROW type { 
+        auto ret_loc = $5.loc;
+        $$ = Type{Type::FnPointer{std::vector<Type>(), m_u<Type>(std::move($5))}, @1 + ret_loc};
+    }
+    | FN LPAREN RPAREN  { 
+        $$ = Type{Type::FnPointer{std::vector<Type>(), m_u<Type>(Type(@3))}, @1 + @3};
+    }
     ;
 
 block_expr
@@ -304,8 +330,9 @@ call_expr_args
     ;
 
 call_expr
-    : IDENTIFIER LPAREN call_expr_args RPAREN { $$ = m_u<CallExpr>(@1 + @4, $1.string_value(), std::move($3)); }
-    | IDENTIFIER LPAREN RPAREN { $$ = m_u<CallExpr>(@1 + @3, $1.string_value(), std::vector<U<Expr>>{}); }
+    : expr LPAREN call_expr_args RPAREN { $$ = m_u<CallExpr>(@1 + @4, std::move($1), std::move($3)); }
+    | expr LPAREN RPAREN { $$ = m_u<CallExpr>(@1 + @3, std::move($1), std::vector<U<Expr>>{}); }
+    ;
 
 while_expr
     : WHILE expr block_expr {$$ = m_u<WhileLoop>(@1, std::move($2), std::move($3)); }

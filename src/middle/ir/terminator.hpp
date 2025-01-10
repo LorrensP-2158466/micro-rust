@@ -53,7 +53,7 @@ namespace mr { namespace middle { namespace ir {
     // nicer/easier if we make a call a terminator of a block. INFO: rustc mainly
     // does this for unwinding purposes, we can add this later if we want
     struct Call {
-        std::string fun;
+        Operand fun;
         std::vector<Operand> args;
         Place dest_place;
         BlockId target;

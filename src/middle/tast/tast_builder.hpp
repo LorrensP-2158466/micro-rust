@@ -96,7 +96,8 @@ namespace mr { namespace middle {
         error::ErrorCtx &ecx;
 
         FunctionNamer _fn_namer{};
-
+        // error reporting
+        std::unordered_map<std::string, location> fn_decl_locs;
         std::vector<std::pair<std::string, Ref<const ast::FunDecl>>> _functions_to_build{};
 
       public:
@@ -135,7 +136,7 @@ namespace mr { namespace middle {
             _fn_namer.push_scope();
             _scoped_types.push_scope();
             _inferer.push_scope();
-            _inferer.clear_tables();
+            //_inferer.clear_tables();
 
             // insert arguments and return_type
             const auto return_type = _inferer.from_ast_type(fun_decl.return_type());
@@ -197,21 +198,33 @@ namespace mr { namespace middle {
                 _inferer.shallow_resolve(found), _inferer.shallow_resolve(expected), loc
             ));
         }
-        void visit_fun_decl_item(const ast::FunDecl &p) override {
+        void visit_fun_decl_item(const ast::FunDecl &f_decl) override {
             // so this is a nested function, we have to mangle and change the name
-            auto typ = _inferer.create_function_type(p);
-            if (_scoped_types.get_current_scope().contains(p.name())) {
+            auto typ = _inferer.create_function_type(f_decl);
+            auto mangled_name = _fn_namer.get_unique_name(_build_ctx.name(), typ->id);
+
+            if (_scoped_types.get_current_scope().contains(f_decl.name())) {
+                const auto fn_item = std::get<const FnItem *>(
+                    _scoped_types.get_current_scope().get_value(f_decl.name())
+                );
+                // big assumption, but it is the
+                ecx.report_diag(errors::multiple_decls(
+                    // we know this is a fnItem, it can be the only type currenlty in the
+                    // current_scope
+                    fn_decl_locs[f_decl.name()],
+                    f_decl.decl_loc(),
+                    f_decl.name()
+                ));
+                // build and test, but do not taint namespace
+                _functions_to_build.emplace_back(mangled_name, f_decl);
                 return;
             }
             // mangle name
-            auto mangled_name = _fn_namer.get_unique_name(_build_ctx.name(), typ->id);
 
             typ->id = mangled_name;
-
-            // but still keep the name of the decl in the scope
-            _scoped_types.insert(p.name(), Ty{typ});
-
-            _functions_to_build.emplace_back(mangled_name, p);
+            fn_decl_locs[f_decl.name()] = f_decl.decl_loc();
+            _scoped_types.insert(f_decl.name(), Ty{typ});
+            _functions_to_build.emplace_back(mangled_name, f_decl);
         }
 
         Stmt visit_let_stmt(const ast::LetStmt &let) override {
@@ -231,7 +244,7 @@ namespace mr { namespace middle {
             }
 
             // the initializer must match the user defined type
-            auto equated = _inferer.eq(user_decl_type, (*initializer).type);
+            auto equated = _inferer.eq(user_decl_type, initializer->type);
             if (!equated) {
                 type_error(initializer->type, user_decl_type, *let.initializer());
                 equated = std::move(user_decl_type);
@@ -516,9 +529,7 @@ namespace mr { namespace middle {
             case expr::BinOp::L_OR:
                 return BinOp::Or;
             default: {
-                std::cerr << "Cant Create Binary Operator from " << expr::BinOp_to_string(op)
-                          << std::endl;
-                std::abort();
+                BUG("Can't create binary operator from {}", expr::BinOp_to_string(op));
             }
             }
         }
@@ -629,44 +640,115 @@ namespace mr { namespace middle {
         Expr visit_continue_expr(const expr::Continue &c) override {
             if (!_build_ctx.is_in_loop()) {
                 _build_ctx.set_structure_failure();
-
                 ecx.report_diag(errors::continue_outside_loop(c.loc));
             }
             _build_ctx.exited_control_flow();
             return Expr(tast::Continue{}, _inferer.never(), c.loc);
         }
 
-        Expr visit_call_expr(const expr::CallExpr &expr) override {
+        Expr
+        check_callable(tast::Expr called, const std::vector<U<expr::Expr>> &args, location loc) {
+            // im making some assumptions, but checking if something is callable can go like this:
+            /*
+            assume these are declared
+                fn foo() -> i32 { 420 }
+                fn bar() -> i32 { 69 }
+            case 1:
+                let x = foo(); // because we already know foo, we know this foo is callable
+
+            case 2:
+                let x = foo; // x is of type fn() -> i32 { foo }
+                x(); // because we know the type
+
+            case 3:
+                let mut x: fn() -> i32 = foo; // x is op type fn() -> i32
+                x(); // is thus callable
+                x = bar; = this is fine, FnItem can coerce to FnPointer
+                x(); // still callable
+
+            the reason why we always the function type:
+            a variable can never have a type variable and later be declared to a fn pointer, because
+                let x;
+                x = foo; //  x is of type fn() -> i32 { foo }
+                x(); // fine
+            or:
+                let x: fn() -> _; // x is fn() -> {type_var}
+                x = foo; // foo is coerced
+                x(); // and thus fine
+
+            So we always know the if the type at this point is a callable type, because it MUST be
+            declared as callable There is no way to say that x is a type variable and later be set
+            to a fn pointer, without explictly saying this, so the type is `callable` or not
+            `callable`
+            thanks for listening to my TED talk
+            */
+            const auto called_type = _inferer.shallow_resolve(called.type);
+            if (!called_type.is_callable()) {
+                // TODO report uncallable
+                ecx.report_diag(errors::called_uncallable(called.type, called.loc));
+                // supress errors, we should have something to taint these things
+                called.type = _inferer.create_type_var();
+                return Expr(
+                    CallExpr(called.type, m_u<Expr>(std::move(called)), std::vector<tast::Expr>()),
+                    _inferer.create_type_var(),
+                    loc
+                );
+            }
+            // we know it is a callable:
+            const auto &[arg_tys, ret_ty] = std::visit(
+                overloaded{
+                    [&](const FnItem *const &fi) -> std::pair<const std::vector<Ty> &, const Ty &> {
+                        return {fi->arg_types, fi->ret_ty};
+                    },
+                    [&](const FnPointerTy &fp) -> std::pair<const std::vector<Ty> &, const Ty &> {
+                        return {fp.arg_tys, *fp.ret_ty};
+                    },
+                    [&](const auto &) -> std::pair<const std::vector<Ty> &, const Ty &> {
+                        ICE(fmt::format(
+                            "Encouterd a non_callable: {} eventhough we checked it to be a "
+                            "callable: {}",
+                            called.type,
+                            called_type
+                        ));
+                        return unreachable<std::pair<const std::vector<Ty> &, const Ty &>>();
+                    }
+                },
+                called_type
+            );
+            auto call_operands = std::vector<tast::Expr>();
+            call_operands.reserve(args.size());
+            if (arg_tys.size() != args.size()) {
+                ICE("Can't handle argument size mismatch");
+            } else {
+                for (size_t i = 0; i < arg_tys.size(); i++) {
+                    const auto &expected_type = arg_tys[i];
+                    const auto &expr = args[i];
+                    auto build_arg = visit_expr(*expr);
+
+                    if (!_inferer.eq(expected_type, build_arg.type)) {
+                        type_error(build_arg.type, expected_type, *expr);
+                        build_arg.type = expected_type;
+                    }
+                    call_operands.push_back(std::move(build_arg));
+                }
+            }
+            std::vector<std::tuple<const types::Ty &, const types::Ty &, location, size_t>>
+                mismatched;
+
+            return Expr(
+                CallExpr(called_type, m_u<Expr>(std::move(called)), std::move(call_operands)),
+                ret_ty,
+                loc
+            );
+        }
+
+        Expr visit_call_expr(const expr::CallExpr &call_expr) override {
             spdlog::info("Building Call Expr in to TAST");
             // we search by expr_id but the call will be of the name of the function
             // this way we can call nested same named functions
-            const auto type = _scoped_types.look_up(expr._id);
-            if (!type.has_value()) {
-                std::cerr << "No function found with name " << expr._id << std::endl;
-                std::exit(1);
-            }
-            if (!has_variant<const FunctionType *>(*type)) {
-                std::cerr << "Cant call `" << expr._id << "` which is not a function\n";
-                throw std::runtime_error("Cant call non callable");
-            }
-            const auto ft = std::get<const FunctionType *>(*type);
-            if (ft->arg_types.size() != expr._args.size()) {
-                std::cerr << "Expected " << ft->arg_types.size() << " amount of arguments, "
-                          << "but got " << expr._args.size() << " instead\n";
-                std::abort();
-            }
-            auto call_operands = std::vector<U<Expr>>();
-            call_operands.reserve(expr._args.size());
-            for (size_t i = 0; i < ft->arg_types.size(); i++) {
-                const auto &expected_type = ft->arg_types[i];
-                auto call_op = visit_expr(*expr._args[i]);
-                if (!_inferer.eq(expected_type, call_op.type)) {
-                    type_error(call_op.type, expected_type, *expr._args[i]);
-                    call_op.type = expected_type;
-                }
-                call_operands.push_back(std::make_unique<Expr>(std::move(call_op)));
-            }
-            return Expr(CallExpr(ft->id, std::move(call_operands)), ft->ret_ty, expr.loc);
+            auto expr = visit_expr(*call_expr.expr);
+
+            return check_callable(std::move(expr), call_expr._args, call_expr.loc);
         }
         Expr visit_litt_expr(const expr::Literal &lit) override {
             spdlog::info("Building Litt Expr in to TAST: `{}`", lit.symbol);
@@ -723,8 +805,11 @@ namespace mr { namespace middle {
                 ecx.report_diag(errors::ident_not_found(id._id, id.loc, std::move(help)));
                 // don't know type of this or what to expect
                 _build_ctx.set_structure_failure();
-                type = _inferer.create_type_var(); // typevar to to make typechecking work
+                // typevar to to make typechecking work
+                _scoped_types.insert(id._id, _inferer.create_type_var());
             }
+            // if fnItem, we cast to parent expression, if this is ty var
+            // we remove cast and hold fn_item
             return Expr(Identifier(id._id), *type, id.loc);
         }
 

@@ -65,6 +65,9 @@ fn suggestion_for_init(){
     let b = x;
 }
 
+fn foo(){
+}
+
 fn main(
     suggestion_for_init()
 ){}

@@ -23,27 +23,31 @@ namespace mr { namespace ast {
         std::vector<FunArg> _args;
         ast::Type _ret_type;
         U<expr::BlockExpr> _body;
+        location _decl_loc; // error
 
       public:
         FunDecl(
             std::string id, std::vector<FunArg> args, ast::Type ret_type, U<expr::BlockExpr> body,
-            location loc
+            location loc, location decl_loc
         )
             : Item(loc)
             , _id(id)
             , _args(std::move(args))
             , _ret_type(std::move(ret_type))
-            , _body(std::move(body)) {}
+            , _body(std::move(body))
+            , _decl_loc(decl_loc) {}
 
         static U<FunDecl> make_unique(
             std::string id, std::vector<FunArg> args, ast::Type ret_type, U<expr::BlockExpr> body,
-            location loc
+            location loc, location decl_loc
         ) noexcept {
             std::cout << std::endl;
             return std::make_unique<FunDecl>(
-                id, std::move(args), std::move(ret_type), std::move(body), loc
+                id, std::move(args), std::move(ret_type), std::move(body), loc, decl_loc
             );
         }
+
+        location decl_loc() const noexcept { return _decl_loc; }
 
         void print(const int depth) const override {
             const auto indent = std::string(depth, '\t');

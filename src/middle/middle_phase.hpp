@@ -49,6 +49,7 @@
    HAVE to check it's declared items because we use the function `bar` before
     it's declared (remember how this is valid?)
 */
+#include "./errors.hpp"
 #include "high/ast/module.hpp"
 #include "high/expr/module.hpp"
 #include "ir/build/ir_builder.hpp"
@@ -85,7 +86,7 @@ namespace mr { namespace middle {
 
             // then for every executable block of code (fn body, const)
             // to collecting and checking
-            check_executable_blocks();
+            build_executable_blocks();
             if (!ecx.has_errors() && !generated_ir.has_main()) {
                 throw std::runtime_error("\nMain function needed as entry point. "
                                          "Please provide:\nfn main(){...}");
@@ -100,7 +101,7 @@ namespace mr { namespace middle {
             std::abort();
         }
 
-        void check_executable_blocks() {
+        void build_executable_blocks() {
             /*
             When creating the symbol table for every function we inluce 2
             things:
@@ -172,12 +173,17 @@ namespace mr { namespace middle {
 
         void collect_function_item(const ast::FunDecl *fn_item) {
             auto typ = _inferer.create_function_type(*fn_item);
-            _scoped_types.insert(fn_item->name(), Ty{typ});
             if (_functions.get_current_scope().contains(fn_item->name())) {
-                std::cerr << "function definition for name: " << fn_item->name()
-                          << " already exits\n";
-                throw std::runtime_error("");
+                ecx.report_diag(errors::multiple_decls(
+                    _functions.get_current_scope().get_value(fn_item->name())->decl_loc(),
+                    fn_item->decl_loc(),
+                    fn_item->name()
+                ));
+                _functions.insert(fn_item->name(), fn_item);
+                return;
             }
+            // we are only inserting the types of the first declaration
+            _scoped_types.insert(fn_item->name(), Ty{typ});
             _functions.insert(fn_item->name(), fn_item);
         }
     };

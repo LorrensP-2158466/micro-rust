@@ -14,7 +14,6 @@
 
 namespace mr { namespace middle { namespace build {
     using namespace types;
-    using namespace tast;
     using namespace inference;
     using namespace ir;
 
@@ -147,7 +146,7 @@ namespace mr { namespace middle { namespace build {
         }
 
         BlockWith<void> build_block_statements(
-            const Place place, const BlockExpr &tast_block, BlockId basic_block
+            const Place place, const tast::BlockExpr &tast_block, BlockId basic_block
         ) {
             unpack(basic_block, build_in_scope<void>([&](IrBuilder &builder) -> BlockWith<void> {
                        for (const auto &stmt : tast_block._statements) {
@@ -167,18 +166,19 @@ namespace mr { namespace middle { namespace build {
         BlockWith<void> build_statement(const tast::Stmt &stmt, BlockId block) {
             return std::visit(
                 overloaded{
-                    [&](const ExprStmt &e) { return build_expr_stmt(e.expr, block); },
-                    [&](const LetStmt &e) { return build_let_stmt(e, block); },
-                    [&](const PrintLn &e) { return build_print_stmt(e, block); },
-                    [&](const EmptyStmt &) { return block.empty(); }
+                    [&](const tast::ExprStmt &e) { return build_expr_stmt(e.expr, block); },
+                    [&](const tast::LetStmt &e) { return build_let_stmt(e, block); },
+                    [&](const tast::PrintLn &e) { return build_print_stmt(e, block); },
+                    [&](const tast::EmptyStmt &) { return block.empty(); }
                 },
                 stmt.inner
             );
         }
 
-        BlockWith<void> build_let_stmt(const LetStmt &let, BlockId block) {
-            fmt::println("let type: {}", let.type_decl);
+        BlockWith<void> build_let_stmt(const tast::LetStmt &let, BlockId block) {
             const auto resolved_ty = _inferer.resolve(let.type_decl);
+            fmt::println("let type: {}", resolved_ty);
+
             if (!resolved_ty.is_known()) {
                 ecx.report_diag(errors::unknown_type(let.id.loc));
             }
@@ -193,23 +193,34 @@ namespace mr { namespace middle { namespace build {
                 let bananas = bananas + 3; // if we build after local is created, bananas will point
                to the new uninit local and this is wrong
             */
+            if (const auto fn_item = std::get_if<const FnItem *>(&resolved_ty)) {
+                // we don't create a local
+                /*
+                    fn foo() {}
+                    // ...
+                    let x = foo;
+                    // this just renames every x to foo...
+                    // so we don't create a local
+                */
+                return block.empty();
+            }
             const auto rvalue = unpack(block, expr_as_rvalue(*let.initializer, block));
             const auto local =
                 create_local(let.id._id, resolved_ty, let.mut.node, LocalType::UserDef, let.id.loc);
             _blocks.push_assign(block, Place(local), std::move(rvalue), let.initializer->loc);
             return block.empty();
         }
-        BlockWith<void> build_expr_stmt(const Expr &expr, BlockId block) {
+        BlockWith<void> build_expr_stmt(const tast::Expr &expr, BlockId block) {
             return std::visit(
                 overloaded{
-                    [&](const AssignExpr &assign) {
+                    [&](const tast::AssignExpr &assign) {
                         const auto rhs = unpack(block, expr_as_rvalue(*assign.rhs, block));
                         const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
                         spdlog::info("ASSIGN EXPR LOC: {}", expr.loc);
                         _blocks.push_assign(block, std::move(lhs), std::move(rhs), expr.loc);
                         return block.empty();
                     },
-                    [&](const AssignOpExpr &assign) {
+                    [&](const tast::AssignOpExpr &assign) {
                         const auto rhs = unpack(block, expr_as_operand(*assign.rhs, block));
                         const auto lhs = unpack(block, expr_as_place(*assign.lhs, block));
                         const auto result =
@@ -217,7 +228,7 @@ namespace mr { namespace middle { namespace build {
                         _blocks.push_assign(block, std::move(lhs), std::move(result), expr.loc);
                         return block.empty();
                     },
-                    [&](const Break &br) {
+                    [&](const tast::Break &br) {
                         // set placeholder so that build_in_breakable_scope can
                         // fill this in when it's done building the breakable
                         // scope
@@ -240,7 +251,7 @@ namespace mr { namespace middle { namespace build {
                         // are unreachable
                         return _blocks.create_new_block().empty();
                     },
-                    [&](const Continue &) {
+                    [&](const tast::Continue &) {
                         // this needs a goto to the loop block
                         _need_continues.back().push_back(block);
                         return _blocks.create_new_block().empty();
@@ -255,7 +266,7 @@ namespace mr { namespace middle { namespace build {
                 expr.kind
             );
         }
-        BlockWith<void> build_print_stmt(const PrintLn &print, BlockId block) {
+        BlockWith<void> build_print_stmt(const tast::PrintLn &print, BlockId block) {
             auto end_str = print._end_str.value_or("");
             if (!print._start_fmt && print._fmt_structure.empty()) {
                 _blocks.push_stmt(block, Statement{SPrintLn{std::move(end_str)}, print.loc});
@@ -286,7 +297,7 @@ namespace mr { namespace middle { namespace build {
         //------- Local/Operand stuff -------
 
         // introduces a temporary if expr is a place
-        BlockWith<Operand> expr_as_operand(const Expr &expr, BlockId block) {
+        BlockWith<Operand> expr_as_operand(const tast::Expr &expr, BlockId block) {
             auto handle_temp_move = [&]() {
                 auto resolved_type = _inferer.resolve(expr.type);
                 if (!resolved_type.is_known()) {
@@ -304,20 +315,16 @@ namespace mr { namespace middle { namespace build {
             };
             return std::visit(
                 overloaded{
-                    [&](const Literal &lit) {
+                    [&](const tast::Literal &lit) {
                         auto resolved_type = _inferer.resolve(expr.type);
                         if (!resolved_type.is_known()) {
                             ecx.report_diag(errors::unknown_type(expr.loc));
                         }
-                        return block.with(
-                            Operand::const_(from_tast_literal(lit), _inferer.resolve(expr.type))
-                        );
+                        return block.with(Operand::const_scalar(
+                            from_tast_literal(lit), _inferer.resolve(expr.type)
+                        ));
                     },
-                    [&](const Identifier &) {
-                        auto place = unpack(block, expr_as_place(expr, block));
-                        return block.with(Operand::copy(std::move(place)));
-                    },
-                    [&](const FieldExpr &) {
+                    [&](const tast::FieldExpr &) {
                         auto place = unpack(block, expr_as_place(expr, block));
                         return block.with(Operand::copy(std::move(place)));
                     },
@@ -327,23 +334,38 @@ namespace mr { namespace middle { namespace build {
             );
         } // namespace build
 
-        BlockWith<RValue> expr_as_rvalue(const Expr &expr, BlockId block) {
+        BlockWith<RValue> expr_as_rvalue(const tast::Expr &expr, BlockId block) {
             return std::visit(
                 overloaded{
-                    [&](const BinOpExpr &bin_op) {
+                    [&](const tast::BinOpExpr &bin_op) {
                         const auto lhs = unpack(block, expr_as_operand(*bin_op.left, block));
                         const auto rhs = unpack(block, expr_as_operand(*bin_op.right, block));
                         return block.with(RValue(BinaryOp{bin_op.op, lhs, rhs}));
                     },
-                    [&](const UnaryOpExpr &un_op) {
+                    [&](const tast::UnaryOpExpr &un_op) {
                         const auto operand = unpack(block, expr_as_operand(*un_op.expr, block));
                         return block.with(RValue(ir::UnaryOp{un_op.op, operand}));
                     },
-                    [&](const Identifier &id) {
-                        const auto local = local_by_name(id.symbol);
-                        return block.with(RValue(AsIs{Operand::move(Place(local))}));
+                    [&](const tast::Identifier &id) {
+                        return std::visit(
+                            overloaded{
+                                [&](const types::FnItem *const &fi) {
+                                    // yeah boyyyyy
+                                    return block.with(RValue(Cast(
+                                        CastKind::FnItemToPtr,
+                                        Operand::const_item(fi->id, Ty{fi}),
+                                        expr.type
+                                    )));
+                                },
+                                [&](const auto &) {
+                                    const auto local = local_by_name(id.symbol);
+                                    return block.with(RValue(AsIs{Operand::move(Place(local))}));
+                                }
+                            },
+                            expr.type
+                        );
                     },
-                    [&](const TupleExpr &tup) {
+                    [&](const tast::TupleExpr &tup) {
                         std::vector<Operand> operands;
                         operands.reserve(tup.exprs.size());
                         for (const auto &expr : tup.exprs) {
@@ -351,13 +373,13 @@ namespace mr { namespace middle { namespace build {
                         }
                         return block.with(RValue(Aggregate{AggrKind::Tuple, std::move(operands)}));
                     },
-                    [&](const Literal &lit) {
+                    [&](const tast::Literal &lit) {
                         auto resolved_type = _inferer.resolve(expr.type);
                         if (!resolved_type.is_known()) {
                             ecx.report_diag(errors::unknown_type(expr.loc));
                         }
                         const auto operand =
-                            Operand::const_(from_tast_literal(lit), std::move(resolved_type));
+                            Operand::const_scalar(from_tast_literal(lit), std::move(resolved_type));
                         return block.with(RValue(AsIs{std::move(operand)}));
                     },
                     [&](const auto &) {
@@ -371,10 +393,23 @@ namespace mr { namespace middle { namespace build {
             );
         }
 
-        BlockWith<void> expr_into_place(Place place, const Expr &expr, BlockId block) {
+        BlockWith<std::vector<Operand>>
+        build_call_arguments(const tast::CallExpr &call, BlockId block) {
+            std::vector<Operand> call_operands{};
+            call_operands.reserve(call.args.size());
+            std::transform(
+                call.args.cbegin(),
+                call.args.cend(),
+                std::back_inserter(call_operands),
+                [&](const tast::Expr &expr) { return unpack(block, expr_as_operand(expr, block)); }
+            );
+            return block.with(std::move(call_operands));
+        }
+
+        BlockWith<void> expr_into_place(Place place, const tast::Expr &expr, BlockId block) {
             return std::visit(
                 overloaded{
-                    [&](const LogicalOpExpr &log_op) {
+                    [&](const tast::LogicalOpExpr &log_op) {
                         // the operand is very important to the generated
                         // structure with `&&` we want to go the exit path when
                         // the first operand is false and for `||` we want true
@@ -395,12 +430,12 @@ namespace mr { namespace middle { namespace build {
                         BlockId short_circuit, continue_block;
                         bool const_bool;
                         switch (log_op.op) {
-                        case LogicalOp::Or: {
+                        case tast::LogicalOp::Or: {
                             short_circuit = then_blk;
                             continue_block = else_blk;
                             const_bool = true;
                         } break;
-                        case LogicalOp::And: {
+                        case tast::LogicalOp::And: {
                             short_circuit = else_blk;
                             continue_block = then_blk;
                             const_bool = false;
@@ -411,7 +446,9 @@ namespace mr { namespace middle { namespace build {
                         _blocks.push_assign(
                             short_circuit,
                             place,
-                            AsIs(Operand::const_(Scalar::from_bool(const_bool), _inferer.bool_t())),
+                            AsIs(Operand::const_scalar(
+                                Scalar::from_bool(const_bool), _inferer.bool_t()
+                            )),
                             expr.loc
                         );
                         const auto rhs =
@@ -421,29 +458,43 @@ namespace mr { namespace middle { namespace build {
                         _blocks.go_to(rhs, join, expr.loc);
                         return join.empty();
                     },
-                    [&](const CallExpr &call) {
-                        // Using std::transform
-                        std::vector<Operand> call_operands{};
-                        call_operands.reserve(call.args.size());
-                        std::transform(
-                            call.args.cbegin(),
-                            call.args.cend(),
-                            std::back_inserter(call_operands),
-                            [&](const auto &expr) {
-                                return unpack(block, expr_as_operand(*expr, block));
-                            }
-                        );
+                    [&](const tast::CallExpr &call) {
+                        spdlog::info("CALL: fun_ty:{}", call.fun_ty);
+                        if (const auto fn_item_p = std::get_if<const FnItem *>(&call.fun_ty)) {
+                            const auto fn_item = *fn_item_p;
+                            auto call_operands = unpack(block, build_call_arguments(call, block));
+                            DBG("here");
+                            auto new_block = _blocks.create_new_block();
+                            _blocks.terminate(
+                                block,
+                                Terminator{
+                                    Call{
+                                        std::move(Operand::const_item(fn_item->id, Ty{fn_item})),
+                                        std::move(call_operands),
+                                        place,
+                                        new_block
+                                    },
+                                    expr.loc
+                                }
+                            );
+                            return new_block.empty();
+                        }
+                        auto fn = unpack(block, expr_as_operand(*call.fun, block));
+                        auto call_operands = unpack(block, build_call_arguments(call, block));
                         auto new_block = _blocks.create_new_block();
                         _blocks.terminate(
                             block,
                             Terminator{
-                                Call{call.id, std::move(call_operands), place, new_block}, expr.loc
+                                Call{std::move(fn), std::move(call_operands), place, new_block},
+                                expr.loc
                             }
                         );
                         return new_block.empty();
                     },
-                    [&](const BlockExpr &bl) { return build_block_statements(place, bl, block); },
-                    [&](const IfElse &if_el) {
+                    [&](const tast::BlockExpr &bl) {
+                        return build_block_statements(place, bl, block);
+                    },
+                    [&](const tast::IfElse &if_el) {
                         /*
                         this is some weird shit but stay with me
 
@@ -512,7 +563,7 @@ namespace mr { namespace middle { namespace build {
                         _blocks.go_to(end_else_blk, join_block, expr.loc);
                         return join_block.empty();
                     },
-                    [&](const Loop &loop) {
+                    [&](const tast::Loop &loop) {
                         /*
                         we have to convert the following structure to a CFG:
                             // while loop
@@ -544,7 +595,7 @@ namespace mr { namespace middle { namespace build {
                             builder._blocks.go_to(body_end, loop_block, expr.loc);
                         });
                     },
-                    [&](const Break &) {
+                    [&](const tast::Break &) {
                         // break can't assing to a place
                         block = build_expr_stmt(expr, block).into_block();
                         return block.empty();
@@ -557,16 +608,16 @@ namespace mr { namespace middle { namespace build {
                         block = build_expr_stmt(expr, block).into_block();
                         return block.empty();
                     },
-                    [&](const Unit &) {
+                    [&](const tast::Unit &) {
                         //_blocks.push_unit_assign(block, unit_temp());
                         return block.empty();
                     },
-                    [&](const AssignExpr &) {
+                    [&](const tast::AssignExpr &) {
                         block = build_expr_stmt(expr, block).into_block();
                         _blocks.push_unit_assign(block, place, expr.loc);
                         return block.empty();
                     },
-                    [&](const AssignOpExpr &) {
+                    [&](const tast::AssignOpExpr &) {
                         block = build_expr_stmt(expr, block).into_block();
                         _blocks.push_unit_assign(block, place, expr.loc);
                         return block.empty();
@@ -581,16 +632,27 @@ namespace mr { namespace middle { namespace build {
             );
         }
 
-        BlockWith<Place> expr_as_place(const Expr &expr, BlockId block) {
+        BlockWith<Place> expr_as_place(const tast::Expr &expr, BlockId block) {
             // currently onlly FieldExpr
             return std::visit(
                 overloaded{
-                    [&](const FieldExpr &fe) {
+                    [&](const tast::FieldExpr &fe) {
                         auto place = unpack(block, expr_as_place(*fe.expr, block));
                         place.field(fe.idx);
                         return block.with(place);
                     },
-                    [&](const Identifier &ident) {
+                    [&](const tast::Identifier &ident) {
+                        // so if we find pointer ty, we cast to that
+                        // else we keep it,
+                        // std::visit(
+                        //     overloaded{
+                        //         [&](const types::FnItem const *&) {},
+                        //         [&](const auto &) {
+
+                        //         }
+                        //     },
+                        //     expr.type
+                        // );
                         return block.with(Place(local_by_name(ident.symbol)));
                     },
 
@@ -605,9 +667,10 @@ namespace mr { namespace middle { namespace build {
 
         LocalId local_by_name(const std::string &name) const {
             const auto local = _locals_table.look_up(name);
+            spdlog::info("LOCAL `{}`", name);
             if (!local) {
                 spdlog::critical("LOCAL `{}` CANT BE FOUND IN IR BUILDER", name);
-                std::runtime_error("COMPILER ERROR");
+                ICE(fmt::format("local: {} in IR builder not defined", name));
             }
             return *local;
         }

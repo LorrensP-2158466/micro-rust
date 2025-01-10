@@ -122,7 +122,7 @@ namespace mr { namespace middle { namespace ir {
             return push_stmt(
                 block,
                 Statement(
-                    Assign{lhs, RValue(AsIs(Operand::const_(Scalar{0, 0}, types::Ty::unit())))}, loc
+                    Assign{lhs, RValue(AsIs(Operand::const_scalar(Scalar{0, 0}, types::Ty::unit())))}, loc
                 )
             );
         }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "diagnostic_window.hpp"
+// #include "diagnostic_window.hpp"
 #include "location.hh"
 #include "style.hpp"
 #include <fmt/color.h>
@@ -82,11 +82,21 @@ namespace mr { namespace error {
                     // rust prints the line between 2 lines ass well
                     print_border(curr_line, line_width);
                     fmt::println(" {}", source_in_lines[curr_line - 2]);
+                } else if (prev_line_diff == 0) {
+                    // we have a span that is about the same line as before
+                    // just print border and label
+                    print_border(0, line_width);
+                    print_diagnostic_label(loc, label, style, line_width);
+                    first_info = false;
+                    prev_line = curr_line;
+                    continue;
                 }
-                first_info = false;
                 print_border(curr_line, line_width);
                 fmt::println(" {}", source_in_lines[curr_line - 1]);
                 print_diagnostic_label(loc, label, style, line_width);
+
+                first_info = false;
+
                 prev_line = curr_line;
             }
             print_border(0, line_width);

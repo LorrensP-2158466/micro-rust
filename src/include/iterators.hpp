@@ -34,7 +34,9 @@ namespace mr { namespace iterators {
         }
 
         value_type operator*() const {
-            return std::apply([](const auto &...its) { return std::make_tuple((*its)...); }, iterators);
+            return std::apply(
+                [](const auto &...its) { return std::make_tuple((*its)...); }, iterators
+            );
         }
 
         bool operator==(const zip_iterator &other) const { return iterators == other.iterators; }
@@ -56,23 +58,33 @@ namespace mr { namespace iterators {
             : containers(conts...) {}
 
         auto begin() {
-            return std::apply([](auto &...conts) { return make_zip_iterator(conts.begin()...); }, containers);
+            return std::apply(
+                [](auto &...conts) { return make_zip_iterator(conts.begin()...); }, containers
+            );
         }
 
         auto end() {
-            return std::apply([](auto &...conts) { return make_zip_iterator(conts.end()...); }, containers);
+            return std::apply(
+                [](auto &...conts) { return make_zip_iterator(conts.end()...); }, containers
+            );
         }
 
         auto begin() const {
-            return std::apply([](const auto &...conts) { return make_zip_iterator(conts.begin()...); }, containers);
+            return std::apply(
+                [](const auto &...conts) { return make_zip_iterator(conts.begin()...); }, containers
+            );
         }
 
         auto end() const {
-            return std::apply([](const auto &...conts) { return make_zip_iterator(conts.end()...); }, containers);
+            return std::apply(
+                [](const auto &...conts) { return make_zip_iterator(conts.end()...); }, containers
+            );
         }
     };
 
-    template <typename... Containers> auto zip(Containers &...conts) { return zip_view<Containers...>(conts...); }
+    template <typename... Containers> auto zip(Containers &...conts) {
+        return zip_view<Containers...>(conts...);
+    }
 
     template <typename... Containers> auto zip(const Containers &...conts) {
         return zip_view<const Containers...>(conts...);

@@ -227,4 +227,9 @@ std::unique_ptr<T> dynamic_unique_cast(std::unique_ptr<U> &&r) noexcept {
     friend std::ostream &operator<<(std::ostream &o, const TYPE b) {                               \
         o << b.idx_val;                                                                            \
         return o;                                                                                  \
-    }\
+    }
+
+#define BUG(fmt_str, ...)                                                                          \
+    do {                                                                                           \
+        ICE(fmt::format(fmt_str, __VA_ARGS__));                                                    \
+    } while (false)

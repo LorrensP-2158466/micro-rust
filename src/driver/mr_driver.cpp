@@ -37,7 +37,7 @@ int mr::driver::MRDriver::start() {
             fmt::println("\nCompilation failed due to `{}` errors", _err_ctx.error_amount());
             return 1;
         }
-        _ast->print();
+        //_ast->print();
         ir = _middle_phase.run(std::move(_ast));
     } catch (const std::exception &e) {
         show_errors();

@@ -56,14 +56,14 @@ target_link_libraries(mr
 
 # Compiler flags
 target_compile_options(mr PRIVATE 
-    -g
     #-O3
-    -ferror-limit=40
+    -g
+    -ferror-limit=10
     -DNDEBUG
     -march=native
-    -Wall
-    -Wextra
-    -Wno-unused-function
+    # -Wall
+    # -Wextra
+    # -Wno-unused-function
 )
 
 # Clean target (optional, as CMake handles this differently)

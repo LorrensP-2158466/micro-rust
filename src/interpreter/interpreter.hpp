@@ -60,10 +60,8 @@ namespace mr { namespace middle_interpreter {
                 Scalar{0, 0}, types::Ty{types::UnitTy{}}
             }; // unit ofcourse, never write to it, but it exists
             init_function_call(
-                ir::Call{
-                    "main", std::vector<ir::Operand>(), ir::Place{ir::LocalId{0}}, ir::BlockId{0}
-                },
-                dest
+                "main", std::vector<ir::Operand>(), dest, ir::BlockId{0}
+
             );
             // as long as we have to do work, we work
             while (interp_curr_block()) {
@@ -92,17 +90,17 @@ namespace mr { namespace middle_interpreter {
         Pushes a frame on to the stack and initalizing arguments
         */
         void init_function_call(
-            const ir::Call &call, Value &dest,
+            const std::string &name, const std::vector<ir::Operand> &args, Value &dest,
             std::optional<ir::BlockId> caller_target = std::nullopt
         ) {
-            auto &fn = _code.get_function_by_name(call.fun);
+            auto &fn = _code.get_function_by_name(name);
             std::vector<Value> values{};
             values.reserve(fn.locals.size());
             values.emplace_back(local_to_uninit_value(fn.locals[0]));
 
             std::transform(
-                call.args.cbegin(),
-                call.args.cend(),
+                args.cbegin(),
+                args.cend(),
                 std::back_inserter(values),
                 [&](const ir::Operand &op) { return interp_operand(op); }
             );
@@ -173,7 +171,11 @@ namespace mr { namespace middle_interpreter {
                         go_to_block(target);
                     },
                     [&](const ir::Call &call) {
-                        init_function_call(call, interp_place(call.dest_place), call.target);
+                        // we typechecked, so we assume haha
+                        const auto &name = std::get<FnPtrValue>(interp_operand(call.fun)).fn_name;
+                        init_function_call(
+                            name, call.args, interp_place(call.dest_place), call.target
+                        );
                     },
                     [&](const auto &) {}
                 },
@@ -199,6 +201,19 @@ namespace mr { namespace middle_interpreter {
                         // we type checked, and don't allow operations that cause UB
                         // this place_value.type is safe
                         return Value(Aggregate(std::move(vals)), place_value.type);
+                    },
+                    [&](const ir::Cast &cast) {
+                        switch (cast.kind) {
+                        case ir::CastKind::FnItemToPtr: {
+                            return Value(
+                                FnPtrValue(std::get<const types::FnItem *>(cast.to_type)->id),
+                                cast.to_type
+                            );
+                        } break;
+
+                        default:
+                            ICE(fmt::format("CAN'T HANDLE CAST KIND {}", cast.kind));
+                        }
                     }
                 },
                 value
@@ -211,8 +226,10 @@ namespace mr { namespace middle_interpreter {
             auto left = interp_operand(bin_op.left);
             auto right = interp_operand(bin_op.right);
             // at this point, we don't accept different types in binary ops
-            if (left.type != right.type)
+            if (left.type != right.type) {
+                fmt::println("{} != {}", left.type, right.type);
                 throw std::runtime_error("Unexpected type difference binary op");
+            }
 
             if (!left.type.is_integral() && !right.type.is_integral())
                 throw std::runtime_error("Non Integral binary op");
@@ -391,14 +408,24 @@ namespace mr { namespace middle_interpreter {
             );
         } // namespace middle_interpreter
 
-        Value interp_operand(const ir::Operand &op) {
+        inline Value interp_operand(const ir::Operand &op) {
             return std::visit(
                 overloaded{
-                    [&](const ir::Const &v) { return Value(v.scalar, v.ty); },
+                    [&](const ir::Const &c) { return interp_const(c); },
                     [&](const ir::Move &m) { return std::move(interp_place(m.val)); },
                     [&](const ir::Copy &c) { return interp_place(c.val); }
                 },
                 op
+            );
+        }
+
+        inline Value interp_const(const ir::Const &v) {
+            return std::visit(
+                overloaded{
+                    [&](Ref<const std::string> s) { return Value(FnPtrValue(s), v.ty); },
+                    [&](const Scalar &s) { return Value(s, v.ty); }
+                },
+                v.kind
             );
         }
 

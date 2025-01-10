@@ -60,9 +60,22 @@ namespace mr { namespace middle { namespace ir {
     struct Copy {
         Place val;
     };
+
+    // std::string represents a fn, this is patch work
+    using ConstKind = std::variant<Scalar, Ref<const std::string>>;
     struct Const {
-        Scalar scalar;
+        ConstKind kind;
         types::Ty ty;
+        friend std::ostream &operator<<(std::ostream &o, const Const &c) {
+            std::visit(
+                overloaded{
+                    [&](const Scalar &s) { o << s.data << '_' << c.ty; },
+                    [&](const std::string &s) { o << s; }
+                },
+                c.kind
+            );
+            return o;
+        }
     };
 
     struct Operand : std::variant<Copy, Move, Const> {
@@ -70,14 +83,17 @@ namespace mr { namespace middle { namespace ir {
         static Operand move(Place val) { return Operand{Move{val}}; }
         static Operand copy(Place val) { return Operand{Copy{val}}; }
         // const is a keyword...
-        static Operand const_(Scalar s, types::Ty t) { return Operand(Const{s, t}); }
+        static Operand const_scalar(Scalar s, types::Ty t) { return Operand(Const{s, t}); }
+        static Operand const_item(const std::string &s, types::Ty t) {
+            return Operand(Const(ConstKind{s}, t));
+        }
 
         friend std::ostream &operator<<(std::ostream &o, const Operand &v) {
             std::visit(
                 overloaded{
                     [&](const Copy &c) { o << "copy " << c.val; },
                     [&](const Move &c) { o << "move " << c.val; },
-                    [&](const Const &c) { o << "const " << c.scalar.data << "_" << c.ty; },
+                    [&](const Const &c) { o << c; },
                 },
                 v
             );
@@ -147,10 +163,19 @@ namespace mr { namespace middle { namespace ir {
         }
     };
 
-    using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp, Aggregate>;
+    ENUM_DEFINE(CastKind, FnItemToPtr)
+
+    struct Cast {
+        CastKind kind;
+        Operand op;
+        types::Ty to_type;
+        friend std::ostream &operator<<(std::ostream &o, const Cast &aggr) { return o; }
+    };
+
+    using rvalue_variant_t = std::variant<AsIs, BinaryOp, UnaryOp, Aggregate, Cast>;
     struct RValue : public rvalue_variant_t {
 #define RVALUE_CONSTR(ty) VARIANT_CONSTR(RValue, ty, rvalue_variant_t)
-        MAP(RVALUE_CONSTR, AsIs, BinaryOp, UnaryOp, Aggregate)
+        MAP(RVALUE_CONSTR, AsIs, BinaryOp, UnaryOp, Aggregate, Cast)
 
         friend std::ostream &operator<<(std::ostream &o, const RValue &val) {
             std::visit([&](const auto &v) { o << v; }, val);
@@ -159,3 +184,6 @@ namespace mr { namespace middle { namespace ir {
     }; // namespace middle
 
 }}} // namespace mr::middle::ir
+
+OSTREAM_FORMATTER(mr::middle::ir::CastKind)
+OSTREAM_FORMATTER(mr::middle::ir::RValue)

@@ -13,31 +13,31 @@ Terminals unused in grammar
 
 
 State 53 conflicts: 1 shift/reduce
-State 92 conflicts: 1 shift/reduce
-State 93 conflicts: 1 shift/reduce
-State 94 conflicts: 1 shift/reduce
-State 97 conflicts: 1 shift/reduce
-State 99 conflicts: 1 shift/reduce
-State 102 conflicts: 1 shift/reduce
-State 104 conflicts: 1 shift/reduce
-State 105 conflicts: 1 shift/reduce
-State 147 conflicts: 1 shift/reduce
-State 148 conflicts: 1 shift/reduce
-State 149 conflicts: 1 shift/reduce
-State 150 conflicts: 1 shift/reduce
-State 151 conflicts: 1 shift/reduce
-State 152 conflicts: 1 shift/reduce
-State 153 conflicts: 1 shift/reduce
-State 154 conflicts: 1 shift/reduce
-State 155 conflicts: 1 shift/reduce
-State 156 conflicts: 1 shift/reduce
-State 157 conflicts: 1 shift/reduce
-State 158 conflicts: 1 shift/reduce
-State 159 conflicts: 1 shift/reduce
-State 160 conflicts: 1 shift/reduce
-State 161 conflicts: 1 shift/reduce
-State 162 conflicts: 1 shift/reduce
-State 163 conflicts: 1 shift/reduce
+State 91 conflicts: 2 shift/reduce
+State 92 conflicts: 2 shift/reduce
+State 93 conflicts: 2 shift/reduce
+State 96 conflicts: 2 shift/reduce
+State 98 conflicts: 2 shift/reduce
+State 101 conflicts: 1 shift/reduce
+State 103 conflicts: 2 shift/reduce
+State 104 conflicts: 2 shift/reduce
+State 145 conflicts: 2 shift/reduce
+State 146 conflicts: 2 shift/reduce
+State 147 conflicts: 2 shift/reduce
+State 148 conflicts: 2 shift/reduce
+State 149 conflicts: 2 shift/reduce
+State 150 conflicts: 2 shift/reduce
+State 151 conflicts: 2 shift/reduce
+State 152 conflicts: 2 shift/reduce
+State 153 conflicts: 2 shift/reduce
+State 154 conflicts: 2 shift/reduce
+State 155 conflicts: 2 shift/reduce
+State 156 conflicts: 2 shift/reduce
+State 157 conflicts: 2 shift/reduce
+State 158 conflicts: 2 shift/reduce
+State 159 conflicts: 2 shift/reduce
+State 160 conflicts: 2 shift/reduce
+State 161 conflicts: 2 shift/reduce
 
 
 Grammar
@@ -112,92 +112,95 @@ Grammar
    50     | LPAREN type_list RPAREN
    51     | LPAREN RPAREN
    52     | FN LPAREN type_list RPAREN ARROW type
+   53     | FN LPAREN type_list RPAREN
+   54     | FN LPAREN RPAREN ARROW type
+   55     | FN LPAREN RPAREN
 
-   53 block_expr: LBRACE stmt_list RBRACE
-   54           | LBRACE stmt_list expr RBRACE
-   55           | LBRACE expr RBRACE
-   56           | LBRACE RBRACE
+   56 block_expr: LBRACE stmt_list RBRACE
+   57           | LBRACE stmt_list expr RBRACE
+   58           | LBRACE expr RBRACE
+   59           | LBRACE RBRACE
 
-   57 unary_op_expr: MINUS expr
-   58              | STAR expr
-   59              | BANG expr
-   60              | AMPERSAND expr
-   61              | AMPERSAND_MUT expr
+   60 unary_op_expr: MINUS expr
+   61              | STAR expr
+   62              | BANG expr
+   63              | AMPERSAND expr
+   64              | AMPERSAND_MUT expr
 
-   62 bin_op_expr: expr PLUS expr
-   63            | expr MINUS expr
-   64            | expr STAR expr
-   65            | expr SLASH expr
-   66            | expr L_AND expr
-   67            | expr L_OR expr
-   68            | expr EQEQ expr
-   69            | expr NE expr
-   70            | expr LT expr
-   71            | expr GT expr
-   72            | expr GE expr
-   73            | expr LE expr
-   74            | expr EQ expr
-   75            | expr PLUS_EQ expr
-   76            | expr MIN_EQ expr
-   77            | expr DIV_EQ expr
-   78            | expr MUL_EQ expr
+   65 bin_op_expr: expr PLUS expr
+   66            | expr MINUS expr
+   67            | expr STAR expr
+   68            | expr SLASH expr
+   69            | expr L_AND expr
+   70            | expr L_OR expr
+   71            | expr EQEQ expr
+   72            | expr NE expr
+   73            | expr LT expr
+   74            | expr GT expr
+   75            | expr GE expr
+   76            | expr LE expr
+   77            | expr EQ expr
+   78            | expr PLUS_EQ expr
+   79            | expr MIN_EQ expr
+   80            | expr DIV_EQ expr
+   81            | expr MUL_EQ expr
 
-   79 literal: DEC_LITERAL
-   80        | STR_LITERAL
-   81        | FLOAT_LITERAL
-   82        | TRUE
-   83        | FALSE
+   82 literal: DEC_LITERAL
+   83        | STR_LITERAL
+   84        | FLOAT_LITERAL
+   85        | TRUE
+   86        | FALSE
 
-   84 call_expr_args: call_expr_args COMMA expr
-   85               | expr
+   87 call_expr_args: call_expr_args COMMA expr
+   88               | expr
 
-   86 call_expr: IDENTIFIER LPAREN call_expr_args RPAREN
-   87          | IDENTIFIER LPAREN RPAREN
+   89 call_expr: expr LPAREN call_expr_args RPAREN
+   90          | expr LPAREN RPAREN
 
-   88 while_expr: WHILE expr block_expr
+   91 while_expr: WHILE expr block_expr
 
-   89 tuple_index_expr: expr DOT DEC_LITERAL
+   92 tuple_index_expr: expr DOT DEC_LITERAL
 
-   90 expr: expr_w_block
-   91     | expr_wo_block
+   93 expr: expr_w_block
+   94     | expr_wo_block
 
-   92 expr_list: expr_list COMMA expr
-   93          | expr
+   95 expr_list: expr_list COMMA expr
+   96          | expr
 
-   94 expr_stmt: expr_w_block
-   95          | expr_wo_block
+   97 expr_stmt: expr_w_block
+   98          | expr_wo_block
 
-   96 expr_w_block: while_expr
-   97             | if_expr
-   98             | block_expr
+   99 expr_w_block: while_expr
+  100             | if_expr
+  101             | block_expr
 
-   99 expr_wo_block: LPAREN expr RPAREN
-  100              | bin_op_expr
-  101              | tuple_index_expr
-  102              | IDENTIFIER
-  103              | unary_op_expr
-  104              | LPAREN RPAREN
-  105              | call_expr
-  106              | RETURN expr
-  107              | BREAK expr
-  108              | CONTINUE
-  109              | LPAREN expr_list opt_comma RPAREN
-  110              | literal
+  102 expr_wo_block: LPAREN expr RPAREN
+  103              | bin_op_expr
+  104              | tuple_index_expr
+  105              | IDENTIFIER
+  106              | unary_op_expr
+  107              | LPAREN RPAREN
+  108              | call_expr
+  109              | RETURN expr
+  110              | BREAK expr
+  111              | CONTINUE
+  112              | LPAREN expr_list opt_comma RPAREN
+  113              | literal
 
-  111 opt_comma: COMMA
-  112          | ε
+  114 opt_comma: COMMA
+  115          | ε
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256) 9 22 26
-    DEC_LITERAL <Token> (258) 79 89
-    FLOAT_LITERAL <Token> (259) 81
-    STR_LITERAL <Token> (260) 24 80
-    TRUE <Token> (261) 82
-    FALSE <Token> (262) 83
-    IDENTIFIER <Token> (263) 5 6 12 30 86 87 102
+    DEC_LITERAL <Token> (258) 82 92
+    FLOAT_LITERAL <Token> (259) 84
+    STR_LITERAL <Token> (260) 24 83
+    TRUE <Token> (261) 85
+    FALSE <Token> (262) 86
+    IDENTIFIER <Token> (263) 5 6 12 30 105
     UNDERSCORE <Token> (264) 49
     I8 <Token> (265) 38
     I16 <Token> (266) 39
@@ -212,44 +215,44 @@ Terminals, with rules where they appear
     LET <Token> (275) 31 32
     MUT <Token> (276) 28
     BOOL <Token> (277) 48
-    FN <Token> (278) 5 6 52
-    WHILE <Token> (279) 88
+    FN <Token> (278) 5 6 52 53 54 55
+    WHILE <Token> (279) 91
     PRINT_LN <Token> (280) 24
-    EQ <Token> (281) 31 74
-    EQEQ <Token> (282) 68
-    NE <Token> (283) 69
-    BANG <Token> (284) 59
-    LT <Token> (285) 70
-    LE <Token> (286) 73
-    GT <Token> (287) 71
-    GE <Token> (288) 72
-    PLUS <Token> (289) 62
-    MINUS <Token> (290) 57 63
-    STAR <Token> (291) 58 64
-    SLASH <Token> (292) 65
-    COMMA <Token> (293) 10 36 84 92 111
-    ARROW <Token> (294) 5 52
+    EQ <Token> (281) 31 77
+    EQEQ <Token> (282) 71
+    NE <Token> (283) 72
+    BANG <Token> (284) 62
+    LT <Token> (285) 73
+    LE <Token> (286) 76
+    GT <Token> (287) 74
+    GE <Token> (288) 75
+    PLUS <Token> (289) 65
+    MINUS <Token> (290) 60 66
+    STAR <Token> (291) 61 67
+    SLASH <Token> (292) 68
+    COMMA <Token> (293) 10 36 87 95 114
+    ARROW <Token> (294) 5 52 54
     IF <Token> (295) 33 34 35
     ELSE <Token> (296) 34 35
-    RETURN <Token> (297) 15 106
-    BREAK <Token> (298) 16 107
-    CONTINUE <Token> (299) 17 108
-    L_AND <Token> (300) 66
-    L_OR <Token> (301) 67
-    PLUS_EQ <Token> (302) 75
-    MIN_EQ <Token> (303) 76
-    MUL_EQ <Token> (304) 78
-    DIV_EQ <Token> (305) 77
-    LBRACE <Token> (306) 53 54 55 56
-    RBRACE <Token> (307) 53 54 55 56
-    LPAREN <Token> (308) 7 8 24 50 51 52 86 87 99 104 109
-    RPAREN <Token> (309) 7 8 24 50 51 52 86 87 99 104 109
+    RETURN <Token> (297) 15 109
+    BREAK <Token> (298) 16 110
+    CONTINUE <Token> (299) 17 111
+    L_AND <Token> (300) 69
+    L_OR <Token> (301) 70
+    PLUS_EQ <Token> (302) 78
+    MIN_EQ <Token> (303) 79
+    MUL_EQ <Token> (304) 81
+    DIV_EQ <Token> (305) 80
+    LBRACE <Token> (306) 56 57 58 59
+    RBRACE <Token> (307) 56 57 58 59
+    LPAREN <Token> (308) 7 8 24 50 51 52 53 54 55 89 90 102 107 112
+    RPAREN <Token> (309) 7 8 24 50 51 52 53 54 55 89 90 102 107 112
     SEMICOLON <Token> (310) 13 15 16 17 18 19 31 32
     COLON <Token> (311) 12 25 26
-    AMPERSAND <Token> (312) 60
+    AMPERSAND <Token> (312) 63
     OR <Token> (313)
-    AMPERSAND_MUT <Token> (314) 61
-    DOT <Token> (315) 89
+    AMPERSAND_MUT <Token> (314) 64
+    DOT <Token> (315) 92
     CONTROL_FLOW (316)
     MOD_EQ (317)
     BIT_AND_EQ (318)
@@ -302,7 +305,7 @@ Nonterminals, with rules where they appear
         on right: 21 23
     stmt_list <std::vector<U<Stmt>>> (90)
         on left: 21 22 23
-        on right: 21 22 53 54
+        on right: 21 22 56 57
     print_ln <U<PrintLn>> (91)
         on left: 24
         on right: 19
@@ -320,55 +323,55 @@ Nonterminals, with rules where they appear
         on right: 14
     if_expr <U<IfElse>> (96)
         on left: 33 34 35
-        on right: 34 97
+        on right: 34 100
     type_list <std::vector<Type>> (97)
         on left: 36 37
-        on right: 36 50 52
+        on right: 36 50 52 53
     type <Type> (98)
-        on left: 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52
-        on right: 5 12 25 36 37 52
+        on left: 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55
+        on right: 5 12 25 36 37 52 54
     block_expr <U<BlockExpr>> (99)
-        on left: 53 54 55 56
-        on right: 5 6 33 34 35 88 98
+        on left: 56 57 58 59
+        on right: 5 6 33 34 35 91 101
     unary_op_expr <U<UnaryOpExpr>> (100)
-        on left: 57 58 59 60 61
-        on right: 103
+        on left: 60 61 62 63 64
+        on right: 106
     bin_op_expr <U<Expr>> (101)
-        on left: 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78
-        on right: 100
+        on left: 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81
+        on right: 103
     literal <U<Literal>> (102)
-        on left: 79 80 81 82 83
-        on right: 110
+        on left: 82 83 84 85 86
+        on right: 113
     call_expr_args <std::vector<U<Expr>>> (103)
-        on left: 84 85
-        on right: 84 86
+        on left: 87 88
+        on right: 87 89
     call_expr <U<CallExpr>> (104)
-        on left: 86 87
-        on right: 105
+        on left: 89 90
+        on right: 108
     while_expr <U<WhileLoop>> (105)
-        on left: 88
-        on right: 96
+        on left: 91
+        on right: 99
     tuple_index_expr <U<TupleIndexExpr>> (106)
-        on left: 89
-        on right: 101
+        on left: 92
+        on right: 104
     expr <U<Expr>> (107)
-        on left: 90 91
-        on right: 31 33 34 35 54 55 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 84 85 88 89 92 93 99 106 107
+        on left: 93 94
+        on right: 31 33 34 35 57 58 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 87 88 89 90 91 92 95 96 102 109 110
     expr_list <std::vector<U<Expr>>> (108)
-        on left: 92 93
-        on right: 92 109
+        on left: 95 96
+        on right: 95 112
     expr_stmt <U<Expr>> (109)
-        on left: 94 95
+        on left: 97 98
         on right: 18
     expr_w_block <U<Expr>> (110)
-        on left: 96 97 98
-        on right: 90 94
+        on left: 99 100 101
+        on right: 93 97
     expr_wo_block <U<Expr>> (111)
-        on left: 99 100 101 102 103 104 105 106 107 108 109 110
-        on right: 91 95
+        on left: 102 103 104 105 106 107 108 109 110 111 112 113
+        on right: 94 98
     opt_comma (112)
-        on left: 111 112
-        on right: 109
+        on left: 114 115
+        on right: 112
 
 
 State 0
@@ -544,10 +547,10 @@ State 17
 
 State 18
 
-   53 block_expr: LBRACE • stmt_list RBRACE
-   54           | LBRACE • stmt_list expr RBRACE
-   55           | LBRACE • expr RBRACE
-   56           | LBRACE • RBRACE
+   56 block_expr: LBRACE • stmt_list RBRACE
+   57           | LBRACE • stmt_list expr RBRACE
+   58           | LBRACE • expr RBRACE
+   59           | LBRACE • RBRACE
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -713,6 +716,9 @@ State 34
 State 35
 
    52 type: FN • LPAREN type_list RPAREN ARROW type
+   53     | FN • LPAREN type_list RPAREN
+   54     | FN • LPAREN RPAREN ARROW type
+   55     | FN • LPAREN RPAREN
 
     LPAREN  shift, and go to state 78
 
@@ -753,48 +759,44 @@ State 37
 
 State 38
 
-   79 literal: DEC_LITERAL •
-
-    $default  reduce using rule 79 (literal)
-
-
-State 39
-
-   81 literal: FLOAT_LITERAL •
-
-    $default  reduce using rule 81 (literal)
-
-
-State 40
-
-   80 literal: STR_LITERAL •
-
-    $default  reduce using rule 80 (literal)
-
-
-State 41
-
-   82 literal: TRUE •
+   82 literal: DEC_LITERAL •
 
     $default  reduce using rule 82 (literal)
 
 
-State 42
+State 39
 
-   83 literal: FALSE •
+   84 literal: FLOAT_LITERAL •
+
+    $default  reduce using rule 84 (literal)
+
+
+State 40
+
+   83 literal: STR_LITERAL •
 
     $default  reduce using rule 83 (literal)
 
 
+State 41
+
+   85 literal: TRUE •
+
+    $default  reduce using rule 85 (literal)
+
+
+State 42
+
+   86 literal: FALSE •
+
+    $default  reduce using rule 86 (literal)
+
+
 State 43
 
-   86 call_expr: IDENTIFIER • LPAREN call_expr_args RPAREN
-   87          | IDENTIFIER • LPAREN RPAREN
-  102 expr_wo_block: IDENTIFIER •
+  105 expr_wo_block: IDENTIFIER •
 
-    LPAREN  shift, and go to state 83
-
-    $default  reduce using rule 102 (expr_wo_block)
+    $default  reduce using rule 105 (expr_wo_block)
 
 
 State 44
@@ -806,12 +808,12 @@ State 44
 
     $default  reduce using rule 29 (opt_mut)
 
-    opt_mut  go to state 84
+    opt_mut  go to state 83
 
 
 State 45
 
-   88 while_expr: WHILE • expr block_expr
+   91 while_expr: WHILE • expr block_expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -824,9 +826,9 @@ State 45
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -840,21 +842,21 @@ State 45
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 88
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr              go to state 87
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 46
 
    24 print_ln: PRINT_LN • LPAREN STR_LITERAL RPAREN
 
-    LPAREN  shift, and go to state 91
+    LPAREN  shift, and go to state 90
 
 
 State 47
 
-   59 unary_op_expr: BANG • expr
+   62 unary_op_expr: BANG • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -867,9 +869,45 @@ State 47
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
+    LBRACE         shift, and go to state 18
+    LPAREN         shift, and go to state 55
+    AMPERSAND      shift, and go to state 57
+    AMPERSAND_MUT  shift, and go to state 58
+
+    if_expr           go to state 64
+    block_expr        go to state 65
+    unary_op_expr     go to state 66
+    bin_op_expr       go to state 67
+    literal           go to state 68
+    call_expr         go to state 69
+    while_expr        go to state 70
+    tuple_index_expr  go to state 71
+    expr              go to state 91
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
+
+
+State 48
+
+   60 unary_op_expr: MINUS • expr
+
+    DEC_LITERAL    shift, and go to state 38
+    FLOAT_LITERAL  shift, and go to state 39
+    STR_LITERAL    shift, and go to state 40
+    TRUE           shift, and go to state 41
+    FALSE          shift, and go to state 42
+    IDENTIFIER     shift, and go to state 43
+    WHILE          shift, and go to state 45
+    BANG           shift, and go to state 47
+    MINUS          shift, and go to state 48
+    STAR           shift, and go to state 49
+    IF             shift, and go to state 50
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -884,13 +922,13 @@ State 47
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 92
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 48
+State 49
 
-   57 unary_op_expr: MINUS • expr
+   61 unary_op_expr: STAR • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -903,9 +941,9 @@ State 48
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -920,44 +958,8 @@ State 48
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 93
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
-
-
-State 49
-
-   58 unary_op_expr: STAR • expr
-
-    DEC_LITERAL    shift, and go to state 38
-    FLOAT_LITERAL  shift, and go to state 39
-    STR_LITERAL    shift, and go to state 40
-    TRUE           shift, and go to state 41
-    FALSE          shift, and go to state 42
-    IDENTIFIER     shift, and go to state 43
-    WHILE          shift, and go to state 45
-    BANG           shift, and go to state 47
-    MINUS          shift, and go to state 48
-    STAR           shift, and go to state 49
-    IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
-    LBRACE         shift, and go to state 18
-    LPAREN         shift, and go to state 55
-    AMPERSAND      shift, and go to state 57
-    AMPERSAND_MUT  shift, and go to state 58
-
-    if_expr           go to state 64
-    block_expr        go to state 65
-    unary_op_expr     go to state 66
-    bin_op_expr       go to state 67
-    literal           go to state 68
-    call_expr         go to state 69
-    while_expr        go to state 70
-    tuple_index_expr  go to state 71
-    expr              go to state 94
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 50
@@ -977,9 +979,9 @@ State 50
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -993,15 +995,15 @@ State 50
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 95
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr              go to state 94
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 51
 
    15 stmt: RETURN • SEMICOLON
-  106 expr_wo_block: RETURN • expr
+  109 expr_wo_block: RETURN • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -1014,12 +1016,12 @@ State 51
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
-    SEMICOLON      shift, and go to state 96
+    SEMICOLON      shift, and go to state 95
     AMPERSAND      shift, and go to state 57
     AMPERSAND_MUT  shift, and go to state 58
 
@@ -1031,15 +1033,15 @@ State 51
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 97
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr              go to state 96
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 52
 
    16 stmt: BREAK • SEMICOLON
-  107 expr_wo_block: BREAK • expr
+  110 expr_wo_block: BREAK • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -1052,12 +1054,12 @@ State 52
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
-    SEMICOLON      shift, and go to state 98
+    SEMICOLON      shift, and go to state 97
     AMPERSAND      shift, and go to state 57
     AMPERSAND_MUT  shift, and go to state 58
 
@@ -1069,34 +1071,34 @@ State 52
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 99
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr              go to state 98
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 53
 
    17 stmt: CONTINUE • SEMICOLON
-  108 expr_wo_block: CONTINUE •
+  111 expr_wo_block: CONTINUE •
 
-    SEMICOLON  shift, and go to state 100
+    SEMICOLON  shift, and go to state 99
 
-    SEMICOLON  [reduce using rule 108 (expr_wo_block)]
-    $default   reduce using rule 108 (expr_wo_block)
+    SEMICOLON  [reduce using rule 111 (expr_wo_block)]
+    $default   reduce using rule 111 (expr_wo_block)
 
 
 State 54
 
-   56 block_expr: LBRACE RBRACE •
+   59 block_expr: LBRACE RBRACE •
 
-    $default  reduce using rule 56 (block_expr)
+    $default  reduce using rule 59 (block_expr)
 
 
 State 55
 
-   99 expr_wo_block: LPAREN • expr RPAREN
-  104              | LPAREN • RPAREN
-  109              | LPAREN • expr_list opt_comma RPAREN
+  102 expr_wo_block: LPAREN • expr RPAREN
+  107              | LPAREN • RPAREN
+  112              | LPAREN • expr_list opt_comma RPAREN
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -1109,12 +1111,12 @@ State 55
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
-    RPAREN         shift, and go to state 101
+    RPAREN         shift, and go to state 100
     AMPERSAND      shift, and go to state 57
     AMPERSAND_MUT  shift, and go to state 58
 
@@ -1126,10 +1128,10 @@ State 55
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 102
-    expr_list         go to state 103
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr              go to state 101
+    expr_list         go to state 102
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 56
@@ -1141,7 +1143,7 @@ State 56
 
 State 57
 
-   60 unary_op_expr: AMPERSAND • expr
+   63 unary_op_expr: AMPERSAND • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -1154,9 +1156,45 @@ State 57
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
+    LBRACE         shift, and go to state 18
+    LPAREN         shift, and go to state 55
+    AMPERSAND      shift, and go to state 57
+    AMPERSAND_MUT  shift, and go to state 58
+
+    if_expr           go to state 64
+    block_expr        go to state 65
+    unary_op_expr     go to state 66
+    bin_op_expr       go to state 67
+    literal           go to state 68
+    call_expr         go to state 69
+    while_expr        go to state 70
+    tuple_index_expr  go to state 71
+    expr              go to state 103
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
+
+
+State 58
+
+   64 unary_op_expr: AMPERSAND_MUT • expr
+
+    DEC_LITERAL    shift, and go to state 38
+    FLOAT_LITERAL  shift, and go to state 39
+    STR_LITERAL    shift, and go to state 40
+    TRUE           shift, and go to state 41
+    FALSE          shift, and go to state 42
+    IDENTIFIER     shift, and go to state 43
+    WHILE          shift, and go to state 45
+    BANG           shift, and go to state 47
+    MINUS          shift, and go to state 48
+    STAR           shift, and go to state 49
+    IF             shift, and go to state 50
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -1171,44 +1209,8 @@ State 57
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 104
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
-
-
-State 58
-
-   61 unary_op_expr: AMPERSAND_MUT • expr
-
-    DEC_LITERAL    shift, and go to state 38
-    FLOAT_LITERAL  shift, and go to state 39
-    STR_LITERAL    shift, and go to state 40
-    TRUE           shift, and go to state 41
-    FALSE          shift, and go to state 42
-    IDENTIFIER     shift, and go to state 43
-    WHILE          shift, and go to state 45
-    BANG           shift, and go to state 47
-    MINUS          shift, and go to state 48
-    STAR           shift, and go to state 49
-    IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
-    LBRACE         shift, and go to state 18
-    LPAREN         shift, and go to state 55
-    AMPERSAND      shift, and go to state 57
-    AMPERSAND_MUT  shift, and go to state 58
-
-    if_expr           go to state 64
-    block_expr        go to state 65
-    unary_op_expr     go to state 66
-    bin_op_expr       go to state 67
-    literal           go to state 68
-    call_expr         go to state 69
-    while_expr        go to state 70
-    tuple_index_expr  go to state 71
-    expr              go to state 105
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 59
@@ -1229,10 +1231,10 @@ State 61
 
    21 stmt_list: stmt_list • stmt
    22          | stmt_list • error
-   53 block_expr: LBRACE stmt_list • RBRACE
-   54           | LBRACE stmt_list • expr RBRACE
+   56 block_expr: LBRACE stmt_list • RBRACE
+   57           | LBRACE stmt_list • expr RBRACE
 
-    error          shift, and go to state 106
+    error          shift, and go to state 105
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
     STR_LITERAL    shift, and go to state 40
@@ -1251,7 +1253,7 @@ State 61
     BREAK          shift, and go to state 52
     CONTINUE       shift, and go to state 53
     LBRACE         shift, and go to state 18
-    RBRACE         shift, and go to state 107
+    RBRACE         shift, and go to state 106
     LPAREN         shift, and go to state 55
     SEMICOLON      shift, and go to state 56
     AMPERSAND      shift, and go to state 57
@@ -1259,7 +1261,7 @@ State 61
 
     item              go to state 59
     function_decl     go to state 5
-    stmt              go to state 108
+    stmt              go to state 107
     print_ln          go to state 62
     let               go to state 63
     if_expr           go to state 64
@@ -1270,7 +1272,7 @@ State 61
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 109
+    expr              go to state 108
     expr_stmt         go to state 73
     expr_w_block      go to state 74
     expr_wo_block     go to state 75
@@ -1280,7 +1282,7 @@ State 62
 
    19 stmt: print_ln • SEMICOLON
 
-    SEMICOLON  shift, and go to state 110
+    SEMICOLON  shift, and go to state 109
 
 
 State 63
@@ -1292,100 +1294,103 @@ State 63
 
 State 64
 
-   97 expr_w_block: if_expr •
+  100 expr_w_block: if_expr •
 
-    $default  reduce using rule 97 (expr_w_block)
+    $default  reduce using rule 100 (expr_w_block)
 
 
 State 65
 
-   98 expr_w_block: block_expr •
+  101 expr_w_block: block_expr •
 
-    $default  reduce using rule 98 (expr_w_block)
+    $default  reduce using rule 101 (expr_w_block)
 
 
 State 66
 
-  103 expr_wo_block: unary_op_expr •
+  106 expr_wo_block: unary_op_expr •
 
-    $default  reduce using rule 103 (expr_wo_block)
+    $default  reduce using rule 106 (expr_wo_block)
 
 
 State 67
 
-  100 expr_wo_block: bin_op_expr •
+  103 expr_wo_block: bin_op_expr •
 
-    $default  reduce using rule 100 (expr_wo_block)
+    $default  reduce using rule 103 (expr_wo_block)
 
 
 State 68
 
-  110 expr_wo_block: literal •
+  113 expr_wo_block: literal •
 
-    $default  reduce using rule 110 (expr_wo_block)
+    $default  reduce using rule 113 (expr_wo_block)
 
 
 State 69
 
-  105 expr_wo_block: call_expr •
+  108 expr_wo_block: call_expr •
 
-    $default  reduce using rule 105 (expr_wo_block)
+    $default  reduce using rule 108 (expr_wo_block)
 
 
 State 70
 
-   96 expr_w_block: while_expr •
+   99 expr_w_block: while_expr •
 
-    $default  reduce using rule 96 (expr_w_block)
+    $default  reduce using rule 99 (expr_w_block)
 
 
 State 71
 
-  101 expr_wo_block: tuple_index_expr •
+  104 expr_wo_block: tuple_index_expr •
 
-    $default  reduce using rule 101 (expr_wo_block)
+    $default  reduce using rule 104 (expr_wo_block)
 
 
 State 72
 
-   55 block_expr: LBRACE expr • RBRACE
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
+   58 block_expr: LBRACE expr • RBRACE
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    RBRACE   shift, and go to state 128
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    RBRACE   shift, and go to state 127
+    LPAREN   shift, and go to state 128
     DOT      shift, and go to state 129
 
 
@@ -1398,20 +1403,20 @@ State 73
 
 State 74
 
-   90 expr: expr_w_block •
-   94 expr_stmt: expr_w_block •
+   93 expr: expr_w_block •
+   97 expr_stmt: expr_w_block •
 
-    SEMICOLON  reduce using rule 94 (expr_stmt)
-    $default   reduce using rule 90 (expr)
+    SEMICOLON  reduce using rule 97 (expr_stmt)
+    $default   reduce using rule 93 (expr)
 
 
 State 75
 
-   91 expr: expr_wo_block •
-   95 expr_stmt: expr_wo_block •
+   94 expr: expr_wo_block •
+   98 expr_stmt: expr_wo_block •
 
-    SEMICOLON  reduce using rule 95 (expr_stmt)
-    $default   reduce using rule 91 (expr)
+    SEMICOLON  reduce using rule 98 (expr_stmt)
+    $default   reduce using rule 94 (expr)
 
 
 State 76
@@ -1446,6 +1451,9 @@ State 77
 State 78
 
    52 type: FN LPAREN • type_list RPAREN ARROW type
+   53     | FN LPAREN • type_list RPAREN
+   54     | FN LPAREN • RPAREN ARROW type
+   55     | FN LPAREN • RPAREN
 
     UNDERSCORE  shift, and go to state 23
     I8          shift, and go to state 24
@@ -1461,8 +1469,9 @@ State 78
     BOOL        shift, and go to state 34
     FN          shift, and go to state 35
     LPAREN      shift, and go to state 36
+    RPAREN      shift, and go to state 132
 
-    type_list  go to state 132
+    type_list  go to state 133
     type       go to state 81
 
 
@@ -1478,8 +1487,8 @@ State 80
    36 type_list: type_list • COMMA type
    50 type: LPAREN type_list • RPAREN
 
-    COMMA   shift, and go to state 133
-    RPAREN  shift, and go to state 134
+    COMMA   shift, and go to state 134
+    RPAREN  shift, and go to state 135
 
 
 State 81
@@ -1498,56 +1507,53 @@ State 82
 
 State 83
 
-   86 call_expr: IDENTIFIER LPAREN • call_expr_args RPAREN
-   87          | IDENTIFIER LPAREN • RPAREN
+   31 let: LET opt_mut • ident type_decl EQ expr SEMICOLON
+   32    | LET opt_mut • ident type_decl SEMICOLON
 
-    DEC_LITERAL    shift, and go to state 38
-    FLOAT_LITERAL  shift, and go to state 39
-    STR_LITERAL    shift, and go to state 40
-    TRUE           shift, and go to state 41
-    FALSE          shift, and go to state 42
-    IDENTIFIER     shift, and go to state 43
-    WHILE          shift, and go to state 45
-    BANG           shift, and go to state 47
-    MINUS          shift, and go to state 48
-    STAR           shift, and go to state 49
-    IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
-    LBRACE         shift, and go to state 18
-    LPAREN         shift, and go to state 55
-    RPAREN         shift, and go to state 135
-    AMPERSAND      shift, and go to state 57
-    AMPERSAND_MUT  shift, and go to state 58
+    IDENTIFIER  shift, and go to state 136
 
-    if_expr           go to state 64
-    block_expr        go to state 65
-    unary_op_expr     go to state 66
-    bin_op_expr       go to state 67
-    literal           go to state 68
-    call_expr_args    go to state 136
-    call_expr         go to state 69
-    while_expr        go to state 70
-    tuple_index_expr  go to state 71
-    expr              go to state 137
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    ident  go to state 137
 
 
 State 84
 
-   31 let: LET opt_mut • ident type_decl EQ expr SEMICOLON
-   32    | LET opt_mut • ident type_decl SEMICOLON
+  109 expr_wo_block: RETURN • expr
 
-    IDENTIFIER  shift, and go to state 138
+    DEC_LITERAL    shift, and go to state 38
+    FLOAT_LITERAL  shift, and go to state 39
+    STR_LITERAL    shift, and go to state 40
+    TRUE           shift, and go to state 41
+    FALSE          shift, and go to state 42
+    IDENTIFIER     shift, and go to state 43
+    WHILE          shift, and go to state 45
+    BANG           shift, and go to state 47
+    MINUS          shift, and go to state 48
+    STAR           shift, and go to state 49
+    IF             shift, and go to state 50
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
+    LBRACE         shift, and go to state 18
+    LPAREN         shift, and go to state 55
+    AMPERSAND      shift, and go to state 57
+    AMPERSAND_MUT  shift, and go to state 58
 
-    ident  go to state 139
+    if_expr           go to state 64
+    block_expr        go to state 65
+    unary_op_expr     go to state 66
+    bin_op_expr       go to state 67
+    literal           go to state 68
+    call_expr         go to state 69
+    while_expr        go to state 70
+    tuple_index_expr  go to state 71
+    expr              go to state 96
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 85
 
-  106 expr_wo_block: RETURN • expr
+  110 expr_wo_block: BREAK • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -1560,9 +1566,9 @@ State 85
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -1576,558 +1582,562 @@ State 85
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 97
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr              go to state 98
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 86
 
-  107 expr_wo_block: BREAK • expr
+  111 expr_wo_block: CONTINUE •
 
-    DEC_LITERAL    shift, and go to state 38
-    FLOAT_LITERAL  shift, and go to state 39
-    STR_LITERAL    shift, and go to state 40
-    TRUE           shift, and go to state 41
-    FALSE          shift, and go to state 42
-    IDENTIFIER     shift, and go to state 43
-    WHILE          shift, and go to state 45
-    BANG           shift, and go to state 47
-    MINUS          shift, and go to state 48
-    STAR           shift, and go to state 49
-    IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
-    LBRACE         shift, and go to state 18
-    LPAREN         shift, and go to state 55
-    AMPERSAND      shift, and go to state 57
-    AMPERSAND_MUT  shift, and go to state 58
-
-    if_expr           go to state 64
-    block_expr        go to state 65
-    unary_op_expr     go to state 66
-    bin_op_expr       go to state 67
-    literal           go to state 68
-    call_expr         go to state 69
-    while_expr        go to state 70
-    tuple_index_expr  go to state 71
-    expr              go to state 99
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    $default  reduce using rule 111 (expr_wo_block)
 
 
 State 87
 
-  108 expr_wo_block: CONTINUE •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   91 while_expr: WHILE expr • block_expr
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    $default  reduce using rule 108 (expr_wo_block)
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LBRACE   shift, and go to state 18
+    LPAREN   shift, and go to state 128
+    DOT      shift, and go to state 129
+
+    block_expr  go to state 138
 
 
 State 88
 
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   88 while_expr: WHILE expr • block_expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
+   93 expr: expr_w_block •
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
+    $default  reduce using rule 93 (expr)
+
+
+State 89
+
+   94 expr: expr_wo_block •
+
+    $default  reduce using rule 94 (expr)
+
+
+State 90
+
+   24 print_ln: PRINT_LN LPAREN • STR_LITERAL RPAREN
+
+    STR_LITERAL  shift, and go to state 139
+
+
+State 91
+
+   62 unary_op_expr: BANG expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 62 (unary_op_expr)]
+    DOT       [reduce using rule 62 (unary_op_expr)]
+    $default  reduce using rule 62 (unary_op_expr)
+
+
+State 92
+
+   60 unary_op_expr: MINUS expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 60 (unary_op_expr)]
+    DOT       [reduce using rule 60 (unary_op_expr)]
+    $default  reduce using rule 60 (unary_op_expr)
+
+
+State 93
+
+   61 unary_op_expr: STAR expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 61 (unary_op_expr)]
+    DOT       [reduce using rule 61 (unary_op_expr)]
+    $default  reduce using rule 61 (unary_op_expr)
+
+
+State 94
+
+   33 if_expr: IF expr • block_expr
+   34        | IF expr • block_expr ELSE if_expr
+   35        | IF expr • block_expr ELSE block_expr
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
     LBRACE   shift, and go to state 18
+    LPAREN   shift, and go to state 128
     DOT      shift, and go to state 129
 
     block_expr  go to state 140
 
 
-State 89
-
-   90 expr: expr_w_block •
-
-    $default  reduce using rule 90 (expr)
-
-
-State 90
-
-   91 expr: expr_wo_block •
-
-    $default  reduce using rule 91 (expr)
-
-
-State 91
-
-   24 print_ln: PRINT_LN LPAREN • STR_LITERAL RPAREN
-
-    STR_LITERAL  shift, and go to state 141
-
-
-State 92
-
-   59 unary_op_expr: BANG expr •
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    DOT  shift, and go to state 129
-
-    DOT       [reduce using rule 59 (unary_op_expr)]
-    $default  reduce using rule 59 (unary_op_expr)
-
-
-State 93
-
-   57 unary_op_expr: MINUS expr •
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    DOT  shift, and go to state 129
-
-    DOT       [reduce using rule 57 (unary_op_expr)]
-    $default  reduce using rule 57 (unary_op_expr)
-
-
-State 94
-
-   58 unary_op_expr: STAR expr •
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    DOT  shift, and go to state 129
-
-    DOT       [reduce using rule 58 (unary_op_expr)]
-    $default  reduce using rule 58 (unary_op_expr)
-
-
 State 95
-
-   33 if_expr: IF expr • block_expr
-   34        | IF expr • block_expr ELSE if_expr
-   35        | IF expr • block_expr ELSE block_expr
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    LBRACE   shift, and go to state 18
-    DOT      shift, and go to state 129
-
-    block_expr  go to state 142
-
-
-State 96
 
    15 stmt: RETURN SEMICOLON •
 
     $default  reduce using rule 15 (stmt)
 
 
-State 97
+State 96
 
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-  106 expr_wo_block: RETURN expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+  109 expr_wo_block: RETURN expr •
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
     DOT      shift, and go to state 129
 
-    DOT       [reduce using rule 106 (expr_wo_block)]
-    $default  reduce using rule 106 (expr_wo_block)
+    LPAREN    [reduce using rule 109 (expr_wo_block)]
+    DOT       [reduce using rule 109 (expr_wo_block)]
+    $default  reduce using rule 109 (expr_wo_block)
 
 
-State 98
+State 97
 
    16 stmt: BREAK SEMICOLON •
 
     $default  reduce using rule 16 (stmt)
 
 
-State 99
+State 98
 
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-  107 expr_wo_block: BREAK expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+  110 expr_wo_block: BREAK expr •
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
     DOT      shift, and go to state 129
 
-    DOT       [reduce using rule 107 (expr_wo_block)]
-    $default  reduce using rule 107 (expr_wo_block)
+    LPAREN    [reduce using rule 110 (expr_wo_block)]
+    DOT       [reduce using rule 110 (expr_wo_block)]
+    $default  reduce using rule 110 (expr_wo_block)
 
 
-State 100
+State 99
 
    17 stmt: CONTINUE SEMICOLON •
 
     $default  reduce using rule 17 (stmt)
 
 
+State 100
+
+  107 expr_wo_block: LPAREN RPAREN •
+
+    $default  reduce using rule 107 (expr_wo_block)
+
+
 State 101
 
-  104 expr_wo_block: LPAREN RPAREN •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+   96 expr_list: expr •
+  102 expr_wo_block: LPAREN expr • RPAREN
 
-    $default  reduce using rule 104 (expr_wo_block)
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
+    RPAREN   shift, and go to state 141
+    DOT      shift, and go to state 129
+
+    RPAREN    [reduce using rule 96 (expr_list)]
+    $default  reduce using rule 96 (expr_list)
 
 
 State 102
 
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-   93 expr_list: expr •
-   99 expr_wo_block: LPAREN expr • RPAREN
+   95 expr_list: expr_list • COMMA expr
+  112 expr_wo_block: LPAREN expr_list • opt_comma RPAREN
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    RPAREN   shift, and go to state 143
-    DOT      shift, and go to state 129
+    COMMA  shift, and go to state 142
 
-    RPAREN    [reduce using rule 93 (expr_list)]
-    $default  reduce using rule 93 (expr_list)
+    $default  reduce using rule 115 (opt_comma)
+
+    opt_comma  go to state 143
 
 
 State 103
 
-   92 expr_list: expr_list • COMMA expr
-  109 expr_wo_block: LPAREN expr_list • opt_comma RPAREN
+   63 unary_op_expr: AMPERSAND expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    COMMA  shift, and go to state 144
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
 
-    $default  reduce using rule 112 (opt_comma)
-
-    opt_comma  go to state 145
+    LPAREN    [reduce using rule 63 (unary_op_expr)]
+    DOT       [reduce using rule 63 (unary_op_expr)]
+    $default  reduce using rule 63 (unary_op_expr)
 
 
 State 104
 
-   60 unary_op_expr: AMPERSAND expr •
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
+   64 unary_op_expr: AMPERSAND_MUT expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    DOT  shift, and go to state 129
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
 
-    DOT       [reduce using rule 60 (unary_op_expr)]
-    $default  reduce using rule 60 (unary_op_expr)
+    LPAREN    [reduce using rule 64 (unary_op_expr)]
+    DOT       [reduce using rule 64 (unary_op_expr)]
+    $default  reduce using rule 64 (unary_op_expr)
 
 
 State 105
-
-   61 unary_op_expr: AMPERSAND_MUT expr •
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    DOT  shift, and go to state 129
-
-    DOT       [reduce using rule 61 (unary_op_expr)]
-    $default  reduce using rule 61 (unary_op_expr)
-
-
-State 106
 
    22 stmt_list: stmt_list error •
 
     $default  reduce using rule 22 (stmt_list)
 
 
+State 106
+
+   56 block_expr: LBRACE stmt_list RBRACE •
+
+    $default  reduce using rule 56 (block_expr)
+
+
 State 107
-
-   53 block_expr: LBRACE stmt_list RBRACE •
-
-    $default  reduce using rule 53 (block_expr)
-
-
-State 108
 
    21 stmt_list: stmt_list stmt •
 
     $default  reduce using rule 21 (stmt_list)
 
 
-State 109
+State 108
 
-   54 block_expr: LBRACE stmt_list expr • RBRACE
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
+   57 block_expr: LBRACE stmt_list expr • RBRACE
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    RBRACE   shift, and go to state 146
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    RBRACE   shift, and go to state 144
+    LPAREN   shift, and go to state 128
     DOT      shift, and go to state 129
 
 
-State 110
+State 109
 
    19 stmt: print_ln SEMICOLON •
 
     $default  reduce using rule 19 (stmt)
 
 
-State 111
+State 110
 
-   74 bin_op_expr: expr EQ • expr
+   77 bin_op_expr: expr EQ • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2140,9 +2150,81 @@ State 111
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
+    LBRACE         shift, and go to state 18
+    LPAREN         shift, and go to state 55
+    AMPERSAND      shift, and go to state 57
+    AMPERSAND_MUT  shift, and go to state 58
+
+    if_expr           go to state 64
+    block_expr        go to state 65
+    unary_op_expr     go to state 66
+    bin_op_expr       go to state 67
+    literal           go to state 68
+    call_expr         go to state 69
+    while_expr        go to state 70
+    tuple_index_expr  go to state 71
+    expr              go to state 145
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
+
+
+State 111
+
+   71 bin_op_expr: expr EQEQ • expr
+
+    DEC_LITERAL    shift, and go to state 38
+    FLOAT_LITERAL  shift, and go to state 39
+    STR_LITERAL    shift, and go to state 40
+    TRUE           shift, and go to state 41
+    FALSE          shift, and go to state 42
+    IDENTIFIER     shift, and go to state 43
+    WHILE          shift, and go to state 45
+    BANG           shift, and go to state 47
+    MINUS          shift, and go to state 48
+    STAR           shift, and go to state 49
+    IF             shift, and go to state 50
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
+    LBRACE         shift, and go to state 18
+    LPAREN         shift, and go to state 55
+    AMPERSAND      shift, and go to state 57
+    AMPERSAND_MUT  shift, and go to state 58
+
+    if_expr           go to state 64
+    block_expr        go to state 65
+    unary_op_expr     go to state 66
+    bin_op_expr       go to state 67
+    literal           go to state 68
+    call_expr         go to state 69
+    while_expr        go to state 70
+    tuple_index_expr  go to state 71
+    expr              go to state 146
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
+
+
+State 112
+
+   72 bin_op_expr: expr NE • expr
+
+    DEC_LITERAL    shift, and go to state 38
+    FLOAT_LITERAL  shift, and go to state 39
+    STR_LITERAL    shift, and go to state 40
+    TRUE           shift, and go to state 41
+    FALSE          shift, and go to state 42
+    IDENTIFIER     shift, and go to state 43
+    WHILE          shift, and go to state 45
+    BANG           shift, and go to state 47
+    MINUS          shift, and go to state 48
+    STAR           shift, and go to state 49
+    IF             shift, and go to state 50
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2157,13 +2239,13 @@ State 111
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 147
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 112
+State 113
 
-   68 bin_op_expr: expr EQEQ • expr
+   73 bin_op_expr: expr LT • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2176,9 +2258,9 @@ State 112
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2193,13 +2275,13 @@ State 112
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 148
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 113
+State 114
 
-   69 bin_op_expr: expr NE • expr
+   76 bin_op_expr: expr LE • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2212,9 +2294,9 @@ State 113
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2229,13 +2311,13 @@ State 113
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 149
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 114
+State 115
 
-   70 bin_op_expr: expr LT • expr
+   74 bin_op_expr: expr GT • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2248,9 +2330,9 @@ State 114
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2265,13 +2347,13 @@ State 114
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 150
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 115
+State 116
 
-   73 bin_op_expr: expr LE • expr
+   75 bin_op_expr: expr GE • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2284,9 +2366,9 @@ State 115
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2301,13 +2383,13 @@ State 115
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 151
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 116
+State 117
 
-   71 bin_op_expr: expr GT • expr
+   65 bin_op_expr: expr PLUS • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2320,9 +2402,9 @@ State 116
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2337,13 +2419,13 @@ State 116
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 152
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 117
+State 118
 
-   72 bin_op_expr: expr GE • expr
+   66 bin_op_expr: expr MINUS • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2356,9 +2438,9 @@ State 117
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2373,13 +2455,13 @@ State 117
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 153
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 118
+State 119
 
-   62 bin_op_expr: expr PLUS • expr
+   67 bin_op_expr: expr STAR • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2392,9 +2474,9 @@ State 118
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2409,13 +2491,13 @@ State 118
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 154
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 119
+State 120
 
-   63 bin_op_expr: expr MINUS • expr
+   68 bin_op_expr: expr SLASH • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2428,9 +2510,9 @@ State 119
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2445,13 +2527,13 @@ State 119
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 155
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 120
+State 121
 
-   64 bin_op_expr: expr STAR • expr
+   69 bin_op_expr: expr L_AND • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2464,9 +2546,9 @@ State 120
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2481,13 +2563,13 @@ State 120
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 156
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 121
+State 122
 
-   65 bin_op_expr: expr SLASH • expr
+   70 bin_op_expr: expr L_OR • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2500,9 +2582,9 @@ State 121
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2517,13 +2599,13 @@ State 121
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 157
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 122
+State 123
 
-   66 bin_op_expr: expr L_AND • expr
+   78 bin_op_expr: expr PLUS_EQ • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2536,9 +2618,9 @@ State 122
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2553,13 +2635,13 @@ State 122
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 158
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 123
+State 124
 
-   67 bin_op_expr: expr L_OR • expr
+   79 bin_op_expr: expr MIN_EQ • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2572,9 +2654,9 @@ State 123
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2589,13 +2671,13 @@ State 123
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 159
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 124
+State 125
 
-   75 bin_op_expr: expr PLUS_EQ • expr
+   81 bin_op_expr: expr MUL_EQ • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2608,9 +2690,9 @@ State 124
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2625,13 +2707,13 @@ State 124
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 160
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 125
+State 126
 
-   76 bin_op_expr: expr MIN_EQ • expr
+   80 bin_op_expr: expr DIV_EQ • expr
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2644,9 +2726,9 @@ State 125
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -2661,49 +2743,21 @@ State 125
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 161
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
-
-
-State 126
-
-   78 bin_op_expr: expr MUL_EQ • expr
-
-    DEC_LITERAL    shift, and go to state 38
-    FLOAT_LITERAL  shift, and go to state 39
-    STR_LITERAL    shift, and go to state 40
-    TRUE           shift, and go to state 41
-    FALSE          shift, and go to state 42
-    IDENTIFIER     shift, and go to state 43
-    WHILE          shift, and go to state 45
-    BANG           shift, and go to state 47
-    MINUS          shift, and go to state 48
-    STAR           shift, and go to state 49
-    IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
-    LBRACE         shift, and go to state 18
-    LPAREN         shift, and go to state 55
-    AMPERSAND      shift, and go to state 57
-    AMPERSAND_MUT  shift, and go to state 58
-
-    if_expr           go to state 64
-    block_expr        go to state 65
-    unary_op_expr     go to state 66
-    bin_op_expr       go to state 67
-    literal           go to state 68
-    call_expr         go to state 69
-    while_expr        go to state 70
-    tuple_index_expr  go to state 71
-    expr              go to state 162
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 127
 
-   77 bin_op_expr: expr DIV_EQ • expr
+   58 block_expr: LBRACE expr RBRACE •
+
+    $default  reduce using rule 58 (block_expr)
+
+
+State 128
+
+   89 call_expr: expr LPAREN • call_expr_args RPAREN
+   90          | expr LPAREN • RPAREN
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2716,11 +2770,12 @@ State 127
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
+    RPAREN         shift, and go to state 162
     AMPERSAND      shift, and go to state 57
     AMPERSAND_MUT  shift, and go to state 58
 
@@ -2729,26 +2784,20 @@ State 127
     unary_op_expr     go to state 66
     bin_op_expr       go to state 67
     literal           go to state 68
+    call_expr_args    go to state 163
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 163
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
-
-
-State 128
-
-   55 block_expr: LBRACE expr RBRACE •
-
-    $default  reduce using rule 55 (block_expr)
+    expr              go to state 164
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
 State 129
 
-   89 tuple_index_expr: expr DOT • DEC_LITERAL
+   92 tuple_index_expr: expr DOT • DEC_LITERAL
 
-    DEC_LITERAL  shift, and go to state 164
+    DEC_LITERAL  shift, and go to state 165
 
 
 State 130
@@ -2767,14 +2816,25 @@ State 131
 
 State 132
 
-   36 type_list: type_list • COMMA type
-   52 type: FN LPAREN type_list • RPAREN ARROW type
+   54 type: FN LPAREN RPAREN • ARROW type
+   55     | FN LPAREN RPAREN •
 
-    COMMA   shift, and go to state 133
-    RPAREN  shift, and go to state 165
+    ARROW  shift, and go to state 166
+
+    $default  reduce using rule 55 (type)
 
 
 State 133
+
+   36 type_list: type_list • COMMA type
+   52 type: FN LPAREN type_list • RPAREN ARROW type
+   53     | FN LPAREN type_list • RPAREN
+
+    COMMA   shift, and go to state 134
+    RPAREN  shift, and go to state 167
+
+
+State 134
 
    36 type_list: type_list COMMA • type
 
@@ -2793,84 +2853,24 @@ State 133
     FN          shift, and go to state 35
     LPAREN      shift, and go to state 36
 
-    type  go to state 166
+    type  go to state 168
 
 
-State 134
+State 135
 
    50 type: LPAREN type_list RPAREN •
 
     $default  reduce using rule 50 (type)
 
 
-State 135
-
-   87 call_expr: IDENTIFIER LPAREN RPAREN •
-
-    $default  reduce using rule 87 (call_expr)
-
-
 State 136
-
-   84 call_expr_args: call_expr_args • COMMA expr
-   86 call_expr: IDENTIFIER LPAREN call_expr_args • RPAREN
-
-    COMMA   shift, and go to state 167
-    RPAREN  shift, and go to state 168
-
-
-State 137
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   85 call_expr_args: expr •
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    DOT      shift, and go to state 129
-
-    $default  reduce using rule 85 (call_expr_args)
-
-
-State 138
 
    30 ident: IDENTIFIER •
 
     $default  reduce using rule 30 (ident)
 
 
-State 139
+State 137
 
    31 let: LET opt_mut ident • type_decl EQ expr SEMICOLON
    32    | LET opt_mut ident • type_decl SEMICOLON
@@ -2882,21 +2882,21 @@ State 139
     type_decl  go to state 170
 
 
-State 140
+State 138
 
-   88 while_expr: WHILE expr block_expr •
+   91 while_expr: WHILE expr block_expr •
 
-    $default  reduce using rule 88 (while_expr)
+    $default  reduce using rule 91 (while_expr)
 
 
-State 141
+State 139
 
    24 print_ln: PRINT_LN LPAREN STR_LITERAL • RPAREN
 
     RPAREN  shift, and go to state 171
 
 
-State 142
+State 140
 
    33 if_expr: IF expr block_expr •
    34        | IF expr block_expr • ELSE if_expr
@@ -2907,17 +2907,17 @@ State 142
     $default  reduce using rule 33 (if_expr)
 
 
-State 143
+State 141
 
-   99 expr_wo_block: LPAREN expr RPAREN •
+  102 expr_wo_block: LPAREN expr RPAREN •
 
-    $default  reduce using rule 99 (expr_wo_block)
+    $default  reduce using rule 102 (expr_wo_block)
 
 
-State 144
+State 142
 
-   92 expr_list: expr_list COMMA • expr
-  111 opt_comma: COMMA •
+   95 expr_list: expr_list COMMA • expr
+  114 opt_comma: COMMA •
 
     DEC_LITERAL    shift, and go to state 38
     FLOAT_LITERAL  shift, and go to state 39
@@ -2930,15 +2930,15 @@ State 144
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
     AMPERSAND_MUT  shift, and go to state 58
 
-    $default  reduce using rule 111 (opt_comma)
+    $default  reduce using rule 114 (opt_comma)
 
     if_expr           go to state 64
     block_expr        go to state 65
@@ -2949,704 +2949,776 @@ State 144
     while_expr        go to state 70
     tuple_index_expr  go to state 71
     expr              go to state 173
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 145
+State 143
 
-  109 expr_wo_block: LPAREN expr_list opt_comma • RPAREN
+  112 expr_wo_block: LPAREN expr_list opt_comma • RPAREN
 
     RPAREN  shift, and go to state 174
 
 
-State 146
+State 144
 
-   54 block_expr: LBRACE stmt_list expr RBRACE •
+   57 block_expr: LBRACE stmt_list expr RBRACE •
 
-    $default  reduce using rule 54 (block_expr)
+    $default  reduce using rule 57 (block_expr)
 
 
-State 147
+State 145
 
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   74            | expr EQ expr •
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   77            | expr EQ expr •
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
     DOT      shift, and go to state 129
 
-    DOT       [reduce using rule 74 (bin_op_expr)]
-    $default  reduce using rule 74 (bin_op_expr)
-
-
-State 148
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   68            | expr EQEQ expr •
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 68 (bin_op_expr)]
-    $default  reduce using rule 68 (bin_op_expr)
-
-
-State 149
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   69            | expr NE expr •
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 69 (bin_op_expr)]
-    $default  reduce using rule 69 (bin_op_expr)
-
-
-State 150
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   70            | expr LT expr •
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 70 (bin_op_expr)]
-    $default  reduce using rule 70 (bin_op_expr)
-
-
-State 151
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   73            | expr LE expr •
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 73 (bin_op_expr)]
-    $default  reduce using rule 73 (bin_op_expr)
-
-
-State 152
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   71            | expr GT expr •
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 71 (bin_op_expr)]
-    $default  reduce using rule 71 (bin_op_expr)
-
-
-State 153
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   72            | expr GE expr •
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 72 (bin_op_expr)]
-    $default  reduce using rule 72 (bin_op_expr)
-
-
-State 154
-
-   62 bin_op_expr: expr • PLUS expr
-   62            | expr PLUS expr •
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 62 (bin_op_expr)]
-    $default  reduce using rule 62 (bin_op_expr)
-
-
-State 155
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   63            | expr MINUS expr •
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 63 (bin_op_expr)]
-    $default  reduce using rule 63 (bin_op_expr)
-
-
-State 156
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   64            | expr STAR expr •
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    DOT  shift, and go to state 129
-
-    DOT       [reduce using rule 64 (bin_op_expr)]
-    $default  reduce using rule 64 (bin_op_expr)
-
-
-State 157
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   65            | expr SLASH expr •
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    DOT  shift, and go to state 129
-
-    DOT       [reduce using rule 65 (bin_op_expr)]
-    $default  reduce using rule 65 (bin_op_expr)
-
-
-State 158
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   66            | expr L_AND expr •
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQEQ   shift, and go to state 112
-    NE     shift, and go to state 113
-    LT     shift, and go to state 114
-    LE     shift, and go to state 115
-    GT     shift, and go to state 116
-    GE     shift, and go to state 117
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 66 (bin_op_expr)]
-    $default  reduce using rule 66 (bin_op_expr)
-
-
-State 159
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   67            | expr L_OR expr •
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQEQ   shift, and go to state 112
-    NE     shift, and go to state 113
-    LT     shift, and go to state 114
-    LE     shift, and go to state 115
-    GT     shift, and go to state 116
-    GE     shift, and go to state 117
-    PLUS   shift, and go to state 118
-    MINUS  shift, and go to state 119
-    STAR   shift, and go to state 120
-    SLASH  shift, and go to state 121
-    L_AND  shift, and go to state 122
-    DOT    shift, and go to state 129
-
-    DOT       [reduce using rule 67 (bin_op_expr)]
-    $default  reduce using rule 67 (bin_op_expr)
-
-
-State 160
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   75            | expr PLUS_EQ expr •
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    DOT      shift, and go to state 129
-
-    DOT       [reduce using rule 75 (bin_op_expr)]
-    $default  reduce using rule 75 (bin_op_expr)
-
-
-State 161
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   76            | expr MIN_EQ expr •
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    DOT      shift, and go to state 129
-
-    DOT       [reduce using rule 76 (bin_op_expr)]
-    $default  reduce using rule 76 (bin_op_expr)
-
-
-State 162
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   78            | expr MUL_EQ expr •
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    DOT      shift, and go to state 129
-
-    DOT       [reduce using rule 78 (bin_op_expr)]
-    $default  reduce using rule 78 (bin_op_expr)
-
-
-State 163
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   77            | expr DIV_EQ expr •
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    DOT      shift, and go to state 129
-
+    LPAREN    [reduce using rule 77 (bin_op_expr)]
     DOT       [reduce using rule 77 (bin_op_expr)]
     $default  reduce using rule 77 (bin_op_expr)
 
 
+State 146
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   71            | expr EQEQ expr •
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 71 (bin_op_expr)]
+    DOT       [reduce using rule 71 (bin_op_expr)]
+    $default  reduce using rule 71 (bin_op_expr)
+
+
+State 147
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   72            | expr NE expr •
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 72 (bin_op_expr)]
+    DOT       [reduce using rule 72 (bin_op_expr)]
+    $default  reduce using rule 72 (bin_op_expr)
+
+
+State 148
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   73            | expr LT expr •
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 73 (bin_op_expr)]
+    DOT       [reduce using rule 73 (bin_op_expr)]
+    $default  reduce using rule 73 (bin_op_expr)
+
+
+State 149
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   76            | expr LE expr •
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 76 (bin_op_expr)]
+    DOT       [reduce using rule 76 (bin_op_expr)]
+    $default  reduce using rule 76 (bin_op_expr)
+
+
+State 150
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   74            | expr GT expr •
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 74 (bin_op_expr)]
+    DOT       [reduce using rule 74 (bin_op_expr)]
+    $default  reduce using rule 74 (bin_op_expr)
+
+
+State 151
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   75            | expr GE expr •
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 75 (bin_op_expr)]
+    DOT       [reduce using rule 75 (bin_op_expr)]
+    $default  reduce using rule 75 (bin_op_expr)
+
+
+State 152
+
+   65 bin_op_expr: expr • PLUS expr
+   65            | expr PLUS expr •
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 65 (bin_op_expr)]
+    DOT       [reduce using rule 65 (bin_op_expr)]
+    $default  reduce using rule 65 (bin_op_expr)
+
+
+State 153
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   66            | expr MINUS expr •
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 66 (bin_op_expr)]
+    DOT       [reduce using rule 66 (bin_op_expr)]
+    $default  reduce using rule 66 (bin_op_expr)
+
+
+State 154
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   67            | expr STAR expr •
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 67 (bin_op_expr)]
+    DOT       [reduce using rule 67 (bin_op_expr)]
+    $default  reduce using rule 67 (bin_op_expr)
+
+
+State 155
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   68            | expr SLASH expr •
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 68 (bin_op_expr)]
+    DOT       [reduce using rule 68 (bin_op_expr)]
+    $default  reduce using rule 68 (bin_op_expr)
+
+
+State 156
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   69            | expr L_AND expr •
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQEQ    shift, and go to state 111
+    NE      shift, and go to state 112
+    LT      shift, and go to state 113
+    LE      shift, and go to state 114
+    GT      shift, and go to state 115
+    GE      shift, and go to state 116
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 69 (bin_op_expr)]
+    DOT       [reduce using rule 69 (bin_op_expr)]
+    $default  reduce using rule 69 (bin_op_expr)
+
+
+State 157
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   70            | expr L_OR expr •
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQEQ    shift, and go to state 111
+    NE      shift, and go to state 112
+    LT      shift, and go to state 113
+    LE      shift, and go to state 114
+    GT      shift, and go to state 115
+    GE      shift, and go to state 116
+    PLUS    shift, and go to state 117
+    MINUS   shift, and go to state 118
+    STAR    shift, and go to state 119
+    SLASH   shift, and go to state 120
+    L_AND   shift, and go to state 121
+    LPAREN  shift, and go to state 128
+    DOT     shift, and go to state 129
+
+    LPAREN    [reduce using rule 70 (bin_op_expr)]
+    DOT       [reduce using rule 70 (bin_op_expr)]
+    $default  reduce using rule 70 (bin_op_expr)
+
+
+State 158
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   78            | expr PLUS_EQ expr •
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
+    DOT      shift, and go to state 129
+
+    LPAREN    [reduce using rule 78 (bin_op_expr)]
+    DOT       [reduce using rule 78 (bin_op_expr)]
+    $default  reduce using rule 78 (bin_op_expr)
+
+
+State 159
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   79            | expr MIN_EQ expr •
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
+    DOT      shift, and go to state 129
+
+    LPAREN    [reduce using rule 79 (bin_op_expr)]
+    DOT       [reduce using rule 79 (bin_op_expr)]
+    $default  reduce using rule 79 (bin_op_expr)
+
+
+State 160
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   81            | expr MUL_EQ expr •
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
+    DOT      shift, and go to state 129
+
+    LPAREN    [reduce using rule 81 (bin_op_expr)]
+    DOT       [reduce using rule 81 (bin_op_expr)]
+    $default  reduce using rule 81 (bin_op_expr)
+
+
+State 161
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   80            | expr DIV_EQ expr •
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
+    DOT      shift, and go to state 129
+
+    LPAREN    [reduce using rule 80 (bin_op_expr)]
+    DOT       [reduce using rule 80 (bin_op_expr)]
+    $default  reduce using rule 80 (bin_op_expr)
+
+
+State 162
+
+   90 call_expr: expr LPAREN RPAREN •
+
+    $default  reduce using rule 90 (call_expr)
+
+
+State 163
+
+   87 call_expr_args: call_expr_args • COMMA expr
+   89 call_expr: expr LPAREN call_expr_args • RPAREN
+
+    COMMA   shift, and go to state 175
+    RPAREN  shift, and go to state 176
+
+
 State 164
 
-   89 tuple_index_expr: expr DOT DEC_LITERAL •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   88 call_expr_args: expr •
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    $default  reduce using rule 89 (tuple_index_expr)
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
+    DOT      shift, and go to state 129
+
+    $default  reduce using rule 88 (call_expr_args)
 
 
 State 165
 
-   52 type: FN LPAREN type_list RPAREN • ARROW type
+   92 tuple_index_expr: expr DOT DEC_LITERAL •
 
-    ARROW  shift, and go to state 175
+    $default  reduce using rule 92 (tuple_index_expr)
 
 
 State 166
 
-   36 type_list: type_list COMMA type •
+   54 type: FN LPAREN RPAREN ARROW • type
 
-    $default  reduce using rule 36 (type_list)
-
-
-State 167
-
-   84 call_expr_args: call_expr_args COMMA • expr
-
-    DEC_LITERAL    shift, and go to state 38
-    FLOAT_LITERAL  shift, and go to state 39
-    STR_LITERAL    shift, and go to state 40
-    TRUE           shift, and go to state 41
-    FALSE          shift, and go to state 42
-    IDENTIFIER     shift, and go to state 43
-    WHILE          shift, and go to state 45
-    BANG           shift, and go to state 47
-    MINUS          shift, and go to state 48
-    STAR           shift, and go to state 49
-    IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
-    LBRACE         shift, and go to state 18
-    LPAREN         shift, and go to state 55
-    AMPERSAND      shift, and go to state 57
-    AMPERSAND_MUT  shift, and go to state 58
-
-    if_expr           go to state 64
-    block_expr        go to state 65
-    unary_op_expr     go to state 66
-    bin_op_expr       go to state 67
-    literal           go to state 68
-    call_expr         go to state 69
-    while_expr        go to state 70
-    tuple_index_expr  go to state 71
-    expr              go to state 176
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
-
-
-State 168
-
-   86 call_expr: IDENTIFIER LPAREN call_expr_args RPAREN •
-
-    $default  reduce using rule 86 (call_expr)
-
-
-State 169
-
-   25 type_decl: COLON • type
-   26          | COLON • error
-
-    error       shift, and go to state 177
     UNDERSCORE  shift, and go to state 23
     I8          shift, and go to state 24
     I16         shift, and go to state 25
@@ -3662,7 +3734,48 @@ State 169
     FN          shift, and go to state 35
     LPAREN      shift, and go to state 36
 
-    type  go to state 178
+    type  go to state 177
+
+
+State 167
+
+   52 type: FN LPAREN type_list RPAREN • ARROW type
+   53     | FN LPAREN type_list RPAREN •
+
+    ARROW  shift, and go to state 178
+
+    $default  reduce using rule 53 (type)
+
+
+State 168
+
+   36 type_list: type_list COMMA type •
+
+    $default  reduce using rule 36 (type_list)
+
+
+State 169
+
+   25 type_decl: COLON • type
+   26          | COLON • error
+
+    error       shift, and go to state 179
+    UNDERSCORE  shift, and go to state 23
+    I8          shift, and go to state 24
+    I16         shift, and go to state 25
+    I32         shift, and go to state 26
+    I64         shift, and go to state 27
+    ISIZE       shift, and go to state 28
+    U8          shift, and go to state 29
+    U16         shift, and go to state 30
+    U32         shift, and go to state 31
+    U64         shift, and go to state 32
+    USIZE       shift, and go to state 33
+    BOOL        shift, and go to state 34
+    FN          shift, and go to state 35
+    LPAREN      shift, and go to state 36
+
+    type  go to state 180
 
 
 State 170
@@ -3670,8 +3783,8 @@ State 170
    31 let: LET opt_mut ident type_decl • EQ expr SEMICOLON
    32    | LET opt_mut ident type_decl • SEMICOLON
 
-    EQ         shift, and go to state 179
-    SEMICOLON  shift, and go to state 180
+    EQ         shift, and go to state 181
+    SEMICOLON  shift, and go to state 182
 
 
 State 171
@@ -3689,62 +3802,115 @@ State 172
     IF      shift, and go to state 50
     LBRACE  shift, and go to state 18
 
-    if_expr     go to state 181
-    block_expr  go to state 182
+    if_expr     go to state 183
+    block_expr  go to state 184
 
 
 State 173
 
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-   92 expr_list: expr_list COMMA expr •
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+   95 expr_list: expr_list COMMA expr •
 
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
     DOT      shift, and go to state 129
 
-    $default  reduce using rule 92 (expr_list)
+    $default  reduce using rule 95 (expr_list)
 
 
 State 174
 
-  109 expr_wo_block: LPAREN expr_list opt_comma RPAREN •
+  112 expr_wo_block: LPAREN expr_list opt_comma RPAREN •
 
-    $default  reduce using rule 109 (expr_wo_block)
+    $default  reduce using rule 112 (expr_wo_block)
 
 
 State 175
+
+   87 call_expr_args: call_expr_args COMMA • expr
+
+    DEC_LITERAL    shift, and go to state 38
+    FLOAT_LITERAL  shift, and go to state 39
+    STR_LITERAL    shift, and go to state 40
+    TRUE           shift, and go to state 41
+    FALSE          shift, and go to state 42
+    IDENTIFIER     shift, and go to state 43
+    WHILE          shift, and go to state 45
+    BANG           shift, and go to state 47
+    MINUS          shift, and go to state 48
+    STAR           shift, and go to state 49
+    IF             shift, and go to state 50
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
+    LBRACE         shift, and go to state 18
+    LPAREN         shift, and go to state 55
+    AMPERSAND      shift, and go to state 57
+    AMPERSAND_MUT  shift, and go to state 58
+
+    if_expr           go to state 64
+    block_expr        go to state 65
+    unary_op_expr     go to state 66
+    bin_op_expr       go to state 67
+    literal           go to state 68
+    call_expr         go to state 69
+    while_expr        go to state 70
+    tuple_index_expr  go to state 71
+    expr              go to state 185
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
+
+
+State 176
+
+   89 call_expr: expr LPAREN call_expr_args RPAREN •
+
+    $default  reduce using rule 89 (call_expr)
+
+
+State 177
+
+   54 type: FN LPAREN RPAREN ARROW type •
+
+    $default  reduce using rule 54 (type)
+
+
+State 178
 
    52 type: FN LPAREN type_list RPAREN ARROW • type
 
@@ -3763,68 +3929,24 @@ State 175
     FN          shift, and go to state 35
     LPAREN      shift, and go to state 36
 
-    type  go to state 183
+    type  go to state 186
 
 
-State 176
-
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   84 call_expr_args: call_expr_args COMMA expr •
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
-
-    EQ       shift, and go to state 111
-    EQEQ     shift, and go to state 112
-    NE       shift, and go to state 113
-    LT       shift, and go to state 114
-    LE       shift, and go to state 115
-    GT       shift, and go to state 116
-    GE       shift, and go to state 117
-    PLUS     shift, and go to state 118
-    MINUS    shift, and go to state 119
-    STAR     shift, and go to state 120
-    SLASH    shift, and go to state 121
-    L_AND    shift, and go to state 122
-    L_OR     shift, and go to state 123
-    PLUS_EQ  shift, and go to state 124
-    MIN_EQ   shift, and go to state 125
-    MUL_EQ   shift, and go to state 126
-    DIV_EQ   shift, and go to state 127
-    DOT      shift, and go to state 129
-
-    $default  reduce using rule 84 (call_expr_args)
-
-
-State 177
+State 179
 
    26 type_decl: COLON error •
 
     $default  reduce using rule 26 (type_decl)
 
 
-State 178
+State 180
 
    25 type_decl: COLON type •
 
     $default  reduce using rule 25 (type_decl)
 
 
-State 179
+State 181
 
    31 let: LET opt_mut ident type_decl EQ • expr SEMICOLON
 
@@ -3839,9 +3961,9 @@ State 179
     MINUS          shift, and go to state 48
     STAR           shift, and go to state 49
     IF             shift, and go to state 50
-    RETURN         shift, and go to state 85
-    BREAK          shift, and go to state 86
-    CONTINUE       shift, and go to state 87
+    RETURN         shift, and go to state 84
+    BREAK          shift, and go to state 85
+    CONTINUE       shift, and go to state 86
     LBRACE         shift, and go to state 18
     LPAREN         shift, and go to state 55
     AMPERSAND      shift, and go to state 57
@@ -3855,83 +3977,133 @@ State 179
     call_expr         go to state 69
     while_expr        go to state 70
     tuple_index_expr  go to state 71
-    expr              go to state 184
-    expr_w_block      go to state 89
-    expr_wo_block     go to state 90
+    expr              go to state 187
+    expr_w_block      go to state 88
+    expr_wo_block     go to state 89
 
 
-State 180
+State 182
 
    32 let: LET opt_mut ident type_decl SEMICOLON •
 
     $default  reduce using rule 32 (let)
 
 
-State 181
+State 183
 
    34 if_expr: IF expr block_expr ELSE if_expr •
 
     $default  reduce using rule 34 (if_expr)
 
 
-State 182
+State 184
 
    35 if_expr: IF expr block_expr ELSE block_expr •
 
     $default  reduce using rule 35 (if_expr)
 
 
-State 183
+State 185
+
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   87 call_expr_args: call_expr_args COMMA expr •
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
+
+    EQ       shift, and go to state 110
+    EQEQ     shift, and go to state 111
+    NE       shift, and go to state 112
+    LT       shift, and go to state 113
+    LE       shift, and go to state 114
+    GT       shift, and go to state 115
+    GE       shift, and go to state 116
+    PLUS     shift, and go to state 117
+    MINUS    shift, and go to state 118
+    STAR     shift, and go to state 119
+    SLASH    shift, and go to state 120
+    L_AND    shift, and go to state 121
+    L_OR     shift, and go to state 122
+    PLUS_EQ  shift, and go to state 123
+    MIN_EQ   shift, and go to state 124
+    MUL_EQ   shift, and go to state 125
+    DIV_EQ   shift, and go to state 126
+    LPAREN   shift, and go to state 128
+    DOT      shift, and go to state 129
+
+    $default  reduce using rule 87 (call_expr_args)
+
+
+State 186
 
    52 type: FN LPAREN type_list RPAREN ARROW type •
 
     $default  reduce using rule 52 (type)
 
 
-State 184
+State 187
 
    31 let: LET opt_mut ident type_decl EQ expr • SEMICOLON
-   62 bin_op_expr: expr • PLUS expr
-   63            | expr • MINUS expr
-   64            | expr • STAR expr
-   65            | expr • SLASH expr
-   66            | expr • L_AND expr
-   67            | expr • L_OR expr
-   68            | expr • EQEQ expr
-   69            | expr • NE expr
-   70            | expr • LT expr
-   71            | expr • GT expr
-   72            | expr • GE expr
-   73            | expr • LE expr
-   74            | expr • EQ expr
-   75            | expr • PLUS_EQ expr
-   76            | expr • MIN_EQ expr
-   77            | expr • DIV_EQ expr
-   78            | expr • MUL_EQ expr
-   89 tuple_index_expr: expr • DOT DEC_LITERAL
+   65 bin_op_expr: expr • PLUS expr
+   66            | expr • MINUS expr
+   67            | expr • STAR expr
+   68            | expr • SLASH expr
+   69            | expr • L_AND expr
+   70            | expr • L_OR expr
+   71            | expr • EQEQ expr
+   72            | expr • NE expr
+   73            | expr • LT expr
+   74            | expr • GT expr
+   75            | expr • GE expr
+   76            | expr • LE expr
+   77            | expr • EQ expr
+   78            | expr • PLUS_EQ expr
+   79            | expr • MIN_EQ expr
+   80            | expr • DIV_EQ expr
+   81            | expr • MUL_EQ expr
+   89 call_expr: expr • LPAREN call_expr_args RPAREN
+   90          | expr • LPAREN RPAREN
+   92 tuple_index_expr: expr • DOT DEC_LITERAL
 
-    EQ         shift, and go to state 111
-    EQEQ       shift, and go to state 112
-    NE         shift, and go to state 113
-    LT         shift, and go to state 114
-    LE         shift, and go to state 115
-    GT         shift, and go to state 116
-    GE         shift, and go to state 117
-    PLUS       shift, and go to state 118
-    MINUS      shift, and go to state 119
-    STAR       shift, and go to state 120
-    SLASH      shift, and go to state 121
-    L_AND      shift, and go to state 122
-    L_OR       shift, and go to state 123
-    PLUS_EQ    shift, and go to state 124
-    MIN_EQ     shift, and go to state 125
-    MUL_EQ     shift, and go to state 126
-    DIV_EQ     shift, and go to state 127
-    SEMICOLON  shift, and go to state 185
+    EQ         shift, and go to state 110
+    EQEQ       shift, and go to state 111
+    NE         shift, and go to state 112
+    LT         shift, and go to state 113
+    LE         shift, and go to state 114
+    GT         shift, and go to state 115
+    GE         shift, and go to state 116
+    PLUS       shift, and go to state 117
+    MINUS      shift, and go to state 118
+    STAR       shift, and go to state 119
+    SLASH      shift, and go to state 120
+    L_AND      shift, and go to state 121
+    L_OR       shift, and go to state 122
+    PLUS_EQ    shift, and go to state 123
+    MIN_EQ     shift, and go to state 124
+    MUL_EQ     shift, and go to state 125
+    DIV_EQ     shift, and go to state 126
+    LPAREN     shift, and go to state 128
+    SEMICOLON  shift, and go to state 188
     DOT        shift, and go to state 129
 
 
-State 185
+State 188
 
    31 let: LET opt_mut ident type_decl EQ expr SEMICOLON •
 

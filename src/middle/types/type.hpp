@@ -208,32 +208,37 @@ namespace mr { namespace middle { namespace types {
         bool operator!=(const FnPointerTy &other) const = default;
     };
 
-    struct FunctionType;
-    static std::string function_type_to_string(const FunctionType *ft);
+    struct FnItem;
+    static std::string function_type_to_string(const FnItem *ft);
 
-    using type_variant_t = std::variant<
+    using TyKind = std::variant<
         UnknownTy, NeverTy, InferTy, BoolTy, IntTy, UIntTy, UnitTy, FloatTy, TupleTy,
-        const FunctionType *, FnPointerTy>;
-    struct Ty : public type_variant_t {
+        const FnItem *, FnPointerTy>;
+    struct Ty : public TyKind {
 
-        bool is_known() const noexcept {
+        inline bool is_known() const noexcept {
             return !std::holds_alternative<InferTy>(*this) &&
                    !std::holds_alternative<UnknownTy>(*this);
         }
 
-        bool is_integral() const noexcept {
+        inline bool is_integral() const noexcept {
             return std::holds_alternative<IntTy>(*this) || std::holds_alternative<UIntTy>(*this);
         }
 
-        bool is_signed_integral() const noexcept { return std::holds_alternative<IntTy>(*this); }
-
+        inline bool is_signed_integral() const noexcept {
+            return std::holds_alternative<IntTy>(*this);
+        }
+        inline bool is_callable() const noexcept {
+            return std::holds_alternative<const FnItem *>(*this) ||
+                   std::holds_alternative<FnPointerTy>(*this);
+        }
         static Ty unit() { return Ty{UnitTy{}}; }
         inline bool is_unit() const noexcept { return has_variant<UnitTy>(*this); }
 
         size_t size() const noexcept {
             return std::visit(
                 overloaded{
-                    [](const FunctionType *const &) { return 8ul; },
+                    [](const FnItem *const &) { return 8ul; },
                     [](const NeverTy &) { return 0ul; },
                     [](const UnitTy &) { return 0ul; },
                     [](const BoolTy &) { return 8ul; },
@@ -266,7 +271,7 @@ namespace mr { namespace middle { namespace types {
         std::string to_string() const noexcept {
             return std::visit(
                 overloaded{
-                    [](const FunctionType *const &t) { return function_type_to_string(t); },
+                    [](const FnItem *const &t) { return function_type_to_string(t); },
                     [](const FnPointerTy &fp) {
                         return fmt::format(
                             "fn({}) -> {}",
@@ -321,7 +326,7 @@ namespace mr { namespace middle { namespace types {
         }
     }; // namespace middle::types
 
-    struct FunctionType {
+    struct FnItem {
         std::string id; // function types are also based on their name:
                         // fn() -> () {foo}
         // we remember the names for convenience
@@ -335,7 +340,7 @@ namespace mr { namespace middle { namespace types {
             o << *this;
             return o.str();
         }
-        friend std::ostream &operator<<(std::ostream &o, const FunctionType &ft) {
+        friend std::ostream &operator<<(std::ostream &o, const FnItem &ft) {
             o << "fn(";
             for (const auto &t : ft.arg_types) {
                 o << t << ", ";
@@ -345,17 +350,17 @@ namespace mr { namespace middle { namespace types {
         }
     };
 
-    static std::string function_type_to_string(const FunctionType *ft) { return ft->to_string(); }
+    static std::string function_type_to_string(const FnItem *ft) { return ft->to_string(); }
 }}} // namespace mr::middle::types
 
 template <> struct fmt::formatter<mr::middle::types::Ty> : fmt::ostream_formatter {};
 
 namespace std {
+// stuff so std can work with this variant
 
-template <>
-struct variant_size<mr::middle::types::Ty> : variant_size<mr::middle::types::type_variant_t> {};
+template <> struct variant_size<mr::middle::types::Ty> : variant_size<mr::middle::types::TyKind> {};
 
 template <std::size_t I>
 struct variant_alternative<I, mr::middle::types::Ty>
-    : variant_alternative<I, mr::middle::types::type_variant_t> {};
+    : variant_alternative<I, mr::middle::types::TyKind> {};
 } // namespace std

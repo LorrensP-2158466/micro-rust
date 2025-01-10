@@ -46,17 +46,13 @@ namespace mr { namespace middle {
             return root;
         }
 
-        void unionize(K var1, K var2) {
+        void unify(K var1, K var2) {
             const auto root1 = find(var1.id());
             const auto root2 = find(var2.id());
 
             if (root1 != root2) {
                 const auto &value1 = table[root1].value;
                 const auto &value2 = table[root2].value;
-                if (value1 != value2) {
-                    throw std::runtime_error("HELP ME IN UNIFICATION TABLE");
-                }
-
                 table[root2].parent = root1;
                 table[root2].value = V::unify_values(value1, value2);
             }
@@ -74,7 +70,7 @@ namespace mr { namespace middle {
             table[root].value = value;
         }
 
-        std::optional<V> get(K var) { return table.at(find(var.id())).value; }
+        std::optional<V> get(K var) { return table.at(find(DBG(var.id()))).value; }
     };
 
 }} // namespace mr::middle

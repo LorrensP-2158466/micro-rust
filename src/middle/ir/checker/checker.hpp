@@ -93,7 +93,6 @@ namespace mr { namespace middle { namespace ir { namespace checker {
                 overloaded{
                     [&](const MutUseCtx) {
                         if (!is_assignable(local, loc) && tainter_by_error.insert(local)) {
-                            DBG("ASSIGN ALREADY ASSIGNED");
                             const auto &[id, ty, mutablity, local_type, l] = fn.local(local);
                             ecx.report_diag(errors::assign_immutable(
                                 first_init_locs[local.id()], source_loc(loc), id, ty

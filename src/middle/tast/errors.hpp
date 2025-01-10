@@ -5,7 +5,7 @@
 #include "types/type.hpp"
 #include <fmt/format.h>
 
-namespace mr { namespace middle { namespace tast { namespace errors {
+namespace mr { namespace middle { namespace errors {
 
     static inline error::Diagnostic mismatched_return_types(
         const types::Ty &found, location found_loc, const types::Ty &expected, location expected_loc
@@ -42,6 +42,66 @@ namespace mr { namespace middle { namespace tast { namespace errors {
             }},
         };
     }
+    static inline error::Diagnostic called_uncallable(const types::Ty &found, location loc) {
+        return error::Diagnostic{
+            error::Level::Error,
+            fmt::format("Expected function, found `{}`", found),
+            loc,
+            std::vector{error::DiagnosticLabel{
+                loc, "Call expression required function", error::Style::Primary
+            }},
+        };
+    }
+
+    // expects the location of the function so we can primary it
+    // than it expects the following list
+    // [ found, expected, location of expr, argument number]
+    static inline error::Diagnostic mis_matched_call_args(
+        location fn_loc,
+        std::vector<std::tuple<const types::Ty &, const types::Ty &, location, size_t>> mismatched
+    ) {
+        std::vector labels{error::DiagnosticLabel{fn_loc, "", error::Style::Primary}};
+        labels.reserve(1 + mismatched.size());
+        for (auto &&[found, expect, loc, pos] : std::move(mismatched)) {
+            labels.emplace_back(
+                loc,
+                fmt::format("argument #{} expected `{}`, but got `{}` ", pos, expect, found),
+                error::Style::Secondary
+            );
+        }
+
+        return error::Diagnostic{
+            error::Level::Error,
+            "arguments to this function are incorrect",
+            fn_loc,
+            std::move(labels)
+        };
+    }
+
+    // missing: [ expected_ty, arg_pos]
+    static inline error::Diagnostic missing_args(
+        location fn_loc, size_t found, size_t expected,
+        std::vector<std::tuple<const types::Ty &, size_t>> missing
+    ) {
+        std::vector labels{error::DiagnosticLabel{fn_loc, "", error::Style::Primary}};
+        labels.reserve(1 + missing.size());
+        for (auto &&[expect, pos] : missing) {
+            labels.emplace_back(
+                fn_loc,
+                fmt::format("missing argument #{} of `{}`", pos, expect, found),
+                error::Style::Secondary
+            );
+        }
+
+        return error::Diagnostic{
+            error::Level::Error,
+            fmt::format(
+                "this function takes {} arguments but {} argument was supplied", expected, found
+            ),
+            fn_loc,
+            std::move(labels)
+        };
+    }
 
     static inline error::Diagnostic mismatched_if_else_types(
         const types::Ty &found, location else_t_loc, const types::Ty &expected, location if_t_loc,
@@ -63,7 +123,6 @@ namespace mr { namespace middle { namespace tast { namespace errors {
             },
         };
     }
-    class MisMatchedCallArgs {};
 
     static inline error::Diagnostic
     unknown_field(std::string field, const types::Ty &actual_type, location loc) {
@@ -133,4 +192,4 @@ namespace mr { namespace middle { namespace tast { namespace errors {
         };
     }
 
-}}}} // namespace mr::middle::tast::errors
+}}} // namespace mr::middle::errors

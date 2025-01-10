@@ -84,16 +84,13 @@ namespace mr { namespace middle { namespace tast {
     };
 
     struct CallExpr {
-        std::string id;
-        std::vector<U<Expr>> args;
+        types::Ty fun_ty; // the type of the "function" being called, return type is of the entire
+                          // expression
+        U<Expr> fun;
+        std::vector<Expr> args;
 
-        CallExpr(std::string i, std::vector<U<Expr>> a)
-            : id(i)
-            , args(std::move(a)) {}
         friend std::ostream &operator<<(std::ostream &o, const CallExpr &call) {
-            o << "CALL EXPR: " << call.id << " WITH ARGS: (";
-            std::copy(call.args.begin(), call.args.end(), std::ostream_iterator<U<Expr>>(o, " "));
-            o << ')';
+            o << "CALL EXPR: ";
             return o;
         }
     };
@@ -398,9 +395,22 @@ namespace mr { namespace middle { namespace tast {
         }
     };
 
+    // i have to represent casting because i can use a fn item as a fn pointer
+    // which is in no way supported inside of the IR
+    struct CastExpr {
+        // cast to parent expression
+        U<Expr> expr;
+
+        friend std::ostream &operator<<(std::ostream &o, const CastExpr &) {
+            o << "Cast Expr ";
+            return o;
+        }
+    };
+
     using ExprKind = std::variant<
         AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier, IfElse, Literal,
-        UnaryOpExpr, Unit, Loop, Break, Return, Continue, LogicalOpExpr, TupleExpr, FieldExpr>;
+        UnaryOpExpr, Unit, Loop, Break, Return, Continue, LogicalOpExpr, TupleExpr, FieldExpr,
+        CastExpr>;
     struct Expr {
         ExprKind kind;
         types::Ty type;
@@ -423,6 +433,6 @@ namespace mr { namespace middle { namespace tast {
 }}} // namespace mr::middle::tast
 #define FORMAT_TAST_TYPE(ty) OSTREAM_FORMATTER(mr::middle::tast::ty)
 
-MAP(FORMAT_TAST_TYPE, Return, Continue, Break, TupleExpr, FieldExpr)
+MAP(FORMAT_TAST_TYPE, Return, Continue, Break, TupleExpr, FieldExpr, CastExpr)
 MAP(FORMAT_TAST_TYPE, AssignExpr, AssignOpExpr, BinOpExpr, BlockExpr, CallExpr, Identifier, IfElse,
     Literal, UnaryOpExpr, Unit, Loop, LogicalOpExpr, ExprKind, Expr)

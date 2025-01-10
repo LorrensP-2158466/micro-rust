@@ -1,12 +1,8 @@
-fn a() -> i32 {
-    let a = 3;
-    let b = {
-        a + 5
-    } - 3;
-    b
+fn a(x: i32, y: i32) -> i32 {
+    x + y
 }
 
 fn main() {
-    let x = a();
+    let x = a(10, 10);
     println!("{x}");
 }

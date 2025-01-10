@@ -14,14 +14,24 @@ namespace mr { namespace middle_interpreter {
         std::vector<Value> vals;
     };
 
-    using value_variant_t = std::variant<Scalar, Aggregate>;
+    struct FnPtrValue {
+        // yeah this is very wrong, but it works
+        Ref<const std::string> fn_name;
+    };
+
+    using value_variant_t = std::variant<Scalar, Aggregate, FnPtrValue>;
     struct Value : value_variant_t {
         types::Ty type;
         Value(Scalar s, types::Ty t)
             : value_variant_t(s)
             , type(std::move(t)) {}
+
         Value(Aggregate a, types::Ty t)
             : value_variant_t(std::move(a))
+            , type(std::move(t)) {}
+
+        Value(FnPtrValue fp, types::Ty t)
+            : value_variant_t(std::move(fp))
             , type(std::move(t)) {}
 
         static inline Value from_bool(bool b) { return {Scalar{b, 1}, types::Ty{types::BoolTy{}}}; }
