@@ -121,7 +121,7 @@ Ever Init:
                 |   y = 20  | ever : { y }
                 |           |
                 -------------
-variable y is potentially already uninitialized.
+variable y is potentially already initialized.
 (this also depends on dead local trees, too much detail, see: EverInit inside ./src/middle/ir/checker/analyzers.hpp
 ```
 
